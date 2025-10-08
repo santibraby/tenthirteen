@@ -87,13 +87,8 @@
         }
 
         .chart-wrapper {
-            width: 100vh;
-            height: 100vw;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(90deg);
-            transform-origin: center center;
+            width: 100%;
+            height: 100%;
             padding: 20px;
         }
 
@@ -146,7 +141,7 @@
         .chart-container {
             flex: 1;
             position: relative;
-            padding: 0 20px;
+            padding: 0 20px 20px 20px;
             min-height: 0;
             height: calc(100% - 80px);
         }
@@ -396,7 +391,7 @@
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
         <!-- UPDATE VERSION NUMBER HERE when artifact changes -->
-        <div class="version">v9</div>
+        <div class="version">v13</div>
         <button class="btn" onclick="handleGoogleLogin()">sign in with google</button>
     </div>
 
@@ -439,36 +434,32 @@
         // QUESTIONS CONFIGURATION - EDIT THIS SECTION
         // ============================================
         const QUESTIONS = [
-            // Morning routines (Cyan)
             { section: 'morning', text: 'brush teeth?', color: 'C' },
             { section: 'morning', text: 'shower?', color: 'C' },
-            { section: 'morning', text: 'skincare?', color: 'C' },
+            { section: 'morning', text: 'colostrum?', color: 'C' },
+            { section: 'morning', text: 'rogaine?', color: 'C' },
+            { section: 'morning', text: 'shave?', color: 'M' },
+            { section: 'morning', text: 'face lotion?', color: 'C' },
+            { section: 'morning', text: 'clean ear?', color: 'C' },
+            { section: 'morning', text: 'fruit / granola / yogurt?', color: 'C' },
             { section: 'morning', text: 'make bed?', color: 'M' },
-            
-            // Evening routines (Cyan)
+            { section: 'morning', text: 'morning walk?', color: 'C' },
+            { section: 'morning', text: 'journal?', color: 'M' },
+            { section: 'evening', text: 'colostrum?', color: 'C' },
+            { section: 'evening', text: 'rogaine?', color: 'C' },
+            { section: 'evening', text: 'shave?', color: 'M' },
+            { section: 'evening', text: 'face lotion?', color: 'C' },
+            { section: 'evening', text: 'yoga / stretch?', color: 'C' },
+            { section: 'evening', text: 'read?', color: 'M' },
+            { section: 'evening', text: 'shower / bath?', color: 'C' },
+            { section: 'evening', text: 'clean ear?', color: 'C' },
             { section: 'evening', text: 'brush teeth?', color: 'C' },
-            { section: 'evening', text: 'floss?', color: 'C' },
-            { section: 'evening', text: 'night skincare?', color: 'C' },
-            
-            // Daily habits (Magenta)
-            { section: 'daily', text: 'exercise?', color: 'M' },
-            { section: 'daily', text: 'meditate?', color: 'M' },
-            { section: 'daily', text: 'read?', color: 'M' },
-            { section: 'daily', text: 'journal?', color: 'M' },
-            
-            // Substances (Magenta, inverse logic)
-            { section: 'daily', text: 'nicotine free?', color: 'M' },
-            { section: 'daily', text: 'cannabis free?', color: 'M' },
+            { section: 'daily', text: 'nicotine free ?', color: 'M' },
+            { section: 'daily', text: 'cannabis free ?', color: 'M' },
             { section: 'daily', text: 'alcohol free?', color: 'M' },
-            
-            // Social (Yellow)
-            { section: 'daily', text: 'connect with friends?', color: 'Y' },
-            { section: 'daily', text: 'quality time with partner?', color: 'Y' },
-            
-            // Text response (Yellow)
+            { section: 'daily', text: 'caffeine?', color: 'M' },
+            { section: 'daily', text: 'check in with Maria?', color: 'Y' },
             { section: 'text', text: 'daily response', color: 'Y' },
-            
-            // Rating (White)
             { section: 'rating', text: 'daily rating', color: 'W' }
         ];
 
