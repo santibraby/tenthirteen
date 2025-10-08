@@ -391,7 +391,7 @@
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
         <!-- UPDATE VERSION NUMBER HERE when artifact changes -->
-        <div class="version">v16</div>
+        <div class="version">v17</div>
         <button class="btn" onclick="handleGoogleLogin()">sign in with google</button>
     </div>
 
@@ -998,7 +998,13 @@
                                 }
                             },
                             grid: {
-                                color: '#333333'
+                                color: function(context) {
+                                    const value = context.tick.value;
+                                    if (value === 0 || value === 25 || value === 50 || value === 75 || value === 100) {
+                                        return '#333333';
+                                    }
+                                    return 'transparent';
+                                }
                             }
                         },
                         x: {
