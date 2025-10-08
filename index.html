@@ -1,4 +1,8 @@
-<!DOCTYPE html>
+// Immediately complete quiz when rating is selected
+      setTimeout(() => {
+        completeQuiz();
+      }, 300);
+    }<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -849,7 +853,15 @@
         
         // Rating calculation
         const rating = parseFloat(entry['daily rating']);
-        const ratingPercent = isNaN(rating) ? 50 : ((rating + 2) / 4) * 100;
+        let ratingPercent;
+        
+        if (isNaN(rating) || entry['daily rating'] === '' || entry['daily rating'] === undefined) {
+          ratingPercent = null; // Don't plot missing data
+        } else {
+          ratingPercent = ((rating + 2) / 4) * 100;
+        }
+        
+        console.log(`Entry ${entry.timestamp}: rating="${entry['daily rating']}", parsed=${rating}, percent=${ratingPercent}`);
         
         // Check for substance use
         const hasSubstanceUse = 
@@ -937,7 +949,8 @@
               borderWidth: 3,
               pointRadius: 6,
               pointHoverRadius: 8,
-              tension: 0.1
+              tension: 0.1,
+              spanGaps: false // Don't connect gaps in data
             }
           ]
         },
@@ -1171,8 +1184,6 @@
       // CRITICAL: Save as number, not string
       responses[question.text] = Number(value);
       
-      console.log('Rating saved:', question.text, '=', responses[question.text]);
-      
       const circles = document.querySelectorAll('.rating-circle');
       circles.forEach(circle => {
         const circleValue = parseInt(circle.dataset.value);
@@ -1213,6 +1224,8 @@
         timestamp,
         ...responses
       };
+      
+      console.log('Complete quiz called with data:', data);
       
       await saveToSheet(data);
       showScreen('chartScreen');
