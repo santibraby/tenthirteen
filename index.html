@@ -163,9 +163,10 @@
             position: absolute;
             bottom: 0;
             left: 0;
-            height: 4px;
-            background-color: #FF00FF;
+            height: 6px;
+            background: linear-gradient(90deg, #00FFFF, #FF00FF, #FFFF00);
             transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
         }
 
         .card-container {
@@ -257,10 +258,10 @@
             width: 100%;
             min-height: 150px;
             background-color: transparent;
-            border: 2px solid #FFFF00;
+            border: 2px solid #FFFFFF;
             border-radius: 8px;
             padding: 16px;
-            color: #FFFF00;
+            color: #FFFFFF;
             font-family: 'Karla', sans-serif;
             font-size: 16px;
             font-weight: 700;
@@ -269,7 +270,7 @@
         }
 
         .text-input::placeholder {
-            color: rgba(255, 255, 0, 0.5);
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .input-controls {
@@ -280,8 +281,8 @@
 
         .mic-btn, .submit-btn {
             background-color: transparent;
-            border: 2px solid #FFFF00;
-            color: #FFFF00;
+            border: 2px solid #FFFFFF;
+            color: #FFFFFF;
             padding: 12px 24px;
             border-radius: 8px;
             font-family: 'Karla', sans-serif;
@@ -295,7 +296,7 @@
         }
 
         .mic-btn:active, .submit-btn:active {
-            background-color: #FFFF00;
+            background-color: #FFFFFF;
             color: #0D0D0D;
         }
 
@@ -325,11 +326,10 @@
             display: block;
         }
 
-        .popup-header {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            color: #FFFFFF;
+        .popup-date {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 20px;
             text-transform: lowercase;
         }
 
@@ -363,10 +363,10 @@
 
         .popup-response {
             background-color: #1A1A1A;
-            border: 2px solid #FFFF00;
+            border: 2px solid #FFFFFF;
             border-radius: 8px;
             padding: 16px;
-            color: #FFFF00;
+            color: #FFFFFF;
             font-size: 14px;
             line-height: 1.6;
             margin-top: 8px;
@@ -374,7 +374,7 @@
         }
 
         .popup-rating {
-            font-size: 32px;
+            font-size: 48px;
             font-weight: 700;
             color: #FFFFFF;
             text-align: center;
@@ -391,7 +391,7 @@
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
         <!-- UPDATE VERSION NUMBER HERE when artifact changes -->
-        <div class="version">v14</div>
+        <div class="version">v15</div>
         <button class="btn" onclick="handleGoogleLogin()">sign in with google</button>
     </div>
 
@@ -441,7 +441,6 @@
             { section: 'morning', text: 'morning walk?', color: 'C' },
             { section: 'morning', text: 'fruit / granola / yogurt?', color: 'C' },
             { section: 'morning', text: 'journal?', color: 'M' },
-
             { section: 'morning', text: 'shower?', color: 'C' },
             { section: 'morning', text: 'rogaine?', color: 'C' },
             { section: 'morning', text: 'shave?', color: 'M' },
@@ -452,15 +451,13 @@
             { section: 'evening', text: 'colostrum?', color: 'C' },
             { section: 'evening', text: 'yoga / stretch?', color: 'C' },
             { section: 'evening', text: 'shower / bath?', color: 'C' },
-
             { section: 'evening', text: 'rogaine?', color: 'C' },
             { section: 'evening', text: 'shave?', color: 'M' },
             { section: 'evening', text: 'face lotion?', color: 'C' },
             { section: 'evening', text: 'clean ear?', color: 'C' },
             { section: 'evening', text: 'brush teeth?', color: 'C' },
-
             { section: 'evening', text: 'read?', color: 'M' },
-
+            
             // daily substances
             { section: 'daily', text: 'nicotine free ?', color: 'M' },
             { section: 'daily', text: 'cannabis free ?', color: 'M' },
@@ -766,7 +763,26 @@
                 hour12: true
             });
 
-            let content = `<div class="popup-header">${displayTime}</div>`;
+            let content = `<div class="popup-date">${displayTime}</div>`;
+
+            // Daily rating FIRST
+            const ratingQuestion = questions.find(q => q.section === 'rating');
+            if (ratingQuestion && entry[ratingQuestion.text]) {
+                const rating = entry[ratingQuestion.text];
+                content += `<div class="popup-section">`;
+                content += `<div class="popup-section-title"><span>Daily Rating</span></div>`;
+                content += `<div class="popup-rating">${rating > 0 ? '+' : ''}${rating}</div>`;
+                content += `</div>`;
+            }
+
+            // Daily response SECOND
+            const responseQuestion = questions.find(q => q.section === 'text');
+            if (responseQuestion && entry[responseQuestion.text]) {
+                content += `<div class="popup-section">`;
+                content += `<div class="popup-section-title"><span>Daily Response</span></div>`;
+                content += `<div class="popup-response">${entry[responseQuestion.text]}</div>`;
+                content += `</div>`;
+            }
 
             // Morning section
             const morningQuestions = questions.filter(q => q.section === 'morning');
@@ -804,25 +820,6 @@
                     const className = answer === 'yes' ? 'yes' : 'no';
                     content += `<div class="popup-item ${className}" style="color: ${q.colorHex}">${q.text} ${answer === 'yes' ? '✓' : '✗'}</div>`;
                 });
-                content += `</div>`;
-            }
-
-            // Daily response
-            const responseQuestion = questions.find(q => q.section === 'text');
-            if (responseQuestion && entry[responseQuestion.text]) {
-                content += `<div class="popup-section">`;
-                content += `<div class="popup-section-title"><span>Daily Response</span></div>`;
-                content += `<div class="popup-response">${entry[responseQuestion.text]}</div>`;
-                content += `</div>`;
-            }
-
-            // Daily rating
-            const ratingQuestion = questions.find(q => q.section === 'rating');
-            if (ratingQuestion && entry[ratingQuestion.text]) {
-                const rating = entry[ratingQuestion.text];
-                content += `<div class="popup-section">`;
-                content += `<div class="popup-section-title"><span>Daily Rating</span></div>`;
-                content += `<div class="popup-rating">${rating > 0 ? '+' : ''}${rating}</div>`;
                 content += `</div>`;
             }
 
@@ -879,8 +876,8 @@
 
                 // Check for substance use (inverse logic)
                 const hasSubstanceUse = 
-                    entry['nicotine free?'] === 'no' || 
-                    entry['cannabis free?'] === 'no' || 
+                    entry['nicotine free ?'] === 'no' || 
+                    entry['cannabis free ?'] === 'no' || 
                     entry['alcohol free?'] === 'no';
 
                 return {
