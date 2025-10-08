@@ -73,6 +73,18 @@
       height: 100vh;
     }
     
+    .chart-screen.landscape {
+      transform: rotate(90deg);
+      transform-origin: center center;
+      width: 100vh;
+      height: 100vw;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-left: -50vh;
+      margin-top: -50vw;
+    }
+    
     .header {
       display: flex;
       justify-content: space-between;
@@ -84,6 +96,8 @@
       font-size: 32px;
       font-weight: bold;
       text-transform: lowercase;
+      cursor: pointer;
+      color: #FFFFFF;
     }
     
     .toggle {
@@ -215,10 +229,10 @@
   </div>
 
   <!-- Chart Screen -->
-  <div id="chartScreen" class="chart-screen hidden">
+  <div id="chartScreen" class="chart-screen landscape hidden">
     <div class="container">
       <div class="header">
-        <div class="title">10:13</div>
+        <div class="title" onclick="startQuiz()">10:13</div>
         <div class="toggle">
           <button class="toggle-btn active" id="toggle30d" onclick="setChartView(false)">30d</button>
           <button class="toggle-btn" id="toggleAll" onclick="setChartView(true)">all</button>
@@ -227,7 +241,6 @@
       <div class="chart-container">
         <canvas id="myChart"></canvas>
       </div>
-      <button class="btn" onclick="startQuiz()">take quiz</button>
     </div>
   </div>
 
@@ -349,7 +362,7 @@
     
     async function saveToSheet(data) {
       const headers = ['timestamp', ...questions.map(q => q.text)];
-      const row = [data.timestamp, ...questions.map(q => data[q.text] || '')];
+      const row = [data.timestamp, ...questions.map(q => data[q.text] !== undefined ? data[q.text] : '')];
       
       try {
         // Check if sheet has headers
@@ -431,6 +444,9 @@
         });
       }
       
+      // Sort by timestamp
+      filteredData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+      
       const chartData = filteredData.map(entry => {
         const timestamp = new Date(entry.timestamp);
         const displayTime = timestamp.toLocaleString('en-US', {
@@ -454,15 +470,24 @@
         const magentaPercent = (magentaYes / magentaQuestions.length) * 100;
         const yellowPercent = (yellowYes / yellowQuestions.length) * 100;
         
-        const rating = parseInt(entry['daily rating']) || 0;
-        const ratingPercent = ((rating + 2) / 4) * 100;
+        // Fix rating calculation - use the actual numeric value
+        const rating = parseFloat(entry['daily rating']);
+        const ratingPercent = isNaN(rating) ? 50 : ((rating + 2) / 4) * 100;
+        
+        // Check for substance use
+        const hasSubstanceUse = 
+          entry['nicotine free ?'] === 'no' || 
+          entry['cannabis free ?'] === 'no' || 
+          entry['alcohol free?'] === 'no';
         
         return {
           time: displayTime,
+          timestamp: timestamp.getTime(),
           cyan: cyanPercent,
           magenta: magentaPercent,
           yellow: yellowPercent,
-          rating: ratingPercent
+          rating: ratingPercent,
+          hasSubstanceUse: hasSubstanceUse
         };
       });
       
@@ -470,10 +495,32 @@
         chart.destroy();
       }
       
+      // Custom plugin to draw vertical red lines
+      const substanceLinePlugin = {
+        id: 'substanceLines',
+        beforeDatasetsDraw(chart) {
+          const { ctx, chartArea: { top, bottom }, scales: { x } } = chart;
+          
+          chartData.forEach((data, index) => {
+            if (data.hasSubstanceUse) {
+              const xPos = x.getPixelForValue(index);
+              ctx.save();
+              ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+              ctx.lineWidth = 2;
+              ctx.beginPath();
+              ctx.moveTo(xPos, top);
+              ctx.lineTo(xPos, bottom);
+              ctx.stroke();
+              ctx.restore();
+            }
+          });
+        }
+      };
+      
       chart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: chartData.map(d => d.time),
+          labels: chartData.map((d, i) => d.time),
           datasets: [
             {
               label: 'Cyan',
@@ -536,6 +583,7 @@
               }
             },
             x: {
+              type: 'category',
               ticks: {
                 color: '#FFFFFF',
                 font: {
@@ -549,7 +597,8 @@
               }
             }
           }
-        }
+        },
+        plugins: [substanceLinePlugin]
       });
     }
     
@@ -613,7 +662,11 @@
     
     function handleAnswer(answer) {
       const question = questions[currentQuestionIndex];
-      responses[question.text] = answer;
+      
+      // Only accept swipe answers for yes/no questions
+      if (question.type === 'yesno') {
+        responses[question.text] = answer;
+      }
       
       if (currentQuestionIndex < questions.length - 1) {
         currentQuestionIndex++;
@@ -632,9 +685,6 @@
       
       await saveToSheet(data);
       showScreen('chartScreen');
-      
-      const btn = document.querySelector('#chartScreen .btn');
-      btn.textContent = 'take another quiz';
     }
     
     // Drag handlers
@@ -669,7 +719,7 @@
       dragOffset = currentX - window.innerWidth / 2;
       
       const rotation = dragOffset * 0.1;
-      const shouldShowColor = dragOffset > 100;
+      const shouldShowColor = dragOffset > 100 && question.type === 'yesno';
       
       card.style.transform = `translateX(${dragOffset}px) rotate(${rotation}deg)`;
       
@@ -697,10 +747,18 @@
       }
       
       if (Math.abs(dragOffset) > 100) {
-        if (dragOffset > 0) {
-          handleAnswer('yes');
+        if (question.type === 'yesno') {
+          // Only process yes/no for yesno questions
+          if (dragOffset > 0) {
+            handleAnswer('yes');
+          } else {
+            handleAnswer('no');
+          }
         } else {
-          handleAnswer('no');
+          // For rating questions, just advance if they selected a rating
+          if (responses[question.text] !== undefined) {
+            handleAnswer(null);
+          }
         }
       } else {
         card.style.transform = 'none';
