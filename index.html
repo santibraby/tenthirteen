@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Karla:wght@700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
   <style>
     * {
       margin: 0;
@@ -542,15 +543,26 @@
           for (let i = event.resultIndex; i < event.results.length; i++) {
             transcript += event.results[i][0].transcript;
           }
-          document.getElementById('textInput').value = transcript;
+          const textInput = document.getElementById('textInput');
+          if (textInput) {
+            textInput.value = transcript;
+          }
         };
         
         recognition.onerror = (event) => {
           console.error('Speech recognition error:', event.error);
-          isRecording = false;
-          document.getElementById('micBtn').classList.remove('recording');
+          stopRecording();
+        };
+        
+        recognition.onend = () => {
+          if (isRecording) {
+            stopRecording();
+          }
         };
       }
+      
+      // Initialize popup drag handlers (once)
+      initPopupDragHandlers();
     };
     
     function handleGoogleLogin() {
@@ -650,6 +662,12 @@
     // ============================================
     
     function showScreen(screenId) {
+      // Clean up when leaving quiz
+      if (screenId !== 'quizScreen') {
+        stopRecording();
+        responses = {};
+      }
+      
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('chartScreen').classList.remove('active');
       document.getElementById('quizScreen').classList.add('hidden');
@@ -672,12 +690,24 @@
     // DATA POPUP
     // ============================================
     
-    function showDataPopup(dataIndex) {
-      const entry = quizData[dataIndex];
+    function initPopupDragHandlers() {
+      const popup = document.getElementById('dataPopup');
+      
+      popup.addEventListener('touchstart', startPopupDrag, { passive: false });
+      popup.addEventListener('touchmove', popupDrag, { passive: false });
+      popup.addEventListener('touchend', endPopupDrag);
+      popup.addEventListener('mousedown', startPopupDrag);
+      document.addEventListener('mousemove', popupDrag);
+      document.addEventListener('mouseup', endPopupDrag);
+    }
+    
+    function showDataPopup(timestamp) {
+      // Find entry by timestamp
+      const entry = quizData.find(e => e.timestamp === timestamp);
       if (!entry) return;
       
-      const timestamp = new Date(entry.timestamp);
-      const displayTime = timestamp.toLocaleString('en-US', {
+      const ts = new Date(entry.timestamp);
+      const displayTime = ts.toLocaleString('en-US', {
         weekday: 'long',
         month: 'long',
         day: 'numeric',
@@ -749,15 +779,6 @@
       
       document.getElementById('popupContent').innerHTML = content;
       document.getElementById('dataPopup').classList.add('active');
-      
-      // Setup popup drag handlers
-      const popup = document.getElementById('dataPopup');
-      popup.addEventListener('touchstart', startPopupDrag);
-      popup.addEventListener('touchmove', popupDrag);
-      popup.addEventListener('touchend', endPopupDrag);
-      popup.addEventListener('mousedown', startPopupDrag);
-      document.addEventListener('mousemove', popupDrag);
-      document.addEventListener('mouseup', endPopupDrag);
     }
     
     function closeDataPopup() {
@@ -795,28 +816,18 @@
       const canvas = document.getElementById('myChart');
       const ctx = canvas.getContext('2d');
       
-      let filteredData = [...quizData];
+      // Filter data once
+      let filteredData = [...quizData].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
       
       if (!showAllData && filteredData.length > 0) {
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        filteredData = filteredData.filter(entry => {
-          const entryDate = new Date(entry.timestamp);
-          return entryDate >= thirtyDaysAgo;
-        });
+        filteredData = filteredData.filter(entry => new Date(entry.timestamp) >= thirtyDaysAgo);
       }
       
-      filteredData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-      
+      // Build chart data with original timestamps for lookup
       const chartData = filteredData.map(entry => {
         const timestamp = new Date(entry.timestamp);
-        const displayTime = timestamp.toLocaleString('en-US', {
-          month: 'short',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: true
-        });
         
         // Calculate percentages by color
         const cyanQuestions = questions.filter(q => q.color === 'C' && q.type === 'yesno');
@@ -842,8 +853,8 @@
           entry['alcohol free?'] === 'no';
         
         return {
-          time: displayTime,
-          timestamp: timestamp.getTime(),
+          x: timestamp,
+          originalTimestamp: entry.timestamp, // Store original for popup lookup
           cyan: cyanPercent,
           magenta: magentaPercent,
           yellow: yellowPercent,
@@ -860,10 +871,12 @@
         id: 'substanceLines',
         beforeDatasetsDraw(chart) {
           const { ctx, chartArea: { top, bottom }, scales: { x } } = chart;
+          const dataset = chart.data.datasets[0];
           
-          chartData.forEach((data, index) => {
-            if (data.hasSubstanceUse) {
-              const xPos = x.getPixelForValue(index);
+          dataset.data.forEach((point, index) => {
+            const dataPoint = chartData[index];
+            if (dataPoint && dataPoint.hasSubstanceUse) {
+              const xPos = x.getPixelForValue(point.x);
               ctx.save();
               ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
               ctx.lineWidth = 2;
@@ -880,11 +893,10 @@
       chart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: chartData.map((d, i) => d.time),
           datasets: [
             {
               label: 'Cyan',
-              data: chartData.map(d => d.cyan),
+              data: chartData.map(d => ({ x: d.x, y: d.cyan })),
               borderColor: '#00FFFF',
               backgroundColor: '#00FFFF',
               borderWidth: 3,
@@ -893,7 +905,7 @@
             },
             {
               label: 'Magenta',
-              data: chartData.map(d => d.magenta),
+              data: chartData.map(d => ({ x: d.x, y: d.magenta })),
               borderColor: '#FF00FF',
               backgroundColor: '#FF00FF',
               borderWidth: 3,
@@ -902,7 +914,7 @@
             },
             {
               label: 'Yellow',
-              data: chartData.map(d => d.yellow),
+              data: chartData.map(d => ({ x: d.x, y: d.yellow })),
               borderColor: '#FFFF00',
               backgroundColor: '#FFFF00',
               borderWidth: 3,
@@ -911,7 +923,7 @@
             },
             {
               label: 'Rating',
-              data: chartData.map(d => d.rating),
+              data: chartData.map(d => ({ x: d.x, y: d.rating })),
               borderColor: '#FFFFFF',
               backgroundColor: '#FFFFFF',
               borderWidth: 3,
@@ -923,29 +935,11 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          onClick: (event, elements, chart) => {
+          onClick: (event, elements) => {
             if (elements.length > 0) {
               const dataIndex = elements[0].index;
-              // Find the actual data index in quizData
-              let actualIndex = 0;
-              if (!showAllData) {
-                const thirtyDaysAgo = new Date();
-                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-                let count = 0;
-                for (let i = 0; i < quizData.length; i++) {
-                  const entryDate = new Date(quizData[i].timestamp);
-                  if (entryDate >= thirtyDaysAgo) {
-                    if (count === dataIndex) {
-                      actualIndex = i;
-                      break;
-                    }
-                    count++;
-                  }
-                }
-              } else {
-                actualIndex = dataIndex;
-              }
-              showDataPopup(actualIndex);
+              const timestamp = chartData[dataIndex].originalTimestamp;
+              showDataPopup(timestamp);
             }
           },
           plugins: {
@@ -968,7 +962,14 @@
               }
             },
             x: {
-              type: 'category',
+              type: 'time',
+              time: {
+                unit: 'day',
+                displayFormats: {
+                  day: 'MMM d, ha'
+                },
+                tooltipFormat: 'MMM d, h:mm a'
+              },
               ticks: {
                 color: '#FFFFFF',
                 font: {
@@ -996,6 +997,27 @@
       responses = {};
       showScreen('quizScreen');
       renderQuestion();
+      
+      // Initialize card drag handlers after elements exist
+      initCardDragHandlers();
+    }
+    
+    function initCardDragHandlers() {
+      const card = document.getElementById('card');
+      if (!card) return;
+      
+      // Remove old listeners if they exist
+      card.removeEventListener('mousedown', startDrag);
+      card.removeEventListener('touchstart', startDrag);
+      
+      // Add new listeners
+      card.addEventListener('mousedown', startDrag);
+      card.addEventListener('touchstart', startDrag, { passive: false });
+      
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('touchmove', drag, { passive: false });
+      document.addEventListener('mouseup', endDrag);
+      document.addEventListener('touchend', endDrag);
     }
     
     function renderQuestion() {
@@ -1004,6 +1026,11 @@
       const sectionLabel = document.getElementById('sectionLabel');
       const cardContent = document.getElementById('cardContent');
       const progressBar = document.getElementById('progressBar');
+      
+      // Stop recording if moving away from text card
+      if (question.type !== 'text') {
+        stopRecording();
+      }
       
       card.style.backgroundColor = '#0D0D0D';
       card.style.borderColor = question.colorHex;
@@ -1062,23 +1089,50 @@
         return;
       }
       
-      const micBtn = document.getElementById('micBtn');
-      
       if (isRecording) {
-        recognition.stop();
-        isRecording = false;
-        micBtn.classList.remove('recording');
-        micBtn.innerHTML = `${MIC_ICON}<span>record</span>`;
+        stopRecording();
       } else {
+        startRecording();
+      }
+    }
+    
+    function startRecording() {
+      if (!recognition) return;
+      
+      try {
         recognition.start();
         isRecording = true;
-        micBtn.classList.add('recording');
-        micBtn.innerHTML = `${MIC_ICON}<span>recording...</span>`;
+        const micBtn = document.getElementById('micBtn');
+        if (micBtn) {
+          micBtn.classList.add('recording');
+          micBtn.innerHTML = `${MIC_ICON}<span>recording...</span>`;
+        }
+      } catch (error) {
+        console.error('Failed to start recording:', error);
+      }
+    }
+    
+    function stopRecording() {
+      if (!recognition || !isRecording) return;
+      
+      try {
+        recognition.stop();
+      } catch (error) {
+        console.error('Failed to stop recording:', error);
+      }
+      
+      isRecording = false;
+      const micBtn = document.getElementById('micBtn');
+      if (micBtn) {
+        micBtn.classList.remove('recording');
+        micBtn.innerHTML = `${MIC_ICON}<span>record</span>`;
       }
     }
     
     function submitText() {
       const textInput = document.getElementById('textInput');
+      if (!textInput) return;
+      
       const text = textInput.value.trim();
       
       if (!text) {
@@ -1086,10 +1140,7 @@
         return;
       }
       
-      if (isRecording) {
-        recognition.stop();
-        isRecording = false;
-      }
+      stopRecording();
       
       const question = questions[currentQuestionIndex];
       responses[question.text] = text;
@@ -1154,25 +1205,17 @@
     // DRAG HANDLERS
     // ============================================
     
-    const card = document.getElementById('card');
-    
-    card.addEventListener('mousedown', startDrag);
-    card.addEventListener('touchstart', startDrag);
-    
-    document.addEventListener('mousemove', drag);
-    document.addEventListener('touchmove', drag);
-    
-    document.addEventListener('mouseup', endDrag);
-    document.addEventListener('touchend', endDrag);
-    
     function startDrag(e) {
       const question = questions[currentQuestionIndex];
       if (question.type === 'rating' || question.type === 'text') return;
       
+      e.preventDefault();
       isDragging = true;
       dragStartX = e.touches ? e.touches[0].clientX : e.clientX;
       dragOffset = 0;
-      card.classList.add('dragging');
+      
+      const card = document.getElementById('card');
+      if (card) card.classList.add('dragging');
     }
     
     function drag(e) {
@@ -1184,6 +1227,9 @@
       
       const rotation = dragOffset * 0.1;
       const shouldShowColor = dragOffset > 100;
+      
+      const card = document.getElementById('card');
+      if (!card) return;
       
       card.style.transform = `translateX(${dragOffset}px) rotate(${rotation}deg)`;
       
@@ -1200,6 +1246,9 @@
     
     function endDrag() {
       if (!isDragging) return;
+      
+      const card = document.getElementById('card');
+      if (!card) return;
       
       if (Math.abs(dragOffset) > 100) {
         if (dragOffset > 0) {
