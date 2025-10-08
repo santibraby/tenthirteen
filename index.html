@@ -43,11 +43,18 @@
             font-size: 48px;
             font-weight: 700;
             text-transform: lowercase;
-            margin-bottom: 40px;
+            margin-bottom: 10px;
             background: linear-gradient(45deg, #00FFFF, #FF00FF, #FFFF00);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+        }
+
+        .version {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 40px;
+            text-transform: lowercase;
         }
 
         .btn {
@@ -388,6 +395,7 @@
     <!-- Login Screen -->
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
+        <div class="version">v5</div>
         <button class="btn" onclick="handleGoogleLogin()">sign in with google</button>
     </div>
 
@@ -466,8 +474,8 @@
         // ============================================
         // APP CONFIGURATION
         // ============================================
-        const CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID';
-        const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID';
+        const CLIENT_ID = '785091900263-bqe75ticj4pr0uovtb1b0c5d8ogpnvm8.apps.googleusercontent.com';
+        const SPREADSHEET_ID = '1HelegJqWzHBK-mTqc6mYlGI3OrgBP8Ge8Vw6BbL7Z5Q';
         const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
 
         const COLOR_MAP = {
