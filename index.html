@@ -30,8 +30,8 @@
     }
     
     .container {
-      width: 100vw;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       display: flex;
       flex-direction: column;
       padding: 20px;
@@ -68,21 +68,26 @@
     }
     
     .chart-screen {
-      display: flex;
-      flex-direction: column;
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
       height: 100vh;
     }
     
-    .chart-screen.landscape {
-      transform: rotate(90deg);
-      transform-origin: center center;
+    .chart-screen.active {
+      display: block;
+    }
+    
+    .chart-wrapper {
       width: 100vh;
       height: 100vw;
       position: absolute;
       top: 50%;
       left: 50%;
-      margin-left: -50vh;
-      margin-top: -50vw;
+      transform: translate(-50%, -50%) rotate(90deg);
+      transform-origin: center center;
     }
     
     .header {
@@ -90,6 +95,7 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
+      padding: 0 20px;
     }
     
     .title {
@@ -129,8 +135,8 @@
     
     .chart-container {
       flex: 1;
-      margin-bottom: 20px;
       position: relative;
+      padding: 0 20px 20px 20px;
     }
     
     .quiz-screen {
@@ -179,9 +185,17 @@
     }
     
     .section-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-size: 12px;
       text-transform: lowercase;
       font-weight: bold;
+    }
+    
+    .icon {
+      width: 20px;
+      height: 20px;
     }
     
     .question-text {
@@ -216,6 +230,141 @@
       transition: all 0.2s;
     }
     
+    .text-input-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+      justify-content: center;
+    }
+    
+    .text-input {
+      width: 100%;
+      min-height: 150px;
+      background-color: transparent;
+      border: 2px solid #FFFF00;
+      border-radius: 8px;
+      padding: 16px;
+      color: #FFFF00;
+      font-family: 'Karla', sans-serif;
+      font-size: 16px;
+      font-weight: bold;
+      resize: none;
+      outline: none;
+    }
+    
+    .text-input::placeholder {
+      color: rgba(255, 255, 0, 0.5);
+    }
+    
+    .input-controls {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    
+    .mic-btn, .submit-btn {
+      background-color: transparent;
+      border: 2px solid #FFFF00;
+      color: #FFFF00;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-family: 'Karla', sans-serif;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    
+    .mic-btn:active, .submit-btn:active {
+      background-color: #FFFF00;
+      color: #0D0D0D;
+    }
+    
+    .mic-btn.recording {
+      background-color: #FF0000;
+      border-color: #FF0000;
+      color: #FFFFFF;
+    }
+    
+    .data-popup {
+      position: fixed;
+      top: 5%;
+      left: 5%;
+      width: 90%;
+      height: 90%;
+      background-color: #0D0D0D;
+      border: 2px solid #FFFFFF;
+      border-radius: 16px;
+      padding: 32px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+    }
+    
+    .data-popup.active {
+      display: block;
+    }
+    
+    .popup-header {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 24px;
+      color: #FFFFFF;
+      text-transform: lowercase;
+    }
+    
+    .popup-section {
+      margin-bottom: 24px;
+    }
+    
+    .popup-section-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: lowercase;
+    }
+    
+    .popup-item {
+      margin-left: 28px;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .popup-item.yes {
+      opacity: 1;
+    }
+    
+    .popup-item.no {
+      opacity: 0.3;
+    }
+    
+    .popup-response {
+      background-color: #1A1A1A;
+      border: 2px solid #FFFF00;
+      border-radius: 8px;
+      padding: 16px;
+      color: #FFFF00;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-top: 8px;
+      white-space: pre-wrap;
+    }
+    
+    .popup-rating {
+      font-size: 32px;
+      font-weight: bold;
+      color: #FFFFFF;
+      text-align: center;
+      margin: 16px 0;
+    }
+    
     .hidden {
       display: none;
     }
@@ -229,19 +378,26 @@
   </div>
 
   <!-- Chart Screen -->
-  <div id="chartScreen" class="chart-screen landscape hidden">
-    <div class="container">
-      <div class="header">
-        <div class="title" onclick="startQuiz()">10:13</div>
-        <div class="toggle">
-          <button class="toggle-btn active" id="toggle30d" onclick="setChartView(false)">30d</button>
-          <button class="toggle-btn" id="toggleAll" onclick="setChartView(true)">all</button>
+  <div id="chartScreen" class="chart-screen">
+    <div class="chart-wrapper">
+      <div class="container">
+        <div class="header">
+          <div class="title" onclick="startQuiz()">10:13</div>
+          <div class="toggle">
+            <button class="toggle-btn active" id="toggle30d" onclick="setChartView(false)">30d</button>
+            <button class="toggle-btn" id="toggleAll" onclick="setChartView(true)">all</button>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="myChart"></canvas>
         </div>
       </div>
-      <div class="chart-container">
-        <canvas id="myChart"></canvas>
-      </div>
     </div>
+  </div>
+
+  <!-- Data Popup -->
+  <div id="dataPopup" class="data-popup">
+    <div id="popupContent"></div>
   </div>
 
   <!-- Quiz Screen -->
@@ -258,9 +414,75 @@
 
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script>
+    // ============================================
+    // QUESTIONS CONFIGURATION - EDIT THIS SECTION
+    // ============================================
+    // section: 'morning' = sun icon, 'evening' = moon icon, 'daily' = no icon, 'text' = text input, 'rating' = rating bubbles
+    // color: 'C' = cyan, 'M' = magenta, 'Y' = yellow, 'W' = white
+    
+    const QUESTIONS = [
+      { section: 'morning', text: 'brush teeth?', color: 'C' },
+      { section: 'morning', text: 'shower?', color: 'C' },
+      { section: 'morning', text: 'colostrum?', color: 'C' },
+      { section: 'morning', text: 'rogaine?', color: 'C' },
+      { section: 'morning', text: 'shave?', color: 'M' },
+      { section: 'morning', text: 'face lotion?', color: 'C' },
+      { section: 'morning', text: 'clean ear?', color: 'C' },
+      { section: 'morning', text: 'fruit / granola / yogurt?', color: 'C' },
+      { section: 'morning', text: 'make bed?', color: 'M' },
+      { section: 'morning', text: 'morning walk?', color: 'C' },
+      { section: 'morning', text: 'journal?', color: 'M' },
+      { section: 'evening', text: 'colostrum?', color: 'C' },
+      { section: 'evening', text: 'rogaine?', color: 'C' },
+      { section: 'evening', text: 'shave?', color: 'M' },
+      { section: 'evening', text: 'face lotion?', color: 'C' },
+      { section: 'evening', text: 'yoga / stretch?', color: 'C' },
+      { section: 'evening', text: 'read?', color: 'M' },
+      { section: 'evening', text: 'shower / bath?', color: 'C' },
+      { section: 'evening', text: 'clean ear?', color: 'C' },
+      { section: 'evening', text: 'brush teeth?', color: 'C' },
+      { section: 'daily', text: 'nicotine free ?', color: 'M' },
+      { section: 'daily', text: 'cannabis free ?', color: 'M' },
+      { section: 'daily', text: 'alcohol free?', color: 'M' },
+      { section: 'daily', text: 'caffeine?', color: 'M' },
+      { section: 'daily', text: 'check in with Maria?', color: 'Y' },
+      { section: 'text', text: 'daily response', color: 'Y' },
+      { section: 'rating', text: 'daily rating', color: 'W' }
+    ];
+    
+    // ============================================
+    // APP CONFIGURATION
+    // ============================================
+    
     const CLIENT_ID = '785091900263-bqe75ticj4pr0uovtb1b0c5d8ogpnvm8.apps.googleusercontent.com';
     const SPREADSHEET_ID = '1HelegJqWzHBK-mTqc6mYlGI3OrgBP8Ge8Vw6BbL7Z5Q';
     const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
+    
+    const COLOR_MAP = {
+      'C': '#00FFFF',  // Cyan
+      'M': '#FF00FF',  // Magenta
+      'Y': '#FFFF00',  // Yellow
+      'W': '#FFFFFF'   // White
+    };
+    
+    const SECTION_LABELS = {
+      'morning': 'Morning Checklist',
+      'evening': 'Evening Checklist',
+      'daily': 'Daily Checklist',
+      'text': 'Daily Response',
+      'rating': 'Daily Rating'
+    };
+    
+    // SVG Icons
+    const SUN_ICON = '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+    
+    const MOON_ICON = '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+    
+    const MIC_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>';
+    
+    // ============================================
+    // APP STATE
+    // ============================================
     
     let accessToken = null;
     let tokenClient = null;
@@ -272,44 +494,29 @@
     let showAllData = false;
     let quizData = [];
     let chart = null;
+    let recognition = null;
+    let isRecording = false;
+    let popupDragStartX = 0;
+    let popupDragOffset = 0;
+    let popupIsDragging = false;
     
-    const questions = [
-      { section: 'Morning Checklist', text: 'brush teeth?', color: 'cyan', type: 'yesno' },
-      { section: 'Morning Checklist', text: 'shower?', color: 'cyan', type: 'yesno' },
-      { section: 'Morning Checklist', text: 'colostrum?', color: 'cyan', type: 'yesno' },
-      { section: 'Morning Checklist', text: 'rogaine?', color: 'cyan', type: 'yesno' },
-      { section: 'Morning Checklist', text: 'shave?', color: 'magenta', type: 'yesno' },
-      { section: 'Morning Checklist', text: 'face lotion?', color: 'cyan', type: 'yesno' },
-      { section: 'Morning Checklist', text: 'clean ear?', color: 'cyan', type: 'yesno' },
-      { section: 'Morning Checklist', text: 'fruit / granola / yogurt?', color: 'cyan', type: 'yesno' },
-      { section: 'Morning Checklist', text: 'make bed?', color: 'magenta', type: 'yesno' },
-      { section: 'Morning Checklist', text: 'morning walk?', color: 'cyan', type: 'yesno' },
-      { section: 'Morning Checklist', text: 'journal?', color: 'magenta', type: 'yesno' },
-      { section: 'Evening Checklist', text: 'colostrum?', color: 'cyan', type: 'yesno' },
-      { section: 'Evening Checklist', text: 'rogaine?', color: 'cyan', type: 'yesno' },
-      { section: 'Evening Checklist', text: 'shave?', color: 'magenta', type: 'yesno' },
-      { section: 'Evening Checklist', text: 'face lotion?', color: 'cyan', type: 'yesno' },
-      { section: 'Evening Checklist', text: 'yoga / stretch?', color: 'cyan', type: 'yesno' },
-      { section: 'Evening Checklist', text: 'read?', color: 'magenta', type: 'yesno' },
-      { section: 'Evening Checklist', text: 'shower / bath?', color: 'cyan', type: 'yesno' },
-      { section: 'Evening Checklist', text: 'clean ear?', color: 'cyan', type: 'yesno' },
-      { section: 'Evening Checklist', text: 'brush teeth?', color: 'cyan', type: 'yesno' },
-      { section: 'Daily Checklist', text: 'nicotine free ?', color: 'magenta', type: 'yesno' },
-      { section: 'Daily Checklist', text: 'cannabis free ?', color: 'magenta', type: 'yesno' },
-      { section: 'Daily Checklist', text: 'alcohol free?', color: 'magenta', type: 'yesno' },
-      { section: 'Daily Checklist', text: 'caffeine?', color: 'magenta', type: 'yesno' },
-      { section: 'Daily Checklist', text: 'check in with Maria?', color: 'yellow', type: 'yesno' },
-      { section: 'Daily Rating', text: 'daily rating', color: 'white', type: 'rating' }
-    ];
+    // Process questions
+    const questions = QUESTIONS.map(q => {
+      let type = 'yesno';
+      if (q.section === 'rating') type = 'rating';
+      if (q.section === 'text') type = 'text';
+      
+      return {
+        ...q,
+        type: type,
+        colorHex: COLOR_MAP[q.color]
+      };
+    });
     
-    const colorMap = {
-      cyan: '#00FFFF',
-      magenta: '#FF00FF',
-      yellow: '#FFFF00',
-      white: '#FFFFFF'
-    };
+    // ============================================
+    // INITIALIZATION
+    // ============================================
     
-    // Initialize Google Identity Services
     window.onload = () => {
       tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
@@ -322,11 +529,36 @@
           }
         },
       });
+      
+      // Initialize speech recognition
+      if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        
+        recognition.onresult = (event) => {
+          let transcript = '';
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript;
+          }
+          document.getElementById('textInput').value = transcript;
+        };
+        
+        recognition.onerror = (event) => {
+          console.error('Speech recognition error:', event.error);
+          isRecording = false;
+          document.getElementById('micBtn').classList.remove('recording');
+        };
+      }
     };
     
     function handleGoogleLogin() {
       tokenClient.requestAccessToken();
     }
+    
+    // ============================================
+    // GOOGLE SHEETS API
+    // ============================================
     
     async function loadSheetData() {
       try {
@@ -365,7 +597,6 @@
       const row = [data.timestamp, ...questions.map(q => data[q.text] !== undefined ? data[q.text] : '')];
       
       try {
-        // Check if sheet has headers
         const checkResponse = await fetch(
           `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A1:Z1`,
           {
@@ -377,7 +608,6 @@
         
         const checkData = await checkResponse.json();
         
-        // Add headers if sheet is empty
         if (!checkData.values || checkData.values.length === 0) {
           await fetch(
             `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A1:append?valueInputOption=RAW`,
@@ -394,7 +624,6 @@
           );
         }
         
-        // Append data row
         await fetch(
           `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A:Z:append?valueInputOption=RAW`,
           {
@@ -415,11 +644,20 @@
       }
     }
     
+    // ============================================
+    // UI NAVIGATION
+    // ============================================
+    
     function showScreen(screenId) {
       document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('chartScreen').classList.add('hidden');
+      document.getElementById('chartScreen').classList.remove('active');
       document.getElementById('quizScreen').classList.add('hidden');
-      document.getElementById(screenId).classList.remove('hidden');
+      
+      if (screenId === 'chartScreen') {
+        document.getElementById('chartScreen').classList.add('active');
+      } else {
+        document.getElementById(screenId).classList.remove('hidden');
+      }
     }
     
     function setChartView(showAll) {
@@ -428,6 +666,129 @@
       document.getElementById('toggleAll').classList.toggle('active', showAll);
       updateChart();
     }
+    
+    // ============================================
+    // DATA POPUP
+    // ============================================
+    
+    function showDataPopup(dataIndex) {
+      const entry = quizData[dataIndex];
+      if (!entry) return;
+      
+      const timestamp = new Date(entry.timestamp);
+      const displayTime = timestamp.toLocaleString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+      
+      let content = `<div class="popup-header">${displayTime}</div>`;
+      
+      // Morning section
+      const morningQuestions = questions.filter(q => q.section === 'morning');
+      if (morningQuestions.length > 0) {
+        content += `<div class="popup-section">`;
+        content += `<div class="popup-section-title">${SUN_ICON}<span>Morning Checklist</span></div>`;
+        morningQuestions.forEach(q => {
+          const answer = entry[q.text];
+          const className = answer === 'yes' ? 'yes' : 'no';
+          content += `<div class="popup-item ${className}" style="color: ${q.colorHex}">${q.text} ${answer === 'yes' ? '✓' : '✗'}</div>`;
+        });
+        content += `</div>`;
+      }
+      
+      // Evening section
+      const eveningQuestions = questions.filter(q => q.section === 'evening');
+      if (eveningQuestions.length > 0) {
+        content += `<div class="popup-section">`;
+        content += `<div class="popup-section-title">${MOON_ICON}<span>Evening Checklist</span></div>`;
+        eveningQuestions.forEach(q => {
+          const answer = entry[q.text];
+          const className = answer === 'yes' ? 'yes' : 'no';
+          content += `<div class="popup-item ${className}" style="color: ${q.colorHex}">${q.text} ${answer === 'yes' ? '✓' : '✗'}</div>`;
+        });
+        content += `</div>`;
+      }
+      
+      // Daily section
+      const dailyQuestions = questions.filter(q => q.section === 'daily');
+      if (dailyQuestions.length > 0) {
+        content += `<div class="popup-section">`;
+        content += `<div class="popup-section-title"><span>Daily Checklist</span></div>`;
+        dailyQuestions.forEach(q => {
+          const answer = entry[q.text];
+          const className = answer === 'yes' ? 'yes' : 'no';
+          content += `<div class="popup-item ${className}" style="color: ${q.colorHex}">${q.text} ${answer === 'yes' ? '✓' : '✗'}</div>`;
+        });
+        content += `</div>`;
+      }
+      
+      // Daily response
+      const responseQuestion = questions.find(q => q.section === 'text');
+      if (responseQuestion && entry[responseQuestion.text]) {
+        content += `<div class="popup-section">`;
+        content += `<div class="popup-section-title"><span>Daily Response</span></div>`;
+        content += `<div class="popup-response">${entry[responseQuestion.text]}</div>`;
+        content += `</div>`;
+      }
+      
+      // Daily rating
+      const ratingQuestion = questions.find(q => q.section === 'rating');
+      if (ratingQuestion && entry[ratingQuestion.text]) {
+        const rating = entry[ratingQuestion.text];
+        content += `<div class="popup-section">`;
+        content += `<div class="popup-section-title"><span>Daily Rating</span></div>`;
+        content += `<div class="popup-rating">${rating > 0 ? '+' : ''}${rating}</div>`;
+        content += `</div>`;
+      }
+      
+      document.getElementById('popupContent').innerHTML = content;
+      document.getElementById('dataPopup').classList.add('active');
+      
+      // Setup popup drag handlers
+      const popup = document.getElementById('dataPopup');
+      popup.addEventListener('touchstart', startPopupDrag);
+      popup.addEventListener('touchmove', popupDrag);
+      popup.addEventListener('touchend', endPopupDrag);
+      popup.addEventListener('mousedown', startPopupDrag);
+      document.addEventListener('mousemove', popupDrag);
+      document.addEventListener('mouseup', endPopupDrag);
+    }
+    
+    function closeDataPopup() {
+      document.getElementById('dataPopup').classList.remove('active');
+    }
+    
+    function startPopupDrag(e) {
+      popupIsDragging = true;
+      popupDragStartX = e.touches ? e.touches[0].clientX : e.clientX;
+      popupDragOffset = 0;
+    }
+    
+    function popupDrag(e) {
+      if (!popupIsDragging) return;
+      const currentX = e.touches ? e.touches[0].clientX : e.clientX;
+      popupDragOffset = currentX - popupDragStartX;
+    }
+    
+    function endPopupDrag() {
+      if (!popupIsDragging) return;
+      
+      if (Math.abs(popupDragOffset) > 100) {
+        closeDataPopup();
+      }
+      
+      popupIsDragging = false;
+      popupDragOffset = 0;
+    }
+    
+    // ============================================
+    // CHART
+    // ============================================
     
     function updateChart() {
       const canvas = document.getElementById('myChart');
@@ -444,7 +805,6 @@
         });
       }
       
-      // Sort by timestamp
       filteredData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
       
       const chartData = filteredData.map(entry => {
@@ -457,20 +817,20 @@
           hour12: true
         });
         
-        // Calculate percentages
-        const cyanQuestions = questions.filter(q => q.color === 'cyan' && q.type === 'yesno');
-        const magentaQuestions = questions.filter(q => q.color === 'magenta' && q.type === 'yesno');
-        const yellowQuestions = questions.filter(q => q.color === 'yellow' && q.type === 'yesno');
+        // Calculate percentages by color
+        const cyanQuestions = questions.filter(q => q.color === 'C' && q.type === 'yesno');
+        const magentaQuestions = questions.filter(q => q.color === 'M' && q.type === 'yesno');
+        const yellowQuestions = questions.filter(q => q.color === 'Y' && q.type === 'yesno');
         
         const cyanYes = cyanQuestions.filter(q => entry[q.text] === 'yes').length;
         const magentaYes = magentaQuestions.filter(q => entry[q.text] === 'yes').length;
         const yellowYes = yellowQuestions.filter(q => entry[q.text] === 'yes').length;
         
-        const cyanPercent = (cyanYes / cyanQuestions.length) * 100;
-        const magentaPercent = (magentaYes / magentaQuestions.length) * 100;
-        const yellowPercent = (yellowYes / yellowQuestions.length) * 100;
+        const cyanPercent = cyanQuestions.length > 0 ? (cyanYes / cyanQuestions.length) * 100 : 0;
+        const magentaPercent = magentaQuestions.length > 0 ? (magentaYes / magentaQuestions.length) * 100 : 0;
+        const yellowPercent = yellowQuestions.length > 0 ? (yellowYes / yellowQuestions.length) * 100 : 0;
         
-        // Fix rating calculation - use the actual numeric value
+        // Rating calculation
         const rating = parseFloat(entry['daily rating']);
         const ratingPercent = isNaN(rating) ? 50 : ((rating + 2) / 4) * 100;
         
@@ -495,7 +855,6 @@
         chart.destroy();
       }
       
-      // Custom plugin to draw vertical red lines
       const substanceLinePlugin = {
         id: 'substanceLines',
         beforeDatasetsDraw(chart) {
@@ -563,6 +922,31 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          onClick: (event, elements, chart) => {
+            if (elements.length > 0) {
+              const dataIndex = elements[0].index;
+              // Find the actual data index in quizData
+              let actualIndex = 0;
+              if (!showAllData) {
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                let count = 0;
+                for (let i = 0; i < quizData.length; i++) {
+                  const entryDate = new Date(quizData[i].timestamp);
+                  if (entryDate >= thirtyDaysAgo) {
+                    if (count === dataIndex) {
+                      actualIndex = i;
+                      break;
+                    }
+                    count++;
+                  }
+                }
+              } else {
+                actualIndex = dataIndex;
+              }
+              showDataPopup(actualIndex);
+            }
+          },
           plugins: {
             legend: {
               display: false
@@ -602,6 +986,10 @@
       });
     }
     
+    // ============================================
+    // QUIZ
+    // ============================================
+    
     function startQuiz() {
       currentQuestionIndex = 0;
       responses = {};
@@ -617,29 +1005,99 @@
       const progressBar = document.getElementById('progressBar');
       
       card.style.backgroundColor = '#0D0D0D';
-      card.style.borderColor = colorMap[question.color];
+      card.style.borderColor = question.colorHex;
       card.style.transform = 'none';
       
-      sectionLabel.textContent = question.section;
-      sectionLabel.style.color = colorMap[question.color];
+      // Section label with icon
+      let icon = '';
+      if (question.section === 'morning') icon = SUN_ICON;
+      else if (question.section === 'evening') icon = MOON_ICON;
+      
+      sectionLabel.innerHTML = icon + `<span>${SECTION_LABELS[question.section]}</span>`;
+      sectionLabel.style.color = question.colorHex;
       
       const progress = (currentQuestionIndex / questions.length) * 100;
       progressBar.style.width = `${progress}%`;
       
       if (question.type === 'yesno') {
-        cardContent.innerHTML = `<div class="question-text" style="color: ${colorMap[question.color]}">${question.text}</div>`;
+        cardContent.innerHTML = `<div class="question-text" style="color: ${question.colorHex}">${question.text}</div>`;
+      } else if (question.type === 'text') {
+        cardContent.innerHTML = `
+          <div class="text-input-container">
+            <textarea 
+              id="textInput" 
+              class="text-input" 
+              placeholder="tap to type or use microphone..."
+            ></textarea>
+            <div class="input-controls">
+              <button id="micBtn" class="mic-btn" onclick="toggleRecording()">
+                ${MIC_ICON}
+                <span>record</span>
+              </button>
+              <button class="submit-btn" onclick="submitText()">
+                submit
+              </button>
+            </div>
+          </div>
+        `;
       } else {
         const values = [2, 1, 0, -1, -2];
         cardContent.innerHTML = `<div class="rating-container">
           ${values.map(val => `
             <div class="rating-circle" 
                  data-value="${val}"
-                 style="border-color: ${colorMap[question.color]}; color: ${colorMap[question.color]};"
+                 style="border-color: ${question.colorHex}; color: ${question.colorHex};"
                  onclick="selectRating(${val})">
               ${val > 0 ? '+' + val : val}
             </div>
           `).join('')}
         </div>`;
+      }
+    }
+    
+    function toggleRecording() {
+      if (!recognition) {
+        alert('Speech recognition not supported on this device');
+        return;
+      }
+      
+      const micBtn = document.getElementById('micBtn');
+      
+      if (isRecording) {
+        recognition.stop();
+        isRecording = false;
+        micBtn.classList.remove('recording');
+        micBtn.innerHTML = `${MIC_ICON}<span>record</span>`;
+      } else {
+        recognition.start();
+        isRecording = true;
+        micBtn.classList.add('recording');
+        micBtn.innerHTML = `${MIC_ICON}<span>recording...</span>`;
+      }
+    }
+    
+    function submitText() {
+      const textInput = document.getElementById('textInput');
+      const text = textInput.value.trim();
+      
+      if (!text) {
+        alert('Please enter a response');
+        return;
+      }
+      
+      if (isRecording) {
+        recognition.stop();
+        isRecording = false;
+      }
+      
+      const question = questions[currentQuestionIndex];
+      responses[question.text] = text;
+      
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        renderQuestion();
+      } else {
+        completeQuiz();
       }
     }
     
@@ -655,15 +1113,19 @@
           circle.style.color = '#0D0D0D';
         } else {
           circle.style.backgroundColor = 'transparent';
-          circle.style.color = colorMap[question.color];
+          circle.style.color = question.colorHex;
         }
       });
+      
+      // Immediately complete quiz when rating is selected
+      setTimeout(() => {
+        completeQuiz();
+      }, 300);
     }
     
     function handleAnswer(answer) {
       const question = questions[currentQuestionIndex];
       
-      // Only accept swipe answers for yes/no questions
       if (question.type === 'yesno') {
         responses[question.text] = answer;
       }
@@ -687,7 +1149,10 @@
       showScreen('chartScreen');
     }
     
-    // Drag handlers
+    // ============================================
+    // DRAG HANDLERS
+    // ============================================
+    
     const card = document.getElementById('card');
     
     card.addEventListener('mousedown', startDrag);
@@ -701,7 +1166,7 @@
     
     function startDrag(e) {
       const question = questions[currentQuestionIndex];
-      if (question.type === 'rating' && responses[question.text] === undefined) return;
+      if (question.type === 'rating' || question.type === 'text') return;
       
       isDragging = true;
       dragStartX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -713,58 +1178,40 @@
       if (!isDragging) return;
       
       const question = questions[currentQuestionIndex];
-      if (question.type === 'rating' && responses[question.text] === undefined) return;
-      
       const currentX = e.touches ? e.touches[0].clientX : e.clientX;
       dragOffset = currentX - window.innerWidth / 2;
       
       const rotation = dragOffset * 0.1;
-      const shouldShowColor = dragOffset > 100 && question.type === 'yesno';
+      const shouldShowColor = dragOffset > 100;
       
       card.style.transform = `translateX(${dragOffset}px) rotate(${rotation}deg)`;
       
       if (shouldShowColor) {
-        card.style.backgroundColor = colorMap[question.color];
+        card.style.backgroundColor = question.colorHex;
         const textElements = card.querySelectorAll('.section-label, .question-text');
         textElements.forEach(el => el.style.color = '#0D0D0D');
       } else {
         card.style.backgroundColor = '#0D0D0D';
         const textElements = card.querySelectorAll('.section-label, .question-text');
-        textElements.forEach(el => el.style.color = colorMap[question.color]);
+        textElements.forEach(el => el.style.color = question.colorHex);
       }
     }
     
     function endDrag() {
       if (!isDragging) return;
       
-      const question = questions[currentQuestionIndex];
-      if (question.type === 'rating' && responses[question.text] === undefined) {
-        isDragging = false;
-        dragOffset = 0;
-        card.style.transform = 'none';
-        card.classList.remove('dragging');
-        return;
-      }
-      
       if (Math.abs(dragOffset) > 100) {
-        if (question.type === 'yesno') {
-          // Only process yes/no for yesno questions
-          if (dragOffset > 0) {
-            handleAnswer('yes');
-          } else {
-            handleAnswer('no');
-          }
+        if (dragOffset > 0) {
+          handleAnswer('yes');
         } else {
-          // For rating questions, just advance if they selected a rating
-          if (responses[question.text] !== undefined) {
-            handleAnswer(null);
-          }
+          handleAnswer('no');
         }
       } else {
         card.style.transform = 'none';
         card.style.backgroundColor = '#0D0D0D';
+        const question = questions[currentQuestionIndex];
         const textElements = card.querySelectorAll('.section-label, .question-text');
-        textElements.forEach(el => el.style.color = colorMap[question.color]);
+        textElements.forEach(el => el.style.color = question.colorHex);
       }
       
       isDragging = false;
