@@ -500,7 +500,7 @@
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
         <!-- UPDATE VERSION NUMBER HERE when artifact changes -->
-        <div class="version">v22</div>
+        <div class="version">v23</div>
         <button class="btn" onclick="handleGoogleLogin()">sign in with google</button>
     </div>
 
@@ -1105,11 +1105,11 @@
                             // Draw green line for nootropics
                             if (dataPoint.hasNootropics) {
                                 ctx.save();
-                                ctx.strokeStyle = 'rgba(0, 255, 0, 0.5)';
+                                ctx.strokeStyle = 'rgba(0, 255, 0, 0.6)';
                                 ctx.lineWidth = 2;
                                 ctx.beginPath();
-                                ctx.moveTo(xPos, top);
-                                ctx.lineTo(xPos, bottom);
+                                ctx.moveTo(xPos + 3, top); // Offset slightly so both lines visible
+                                ctx.lineTo(xPos + 3, bottom);
                                 ctx.stroke();
                                 ctx.restore();
                             }
@@ -1146,9 +1146,8 @@
                 ticks: {
                     color: '#FFFFFF',
                     font: { size: 10 },
-                    stepSize: 4,
                     callback: function(value) {
-                        if (value % 4 === 0) {
+                        if (value === 0 || value === 24) {
                             return value;
                         }
                         return '';
@@ -1157,7 +1156,7 @@
                 grid: {
                     color: function(context) {
                         const value = context.tick.value;
-                        if (value % 4 === 0) {
+                        if (value === 0 || value === 24) {
                             return '#333333';
                         }
                         return 'transparent';
@@ -1305,7 +1304,7 @@
                                 minRotation: 90
                             },
                             grid: {
-                                color: '#333333'
+                                color: chartMode === 'hours' ? 'transparent' : '#333333'
                             },
                             stacked: chartMode === 'hours'
                         }
@@ -1405,6 +1404,7 @@
             } else if (question.type === 'hours') {
                 cardContent.innerHTML = `
                     <div class="slider-container">
+                        <div class="question-text" style="color: ${question.colorHex}; font-size: 24px; margin-bottom: 20px;">${question.text}</div>
                         <div class="slider-value" id="sliderValue" style="color: ${question.colorHex}">0</div>
                         <div class="slider-wrapper">
                             <input 
