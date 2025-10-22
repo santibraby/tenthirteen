@@ -506,7 +506,7 @@
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
         <!-- UPDATE VERSION NUMBER HERE when artifact changes -->
-        <div class="version">v27</div>
+        <div class="version">v28</div>
         <button class="btn" onclick="handleLogin()">sign in with google</button>
     </div>
 
@@ -1198,7 +1198,7 @@
                     data: chartData.map(d => ({ x: d.x, y: d.magenta })),
                     backgroundColor: '#FF00FF',
                     borderColor: '#FF00FF',
-                    borderWidth: 1,
+                    borderWidth: 0,
                     type: 'bar',
                     stack: 'hours',
                     barPercentage: 0.7
@@ -1208,7 +1208,7 @@
                     data: chartData.map(d => ({ x: d.x, y: d.cyan })),
                     backgroundColor: '#00FFFF',
                     borderColor: '#00FFFF',
-                    borderWidth: 1,
+                    borderWidth: 0,
                     type: 'bar',
                     stack: 'hours',
                     barPercentage: 0.7
@@ -1218,7 +1218,7 @@
                     data: chartData.map(d => ({ x: d.x, y: d.yellow })),
                     backgroundColor: '#FFFF00',
                     borderColor: '#FFFF00',
-                    borderWidth: 1,
+                    borderWidth: 0,
                     type: 'bar',
                     stack: 'hours',
                     barPercentage: 0.7
@@ -1228,7 +1228,7 @@
                     data: chartData.map(d => ({ x: d.x, y: d.white })),
                     backgroundColor: '#FFFFFF',
                     borderColor: '#FFFFFF',
-                    borderWidth: 1,
+                    borderWidth: 0,
                     type: 'bar',
                     stack: 'hours',
                     barPercentage: 0.7
