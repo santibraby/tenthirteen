@@ -30,6 +30,10 @@
             touch-action: none;
         }
 
+        .hidden {
+            display: none !important;
+        }
+
         /* Login Screen */
         .login-screen {
             display: flex;
@@ -91,6 +95,8 @@
             height: 100%;
             padding: 20px;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
@@ -144,7 +150,6 @@
             position: relative;
             padding: 0 20px 60px 20px;
             min-height: 0;
-            height: calc(100% - 80px);
         }
 
         .view-toggle {
@@ -249,61 +254,45 @@
             font-weight: 700;
             text-transform: lowercase;
             line-height: 1.2;
-            text-align: center;
-            word-break: break-word;
         }
 
-        .rating-container {
+        .swipe-hint {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            gap: 16px;
-            flex: 1;
-            justify-content: center;
-        }
-
-        .rating-circle {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 3px solid;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
+            font-size: 14px;
             font-weight: 700;
-            transition: all 0.2s;
-            background-color: transparent;
+            text-transform: lowercase;
+            opacity: 0.5;
         }
 
+        /* Hours Slider */
         .slider-container {
+            width: 100%;
+            max-width: 400px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 24px;
-            flex: 1;
-            justify-content: center;
+            gap: 30px;
         }
 
         .slider-value {
             font-size: 72px;
             font-weight: 700;
-            margin-bottom: 16px;
+            text-align: center;
         }
 
         .slider-wrapper {
-            width: 100%;
-            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .hour-slider {
+            -webkit-appearance: none;
             width: 100%;
             height: 8px;
             border-radius: 4px;
             outline: none;
-            -webkit-appearance: none;
-            background: #1A1A1A;
         }
 
         .hour-slider::-webkit-slider-thumb {
@@ -313,6 +302,7 @@
             height: 24px;
             border-radius: 50%;
             cursor: pointer;
+            border: none;
         }
 
         .hour-slider::-moz-range-thumb {
@@ -326,133 +316,198 @@
         .slider-labels {
             display: flex;
             justify-content: space-between;
-            margin-top: 8px;
-            font-size: 12px;
+            font-size: 14px;
             color: #666;
         }
 
         .slider-submit {
             background-color: transparent;
             border: 2px solid;
-            padding: 12px 32px;
-            border-radius: 8px;
-            font-family: 'Karla', sans-serif;
+            padding: 16px 32px;
             font-size: 18px;
             font-weight: 700;
-            cursor: pointer;
+            font-family: 'Karla', sans-serif;
             text-transform: lowercase;
-            transition: all 0.2s;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
         }
 
-        .slider-submit:active {
-            transform: scale(0.95);
+        .slider-submit:hover {
+            opacity: 0.8;
         }
 
-        .text-input-container {
+        /* Text Input */
+        .text-container {
+            width: 100%;
+            max-width: 400px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            flex: 1;
-            justify-content: center;
+            gap: 20px;
         }
 
         .text-input {
             width: 100%;
-            min-height: 150px;
-            background-color: transparent;
+            min-height: 200px;
+            padding: 20px;
+            font-size: 18px;
+            font-family: 'Karla', sans-serif;
+            background-color: #1A1A1A;
+            color: #FFFFFF;
             border: 2px solid #FFFFFF;
             border-radius: 8px;
-            padding: 16px;
-            color: #FFFFFF;
-            font-family: 'Karla', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            resize: none;
-            outline: none;
+            resize: vertical;
         }
 
-        .text-input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .input-controls {
+        .mic-button {
             display: flex;
-            gap: 12px;
+            align-items: center;
             justify-content: center;
-        }
-
-        .mic-btn, .submit-btn {
+            gap: 8px;
             background-color: transparent;
             border: 2px solid #FFFFFF;
             color: #FFFFFF;
             padding: 12px 24px;
-            border-radius: 8px;
-            font-family: 'Karla', sans-serif;
             font-size: 16px;
             font-weight: 700;
+            font-family: 'Karla', sans-serif;
+            text-transform: lowercase;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
+            border-radius: 8px;
+            transition: all 0.3s;
         }
 
-        .mic-btn:active, .submit-btn:active {
-            background-color: #FFFFFF;
-            color: #0D0D0D;
-        }
-
-        .mic-btn.recording {
+        .mic-button.recording {
             background-color: #FF0000;
             border-color: #FF0000;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .text-submit {
+            background-color: transparent;
+            border: 2px solid #FFFFFF;
             color: #FFFFFF;
+            padding: 16px 32px;
+            font-size: 18px;
+            font-weight: 700;
+            font-family: 'Karla', sans-serif;
+            text-transform: lowercase;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        /* Rating */
+        .rating-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .rating-circles {
+            display: flex;
+            gap: 20px;
+        }
+
+        .rating-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: transparent;
+        }
+
+        .rating-circle:hover {
+            transform: scale(1.1);
         }
 
         /* Data Popup */
         .data-popup {
             position: fixed;
-            top: 5%;
-            left: 5%;
-            width: 90%;
-            height: 90%;
-            background-color: #0D0D0D;
-            border: 2px solid #FFFFFF;
-            border-radius: 16px;
-            padding: 32px;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.95);
+            display: none;
             overflow-y: auto;
             z-index: 1000;
-            display: none;
+            padding: 40px 20px;
         }
 
         .data-popup.active {
             display: block;
         }
 
+        .popup-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
         .popup-date {
-            font-size: 12px;
+            font-size: 16px;
             color: #666;
-            margin-bottom: 20px;
-            text-transform: lowercase;
+            margin-bottom: 30px;
+            text-align: center;
         }
 
         .popup-section {
-            margin-bottom: 24px;
+            margin-bottom: 30px;
         }
 
         .popup-section-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 14px;
+            font-weight: 700;
             text-transform: lowercase;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .popup-rating {
+            font-size: 48px;
+            font-weight: 700;
+            color: #FF00FF;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .popup-response {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #FFFFFF;
+            padding: 20px;
+            background-color: #1A1A1A;
+            border-radius: 8px;
+        }
+
+        .popup-hours {
+            font-size: 16px;
+            margin: 8px 0;
+            padding-left: 20px;
         }
 
         .popup-item {
-            margin-left: 28px;
-            margin-bottom: 8px;
-            font-size: 14px;
+            font-size: 16px;
+            margin: 8px 0;
+            padding-left: 20px;
         }
 
         .popup-item.yes {
@@ -462,45 +517,13 @@
         .popup-item.no {
             opacity: 0.3;
         }
-
-        .popup-response {
-            background-color: #1A1A1A;
-            border: 2px solid #FFFFFF;
-            border-radius: 8px;
-            padding: 16px;
-            color: #FFFFFF;
-            font-size: 14px;
-            line-height: 1.6;
-            margin-top: 8px;
-            white-space: pre-wrap;
-        }
-
-        .popup-rating {
-            font-size: 48px;
-            font-weight: 700;
-            color: #FFFFFF;
-            text-align: center;
-            margin: 16px 0;
-        }
-
-        .popup-hours {
-            font-size: 32px;
-            font-weight: 700;
-            text-align: center;
-            margin: 12px 0;
-        }
-
-        .hidden {
-            display: none;
-        }
     </style>
 </head>
 <body>
     <!-- Login Screen -->
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
-        <!-- UPDATE VERSION NUMBER HERE when artifact changes -->
-        <div class="version">v23.1</div>
+        <div class="version">v24</div>
         <button class="btn" onclick="handleGoogleLogin()">sign in with google</button>
     </div>
 
@@ -510,94 +533,86 @@
             <div class="header">
                 <div class="title" onclick="startQuiz()">10:13</div>
                 <div class="toggle">
-                    <button class="toggle-btn active" id="toggle30d" onclick="setChartView(false)">30d</button>
-                    <button class="toggle-btn" id="toggleAll" onclick="setChartView(true)">all</button>
+                    <button id="toggle30d" class="toggle-btn active" onclick="setChartView(false)">30d</button>
+                    <button id="toggleAll" class="toggle-btn" onclick="setChartView(true)">all</button>
                 </div>
             </div>
             <div class="chart-container">
                 <canvas id="myChart"></canvas>
                 <div class="view-toggle">
-                    <button class="view-btn active" id="viewPercent" onclick="setChartMode('percent')">%</button>
-                    <button class="view-btn" id="viewHours" onclick="setChartMode('hours')">hours</button>
+                    <button id="viewPercent" class="view-btn active" onclick="setChartMode('percent')">%</button>
+                    <button id="viewHours" class="view-btn" onclick="setChartMode('hours')">hours</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Data Popup -->
-    <div id="dataPopup" class="data-popup">
-        <div id="popupContent"></div>
-    </div>
-
     <!-- Quiz Screen -->
     <div id="quizScreen" class="quiz-screen">
+        <div class="card-container" id="cardContainer"></div>
         <div class="progress-bar" id="progressBar"></div>
-        <div class="card-container">
-            <div class="card" id="card">
-                <div class="section-label" id="sectionLabel"></div>
-                <div id="cardContent"></div>
-                <div></div>
-            </div>
-        </div>
+    </div>
+
+    <!-- Data Popup -->
+    <div id="dataPopup" class="data-popup" onclick="closeDataPopup()">
+        <div class="popup-content" id="popupContent" onclick="event.stopPropagation()"></div>
     </div>
 
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
         // ============================================
-        // QUESTIONS CONFIGURATION - EDIT THIS SECTION
+        // QUESTION CONFIGURATION WITH STABLE IDS
         // ============================================
         const QUESTIONS = [
-            // morning section
-            { section: 'morning', text: 'make bed?', color: 'M' },
-            { section: 'morning', text: 'brush teeth AM?', color: 'C' },
-            { section: 'morning', text: 'colostrum AM?', color: 'C' },
-            { section: 'morning', text: 'morning run?', color: 'C' },
-            { section: 'morning', text: 'fruit / granola / yogurt?', color: 'C' },
-            { section: 'morning', text: 'journal?', color: 'M' },
-            { section: 'morning', text: 'shower AM?', color: 'C' },
-            { section: 'morning', text: 'rogaine AM?', color: 'C' },
-            { section: 'morning', text: 'shave?', color: 'M' },
-            { section: 'morning', text: 'face lotion AM?', color: 'C' },
-            { section: 'morning', text: 'clean ear AM?', color: 'C' },
+            // Morning section (11 questions) - IDs: m1 to m11
+            { id: 'm1', section: 'morning', text: 'make bed?', color: 'M' },
+            { id: 'm2', section: 'morning', text: 'brush teeth AM?', color: 'C' },
+            { id: 'm3', section: 'morning', text: 'colostrum AM?', color: 'C' },
+            { id: 'm4', section: 'morning', text: 'morning run?', color: 'C' },
+            { id: 'm5', section: 'morning', text: 'fruit / granola / yogurt?', color: 'C' },
+            { id: 'm6', section: 'morning', text: 'journal?', color: 'M' },
+            { id: 'm7', section: 'morning', text: 'shower AM?', color: 'C' },
+            { id: 'm8', section: 'morning', text: 'rogaine AM?', color: 'C' },
+            { id: 'm9', section: 'morning', text: 'shave?', color: 'M' },
+            { id: 'm10', section: 'morning', text: 'face lotion AM?', color: 'C' },
+            { id: 'm11', section: 'morning', text: 'clean ear AM?', color: 'C' },
             
-            // evening section
-            { section: 'evening', text: 'colostrum PM?', color: 'C' },
-            { section: 'evening', text: 'body weight workout?', color: 'C' },
-            { section: 'evening', text: 'shower / bath PM?', color: 'C' },
-            { section: 'evening', text: 'rogaine PM?', color: 'C' },
-            { section: 'evening', text: 'face lotion PM?', color: 'C' },
-            { section: 'evening', text: 'clean ear PM?', color: 'C' },
-            { section: 'evening', text: 'brush teeth PM?', color: 'C' },
-            { section: 'evening', text: 'read?', color: 'M' },
+            // Evening section (8 questions) - IDs: e1 to e8
+            { id: 'e1', section: 'evening', text: 'colostrum PM?', color: 'C' },
+            { id: 'e2', section: 'evening', text: 'body weight workout?', color: 'C' },
+            { id: 'e3', section: 'evening', text: 'shower / bath PM?', color: 'C' },
+            { id: 'e4', section: 'evening', text: 'rogaine PM?', color: 'C' },
+            { id: 'e5', section: 'evening', text: 'face lotion PM?', color: 'C' },
+            { id: 'e6', section: 'evening', text: 'clean ear PM?', color: 'C' },
+            { id: 'e7', section: 'evening', text: 'brush teeth PM?', color: 'C' },
+            { id: 'e8', section: 'evening', text: 'read?', color: 'M' },
             
-            // daily substances
-            { section: 'daily', text: 'nicotine free?', color: 'M' },
-            { section: 'daily', text: 'cannabis free?', color: 'M' },
-            { section: 'daily', text: 'alcohol free?', color: 'M' },
-            { section: 'daily', text: 'caffeine?', color: 'M' },
-            { section: 'daily', text: 'nootropics?', color: 'M' },           
+            // Daily questions (8 questions) - IDs: d1 to d8
+            { id: 'd1', section: 'daily', text: 'nicotine free?', color: 'M' },
+            { id: 'd2', section: 'daily', text: 'cannabis free?', color: 'M' },
+            { id: 'd3', section: 'daily', text: 'alcohol free?', color: 'M' },
+            { id: 'd4', section: 'daily', text: 'caffeine?', color: 'M' },
+            { id: 'd5', section: 'daily', text: 'nootropics?', color: 'M' },
+            { id: 'd6', section: 'daily', text: 'connect with friends?', color: 'Y' },
+            { id: 'd7', section: 'daily', text: 'connect with family?', color: 'Y' },
+            { id: 'd8', section: 'daily', text: 'quality time with Maria?', color: 'Y' },
             
-            // daily social
-            { section: 'daily', text: 'connect with friends?', color: 'Y' },
-            { section: 'daily', text: 'connect with family?', color: 'Y' },
-            { section: 'daily', text: 'quality time with Maria?', color: 'Y' },
+            // Hours tracking (4 sliders) - IDs: h1 to h4
+            { id: 'h1', section: 'hours', text: 'pinkProportion hours', color: 'M' },
+            { id: 'h2', section: 'hours', text: 'forma rosa studio hours', color: 'C' },
+            { id: 'h3', section: 'hours', text: 'forma rosa creative hours', color: 'Y' },
+            { id: 'h4', section: 'hours', text: 'health hours', color: 'W' },
             
-            // hours tracking
-            { section: 'hours', text: 'pinkProportion hours', color: 'M' },
-            { section: 'hours', text: 'forma rosa studio hours', color: 'C' },
-            { section: 'hours', text: 'forma rosa creative hours', color: 'Y' },
-            { section: 'hours', text: 'health hours', color: 'W' },
-            
-            // daily reflections
-            { section: 'text', text: 'daily response', color: 'W' },
-            { section: 'rating', text: 'daily rating', color: 'W' }
+            // Daily reflections (2 special questions)
+            { id: 'text', section: 'text', text: 'daily response', color: 'W' },
+            { id: 'rating', section: 'rating', text: 'daily rating', color: 'W' }
         ];
 
         // ============================================
         // APP CONFIGURATION
         // ============================================
-        const CLIENT_ID = '785091900263-bqe75ticj4pr0uovtb1b0c5d8ogpnvm8.apps.googleusercontent.com';
-        const SPREADSHEET_ID = '1HelegJqWzHBK-mTqc6mYlGI3OrgBP8Ge8Vw6BbL7Z5Q';
+        const CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID_HERE';  // ← REPLACE THIS
+        const SPREADSHEET_ID = 'YOUR_SPREADSHEET_ID_HERE';  // ← REPLACE THIS
         const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
 
         const COLOR_MAP = {
@@ -605,15 +620,6 @@
             'M': '#FF00FF',  // Magenta
             'Y': '#FFFF00',  // Yellow
             'W': '#FFFFFF'   // White
-        };
-
-        const SECTION_LABELS = {
-            'morning': 'Morning Checklist',
-            'evening': 'Evening Checklist',
-            'daily': 'Daily Checklist',
-            'hours': 'Hours Tracking',
-            'text': 'Daily Response',
-            'rating': 'Daily Rating'
         };
 
         // SVG Icons
@@ -634,7 +640,7 @@
         let dragOffset = 0;
         let isDragging = false;
         let showAllData = false;
-        let chartMode = 'percent'; // 'percent' or 'hours'
+        let chartMode = 'percent';
         let quizData = [];
         let chart = null;
         let recognition = null;
@@ -707,7 +713,7 @@
         }
 
         // ============================================
-        // GOOGLE SHEETS API
+        // GOOGLE SHEETS API - NEW ID-BASED SYSTEM
         // ============================================
         async function loadSheetData() {
             try {
@@ -735,6 +741,7 @@
                     quizData = [];
                 }
 
+                console.log('Loaded data:', quizData.length, 'entries');
                 updateChart();
             } catch (error) {
                 console.error('Error loading sheet data:', error);
@@ -745,6 +752,9 @@
 
         async function saveToSheet(data) {
             try {
+                // Build expected headers from question IDs
+                const expectedHeaders = ['timestamp', ...questions.map(q => q.id)];
+
                 // Get existing headers
                 const checkResponse = await fetch(
                     `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!1:1`,
@@ -758,20 +768,9 @@
                 const checkData = await checkResponse.json();
                 let existingHeaders = checkData.values?.[0] || [];
 
-                // Build expected headers from current questions
-                const expectedHeaders = ['timestamp', ...questions.map(q => q.text)];
-
-                // Merge headers: keep all existing + add any new ones
-                const mergedHeaders = [...existingHeaders];
-                expectedHeaders.forEach(header => {
-                    if (!mergedHeaders.includes(header)) {
-                        mergedHeaders.push(header);
-                    }
-                });
-
-                // If headers changed, update the header row
-                if (mergedHeaders.length !== existingHeaders.length) {
-                    console.log('Updating headers with new columns:', mergedHeaders.filter(h => !existingHeaders.includes(h)));
+                // If no headers exist, create them
+                if (existingHeaders.length === 0) {
+                    console.log('Creating new headers:', expectedHeaders);
                     await fetch(
                         `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!1:1?valueInputOption=RAW`,
                         {
@@ -781,14 +780,15 @@
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify({
-                                values: [mergedHeaders]
+                                values: [expectedHeaders]
                             })
                         }
                     );
+                    existingHeaders = expectedHeaders;
                 }
 
-                // Build data row matching merged headers
-                const row = mergedHeaders.map(header => {
+                // Build data row matching headers
+                const row = existingHeaders.map(header => {
                     if (data[header] !== undefined) {
                         return data[header];
                     }
@@ -914,9 +914,9 @@
             let content = `<div class="popup-date">${displayTime}</div>`;
 
             // Daily rating FIRST
-            const ratingQuestion = questions.find(q => q.section === 'rating');
-            if (ratingQuestion && entry[ratingQuestion.text]) {
-                const rating = entry[ratingQuestion.text];
+            const ratingQuestion = questions.find(q => q.id === 'rating');
+            if (ratingQuestion && entry[ratingQuestion.id]) {
+                const rating = entry[ratingQuestion.id];
                 content += `<div class="popup-section">`;
                 content += `<div class="popup-section-title"><span>Daily Rating</span></div>`;
                 content += `<div class="popup-rating">${rating > 0 ? '+' : ''}${rating}</div>`;
@@ -924,21 +924,21 @@
             }
 
             // Daily response SECOND
-            const responseQuestion = questions.find(q => q.section === 'text');
-            if (responseQuestion && entry[responseQuestion.text]) {
+            const responseQuestion = questions.find(q => q.id === 'text');
+            if (responseQuestion && entry[responseQuestion.id]) {
                 content += `<div class="popup-section">`;
                 content += `<div class="popup-section-title"><span>Daily Response</span></div>`;
-                content += `<div class="popup-response">${entry[responseQuestion.text]}</div>`;
+                content += `<div class="popup-response">${entry[responseQuestion.id]}</div>`;
                 content += `</div>`;
             }
 
             // Hours tracking
             const hoursQuestions = questions.filter(q => q.section === 'hours');
-            if (hoursQuestions.length > 0 && hoursQuestions.some(q => entry[q.text])) {
+            if (hoursQuestions.length > 0 && hoursQuestions.some(q => entry[q.id])) {
                 content += `<div class="popup-section">`;
                 content += `<div class="popup-section-title"><span>Hours Tracking</span></div>`;
                 hoursQuestions.forEach(q => {
-                    const hours = entry[q.text];
+                    const hours = entry[q.id];
                     if (hours !== undefined && hours !== '') {
                         content += `<div class="popup-hours" style="color: ${q.colorHex}">${q.text}: ${hours}h</div>`;
                     }
@@ -952,7 +952,7 @@
                 content += `<div class="popup-section">`;
                 content += `<div class="popup-section-title">${SUN_ICON}<span>Morning Checklist</span></div>`;
                 morningQuestions.forEach(q => {
-                    const answer = entry[q.text];
+                    const answer = entry[q.id];
                     const className = answer === 'yes' ? 'yes' : 'no';
                     content += `<div class="popup-item ${className}" style="color: ${q.colorHex}">${q.text} ${answer === 'yes' ? '✓' : '✗'}</div>`;
                 });
@@ -965,7 +965,7 @@
                 content += `<div class="popup-section">`;
                 content += `<div class="popup-section-title">${MOON_ICON}<span>Evening Checklist</span></div>`;
                 eveningQuestions.forEach(q => {
-                    const answer = entry[q.text];
+                    const answer = entry[q.id];
                     const className = answer === 'yes' ? 'yes' : 'no';
                     content += `<div class="popup-item ${className}" style="color: ${q.colorHex}">${q.text} ${answer === 'yes' ? '✓' : '✗'}</div>`;
                 });
@@ -978,7 +978,7 @@
                 content += `<div class="popup-section">`;
                 content += `<div class="popup-section-title"><span>Daily Checklist</span></div>`;
                 dailyQuestions.forEach(q => {
-                    const answer = entry[q.text];
+                    const answer = entry[q.id];
                     const className = answer === 'yes' ? 'yes' : 'no';
                     content += `<div class="popup-item ${className}" style="color: ${q.colorHex}">${q.text} ${answer === 'yes' ? '✓' : '✗'}</div>`;
                 });
@@ -994,7 +994,7 @@
         }
 
         // ============================================
-        // CHART
+        // CHART - UPDATED TO USE IDs
         // ============================================
         function updateChart() {
             const canvas = document.getElementById('myChart');
@@ -1012,7 +1012,7 @@
             let chartData;
             
             if (chartMode === 'percent') {
-                // Build percentage chart data
+                // Build percentage chart data using IDs
                 chartData = filteredData.map(entry => {
                     const timestamp = new Date(entry.timestamp);
 
@@ -1020,21 +1020,26 @@
                     const magentaQuestions = questions.filter(q => q.color === 'M' && q.type === 'yesno');
                     const yellowQuestions = questions.filter(q => q.color === 'Y' && q.type === 'yesno');
 
-                    const cyanYes = cyanQuestions.filter(q => entry[q.text] === 'yes').length;
-                    const magentaYes = magentaQuestions.filter(q => entry[q.text] === 'yes').length;
-                    const yellowYes = yellowQuestions.filter(q => entry[q.text] === 'yes').length;
+                    const cyanYes = cyanQuestions.filter(q => entry[q.id] === 'yes').length;
+                    const magentaYes = magentaQuestions.filter(q => entry[q.id] === 'yes').length;
+                    const yellowYes = yellowQuestions.filter(q => entry[q.id] === 'yes').length;
 
                     const cyanPercent = cyanQuestions.length > 0 ? (cyanYes / cyanQuestions.length) * 100 : 0;
                     const magentaPercent = magentaQuestions.length > 0 ? (magentaYes / magentaQuestions.length) * 100 : 0;
                     const yellowPercent = yellowQuestions.length > 0 ? (yellowYes / yellowQuestions.length) * 100 : 0;
 
-                    const rating = parseFloat(entry['daily rating']);
-                    let ratingPercent = isNaN(rating) || entry['daily rating'] === '' ? null : ((rating + 2) / 4) * 100;
+                    // Use stable ID for rating
+                    const rating = parseFloat(entry['rating']);
+                    let ratingPercent = isNaN(rating) || entry['rating'] === '' ? null : ((rating + 2) / 4) * 100;
 
+                    // Check substance use using IDs: d1=nicotine, d2=cannabis, d3=alcohol
                     const hasSubstanceUse = 
-                        entry['nicotine free ?'] === 'no' || 
-                        entry['cannabis free ?'] === 'no' || 
-                        entry['alcohol free?'] === 'no';
+                        entry['d1'] === 'no' || 
+                        entry['d2'] === 'no' || 
+                        entry['d3'] === 'no';
+
+                    // Check nootropics using ID: d5=nootropics
+                    const hasNootropics = entry['d5'] === 'yes';
 
                     return {
                         x: timestamp,
@@ -1043,22 +1048,23 @@
                         magenta: magentaPercent,
                         yellow: yellowPercent,
                         rating: ratingPercent,
-                        hasSubstanceUse: hasSubstanceUse
+                        hasSubstanceUse: hasSubstanceUse,
+                        hasNootropics: hasNootropics
                     };
                 });
             } else {
-                // Build hours chart data
+                // Build hours chart data using IDs: h1-h4
                 chartData = filteredData.map(entry => {
                     const timestamp = new Date(entry.timestamp);
 
-                    const pinkHours = parseFloat(entry['pinkProportion hours']) || 0;
-                    const studioHours = parseFloat(entry['forma rosa studio hours']) || 0;
-                    const creativeHours = parseFloat(entry['forma rosa creative hours']) || 0;
-                    const healthHours = parseFloat(entry['health hours']) || 0;
+                    const pinkHours = parseFloat(entry['h1']) || 0;        // h1 = pinkProportion
+                    const studioHours = parseFloat(entry['h2']) || 0;      // h2 = forma rosa studio
+                    const creativeHours = parseFloat(entry['h3']) || 0;    // h3 = forma rosa creative
+                    const healthHours = parseFloat(entry['h4']) || 0;      // h4 = health
 
                     // Convert rating to 0-24 scale for overlay
-                    const rating = parseFloat(entry['daily rating']);
-                    let ratingScaled = isNaN(rating) || entry['daily rating'] === '' ? null : ((rating + 2) / 4) * 24;
+                    const rating = parseFloat(entry['rating']);
+                    let ratingScaled = isNaN(rating) || entry['rating'] === '' ? null : ((rating + 2) / 4) * 24;
 
                     return {
                         x: timestamp,
@@ -1076,7 +1082,7 @@
                 chart.destroy();
             }
 
-            // Substance line plugin (only for percent mode)
+            // Substance line plugin (works for both modes now)
             const substanceLinePlugin = {
                 id: 'substanceLines',
                 beforeDatasetsDraw(chart) {
@@ -1101,15 +1107,15 @@
                                 ctx.stroke();
                                 ctx.restore();
                             }
-                            
+
                             // Draw green line for nootropics
                             if (dataPoint.hasNootropics) {
                                 ctx.save();
-                                ctx.strokeStyle = 'rgba(0, 255, 0, 1)';
+                                ctx.strokeStyle = 'rgba(0, 255, 0, 0.5)';
                                 ctx.lineWidth = 2;
                                 ctx.beginPath();
-                                ctx.moveTo(xPos + 3, top); // Offset slightly so both lines visible
-                                ctx.lineTo(xPos + 3, bottom);
+                                ctx.moveTo(xPos, top);
+                                ctx.lineTo(xPos, bottom);
                                 ctx.stroke();
                                 ctx.restore();
                             }
@@ -1118,291 +1124,326 @@
                 }
             };
 
-            const yAxisConfig = chartMode === 'percent' ? {
-                min: -5,
-                max: 105,
-                ticks: {
-                    color: '#FFFFFF',
-                    font: { size: 10 },
-                    callback: function(value) {
-                        if (value === 0 || value === 25 || value === 50 || value === 75 || value === 100) {
-                            return value;
-                        }
-                        return '';
-                    }
-                },
-                grid: {
-                    color: function(context) {
-                        const value = context.tick.value;
-                        if (value === 0 || value === 25 || value === 50 || value === 75 || value === 100) {
-                            return '#333333';
-                        }
-                        return 'transparent';
-                    }
-                }
-            } : {
-                min: 0,
-                max: 24,
-                ticks: {
-                    color: '#FFFFFF',
-                    font: { size: 10 },
-                    callback: function(value) {
-                        if (value === 0 || value === 24) {
-                            return value;
-                        }
-                        return '';
-                    }
-                },
-                grid: {
-                    color: function(context) {
-                        const value = context.tick.value;
-                        if (value === 0 || value === 24) {
-                            return '#333333';
-                        }
-                        return 'transparent';
-                    }
-                }
-            };
-
-            const datasets = chartMode === 'percent' ? [
-                {
-                    label: 'Cyan',
-                    data: chartData.map(d => ({ x: d.x, y: d.cyan })),
-                    borderColor: '#00FFFF',
-                    backgroundColor: '#00FFFF',
-                    borderWidth: 3,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    tension: 0.1,
-                    spanGaps: false
-                },
-                {
-                    label: 'Magenta',
-                    data: chartData.map(d => ({ x: d.x, y: d.magenta })),
-                    borderColor: '#FF00FF',
-                    backgroundColor: '#FF00FF',
-                    borderWidth: 3,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    tension: 0.1,
-                    spanGaps: false
-                },
-                {
-                    label: 'Yellow',
-                    data: chartData.map(d => ({ x: d.x, y: d.yellow })),
-                    borderColor: '#FFFF00',
-                    backgroundColor: '#FFFF00',
-                    borderWidth: 3,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    tension: 0.1,
-                    spanGaps: false
-                },
-                {
-                    label: 'Rating',
-                    data: chartData.map(d => ({ x: d.x, y: d.rating })),
-                    borderColor: '#FFFFFF',
-                    backgroundColor: '#FFFFFF',
-                    borderWidth: 3,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    tension: 0.1,
-                    spanGaps: false
-                }
-            ] : [
-                {
-                    label: 'pinkProportion',
-                    data: chartData.map(d => ({ x: d.x, y: d.magenta })),
-                    backgroundColor: '#FF00FF',
-                    borderColor: '#FF00FF',
-                    borderWidth: 1,
-                    type: 'bar',
-                    stack: 'hours',
-                    barPercentage: 0.7
-                },
-                {
-                    label: 'Studio',
-                    data: chartData.map(d => ({ x: d.x, y: d.cyan })),
-                    backgroundColor: '#00FFFF',
-                    borderColor: '#00FFFF',
-                    borderWidth: 1,
-                    type: 'bar',
-                    stack: 'hours',
-                    barPercentage: 0.7
-                },
-                {
-                    label: 'Creative',
-                    data: chartData.map(d => ({ x: d.x, y: d.yellow })),
-                    backgroundColor: '#FFFF00',
-                    borderColor: '#FFFF00',
-                    borderWidth: 1,
-                    type: 'bar',
-                    stack: 'hours',
-                    barPercentage: 0.7
-                },
-                {
-                    label: 'Health',
-                    data: chartData.map(d => ({ x: d.x, y: d.white })),
-                    backgroundColor: '#FFFFFF',
-                    borderColor: '#FFFFFF',
-                    borderWidth: 1,
-                    type: 'bar',
-                    stack: 'hours',
-                    barPercentage: 0.7
-                },
-                {
-                    label: 'Daily Rating',
-                    data: chartData.map(d => ({ x: d.x, y: d.rating })),
-                    borderColor: '#FFFFFF',
-                    backgroundColor: 'transparent',
-                    borderWidth: 3,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    tension: 0.1,
+            // Configure chart based on mode
+            if (chartMode === 'percent') {
+                // Percentage mode: line chart
+                chart = new Chart(ctx, {
                     type: 'line',
-                    spanGaps: false,
-                    order: 0
-                }
-            ];
-
-            chart = new Chart(ctx, {
-                type: chartMode === 'percent' ? 'line' : 'bar',
-                data: { datasets: datasets },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    onClick: (event, elements) => {
-                        if (elements.length > 0) {
-                            const dataIndex = elements[0].index;
-                            const timestamp = chartData[dataIndex].originalTimestamp;
-                            showDataPopup(timestamp);
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Cyan',
+                                data: chartData.map(d => ({ x: d.x, y: d.cyan })),
+                                borderColor: '#00FFFF',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 6,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Magenta',
+                                data: chartData.map(d => ({ x: d.x, y: d.magenta })),
+                                borderColor: '#FF00FF',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 6,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Yellow',
+                                data: chartData.map(d => ({ x: d.x, y: d.yellow })),
+                                borderColor: '#FFFF00',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 6,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Rating',
+                                data: chartData.map(d => ({ x: d.x, y: d.rating })),
+                                borderColor: '#FFFFFF',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                pointRadius: 4,
+                                pointHoverRadius: 6,
+                                tension: 0.1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        onClick: (event, elements) => {
+                            if (elements.length > 0) {
+                                const index = elements[0].index;
+                                const timestamp = chartData[index].originalTimestamp;
+                                showDataPopup(timestamp);
+                            }
+                        },
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'day',
+                                    displayFormats: {
+                                        day: 'M-d-yy'
+                                    }
+                                },
+                                grid: {
+                                    color: '#1A1A1A'
+                                },
+                                ticks: {
+                                    color: '#666'
+                                }
+                            },
+                            y: {
+                                min: 0,
+                                max: 100,
+                                grid: {
+                                    color: '#1A1A1A'
+                                },
+                                ticks: {
+                                    color: '#666',
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                enabled: true,
+                                backgroundColor: 'rgba(13, 13, 13, 0.9)',
+                                titleColor: '#FFFFFF',
+                                bodyColor: '#FFFFFF',
+                                borderColor: '#333',
+                                borderWidth: 1
+                            }
                         }
                     },
-                    plugins: {
-                        legend: { display: false }
+                    plugins: [substanceLinePlugin]
+                });
+            } else {
+                // Hours mode: stacked bar chart
+                chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        datasets: [
+                            {
+                                label: 'Pink',
+                                data: chartData.map(d => ({ x: d.x, y: d.magenta })),
+                                backgroundColor: '#FF00FF',
+                                borderColor: 'transparent',
+                                borderWidth: 0,
+                                order: 4
+                            },
+                            {
+                                label: 'Studio',
+                                data: chartData.map(d => ({ x: d.x, y: d.cyan })),
+                                backgroundColor: '#00FFFF',
+                                borderColor: 'transparent',
+                                borderWidth: 0,
+                                order: 3
+                            },
+                            {
+                                label: 'Creative',
+                                data: chartData.map(d => ({ x: d.x, y: d.yellow })),
+                                backgroundColor: '#FFFF00',
+                                borderColor: 'transparent',
+                                borderWidth: 0,
+                                order: 2
+                            },
+                            {
+                                label: 'Health',
+                                data: chartData.map(d => ({ x: d.x, y: d.white })),
+                                backgroundColor: '#FFFFFF',
+                                borderColor: 'transparent',
+                                borderWidth: 0,
+                                order: 1
+                            },
+                            {
+                                label: 'Rating',
+                                data: chartData.map(d => ({ x: d.x, y: d.rating })),
+                                type: 'line',
+                                borderColor: '#FFFFFF',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                pointRadius: 0,
+                                tension: 0.1,
+                                order: 0
+                            }
+                        ]
                     },
-                    scales: {
-                        y: {
-                            ...yAxisConfig,
-                            stacked: chartMode === 'hours'
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        onClick: (event, elements) => {
+                            if (elements.length > 0) {
+                                const index = elements[0].index;
+                                const timestamp = chartData[index].originalTimestamp;
+                                showDataPopup(timestamp);
+                            }
                         },
-                        x: {
-                            type: 'time',
-                            time: {
-                                unit: 'hour',
-                                stepSize: 6,
-                                displayFormats: {
-                                    hour: 'M-d-yy'
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'day',
+                                    displayFormats: {
+                                        day: 'M-d-yy'
+                                    }
                                 },
-                                tooltipFormat: 'MMM d, h:mm a'
+                                stacked: true,
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: '#666'
+                                }
                             },
-                            ticks: {
-                                source: 'data',
-                                color: '#FFFFFF',
-                                font: { size: 8 },
-                                maxRotation: 90,
-                                minRotation: 90
+                            y: {
+                                stacked: true,
+                                min: 0,
+                                max: 24,
+                                grid: {
+                                    color: (context) => {
+                                        if (context.tick.value === 0 || context.tick.value === 24) {
+                                            return '#666';
+                                        }
+                                        return 'transparent';
+                                    }
+                                },
+                                ticks: {
+                                    color: '#666',
+                                    stepSize: 6,
+                                    callback: function(value) {
+                                        return value + 'h';
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
                             },
-                            grid: {
-                                color: chartMode === 'hours' ? 'transparent' : '#333333'
-                            },
-                            stacked: chartMode === 'hours'
+                            tooltip: {
+                                enabled: true,
+                                backgroundColor: 'rgba(13, 13, 13, 0.9)',
+                                titleColor: '#FFFFFF',
+                                bodyColor: '#FFFFFF',
+                                borderColor: '#333',
+                                borderWidth: 1
+                            }
                         }
                     }
-                },
-                plugins: [substanceLinePlugin]
-            });
+                });
+            }
         }
 
         // ============================================
-        // QUIZ
+        // QUIZ LOGIC
         // ============================================
         function startQuiz() {
             currentQuestionIndex = 0;
             responses = {};
             showScreen('quizScreen');
             renderQuestion();
-            initCardDragHandlers();
-        }
-
-        function initCardDragHandlers() {
-            const card = document.getElementById('card');
-            if (!card) return;
-
-            card.removeEventListener('mousedown', startDrag);
-            card.removeEventListener('touchstart', startDrag);
-
-            card.addEventListener('mousedown', startDrag);
-            card.addEventListener('touchstart', startDrag, { passive: false });
-
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('touchmove', drag, { passive: false });
-            document.addEventListener('mouseup', endDrag);
-            document.addEventListener('touchend', endDrag);
         }
 
         function renderQuestion() {
             const question = questions[currentQuestionIndex];
-            const card = document.getElementById('card');
-            const sectionLabel = document.getElementById('sectionLabel');
-            const cardContent = document.getElementById('cardContent');
-            const progressBar = document.getElementById('progressBar');
+            const progress = ((currentQuestionIndex) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
 
-            // Stop recording if moving away from text card
-            if (question.type !== 'text') {
-                stopRecording();
-            }
-
-            card.style.backgroundColor = '#0D0D0D';
-            card.style.borderColor = question.colorHex;
-            card.style.transform = 'none';
-
-            // Section label with icon
-            let icon = '';
-            if (question.section === 'morning') icon = SUN_ICON;
-            else if (question.section === 'evening') icon = MOON_ICON;
-
-            sectionLabel.innerHTML = icon + `<span>${SECTION_LABELS[question.section]}</span>`;
-            sectionLabel.style.color = question.colorHex;
-
-            const progress = (currentQuestionIndex / questions.length) * 100;
-            progressBar.style.width = `${progress}%`;
-
+            const container = document.getElementById('cardContainer');
+            
             if (question.type === 'yesno') {
-                cardContent.innerHTML = `<div class="question-text" style="color: ${question.colorHex}">${question.text}</div>`;
-            } else if (question.type === 'text') {
-                cardContent.innerHTML = `
-                    <div class="text-input-container">
-                        <textarea 
-                            id="textInput" 
-                            class="text-input" 
-                            placeholder="tap to type or use microphone..."
-                        ></textarea>
-                        <div class="input-controls">
-                            <button id="micBtn" class="mic-btn" onclick="toggleRecording()">
-                                ${MIC_ICON}
-                                <span>record</span>
-                            </button>
-                            <button class="submit-btn" onclick="submitText()">
-                                submit
-                            </button>
+                container.innerHTML = `
+                    <div 
+                        id="card" 
+                        class="card" 
+                        style="border-color: ${question.colorHex};"
+                        onmousedown="startDrag(event)"
+                        ontouchstart="startDrag(event)"
+                    >
+                        <div class="section-label" style="color: ${question.colorHex};">
+                            ${question.section === 'morning' ? SUN_ICON : ''}
+                            ${question.section === 'evening' ? MOON_ICON : ''}
+                            <span>${question.section}</span>
+                        </div>
+                        <div class="question-text" style="color: ${question.colorHex};">
+                            ${question.text}
+                        </div>
+                        <div class="swipe-hint" style="color: ${question.colorHex};">
+                            <span>← no</span>
+                            <span>yes →</span>
                         </div>
                     </div>
                 `;
+
+                const card = document.getElementById('card');
+                card.addEventListener('mousemove', drag);
+                card.addEventListener('touchmove', drag, { passive: false });
+                card.addEventListener('mouseup', endDrag);
+                card.addEventListener('touchend', endDrag);
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('touchmove', drag, { passive: false });
+                document.addEventListener('mouseup', endDrag);
+                document.addEventListener('touchend', endDrag);
+            } else if (question.type === 'text') {
+                container.innerHTML = `
+                    <div class="text-container">
+                        <div class="question-text" style="color: ${question.colorHex}; font-size: 24px; margin-bottom: 20px;">${question.text}</div>
+                        <textarea 
+                            id="textInput" 
+                            class="text-input" 
+                            placeholder="type your thoughts here..."
+                            style="border-color: ${question.colorHex};"
+                        ></textarea>
+                        <button 
+                            id="micBtn"
+                            class="mic-button" 
+                            style="border-color: ${question.colorHex}; color: ${question.colorHex};"
+                            onclick="toggleRecording()"
+                        >
+                            ${MIC_ICON}
+                            <span>record</span>
+                        </button>
+                        <button 
+                            class="text-submit" 
+                            style="border-color: ${question.colorHex}; color: ${question.colorHex};"
+                            onclick="submitText()"
+                        >
+                            submit
+                        </button>
+                    </div>
+                `;
             } else if (question.type === 'rating') {
-                const values = [2, 1, 0, -1, -2];
-                cardContent.innerHTML = `<div class="rating-container">
-                    ${values.map(val => `
-                        <div class="rating-circle" 
-                             data-value="${val}"
-                             style="border-color: ${question.colorHex}; color: ${question.colorHex};"
-                             onclick="selectRating(${val})">
-                            ${val > 0 ? '+' + val : val}
+                container.innerHTML = `
+                    <div class="rating-container">
+                        <div class="question-text" style="color: ${question.colorHex}; font-size: 24px; margin-bottom: 20px;">${question.text}</div>
+                        <div class="rating-circles">
+                            ${[-2, -1, 0, 1, 2].map(value => `
+                                <div 
+                                    class="rating-circle" 
+                                    style="border-color: ${question.colorHex}; color: ${question.colorHex};"
+                                    data-value="${value}"
+                                    onclick="selectRating(${value})"
+                                >
+                                    ${value > 0 ? '+' : ''}${value}
+                                </div>
+                            `).join('')}
                         </div>
-                    `).join('')}
-                </div>`;
+                    </div>
+                `;
             } else if (question.type === 'hours') {
-                cardContent.innerHTML = `
+                container.innerHTML = `
                     <div class="slider-container">
                         <div class="question-text" style="color: ${question.colorHex}; font-size: 24px; margin-bottom: 20px;">${question.text}</div>
                         <div class="slider-value" id="sliderValue" style="color: ${question.colorHex}">0</div>
@@ -1454,7 +1495,8 @@
             const value = parseInt(slider.value);
             const question = questions[currentQuestionIndex];
             
-            responses[question.text] = value;
+            // CRITICAL: Save using ID, not text
+            responses[question.id] = value;
             
             if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
@@ -1524,7 +1566,8 @@
             stopRecording();
 
             const question = questions[currentQuestionIndex];
-            responses[question.text] = text;
+            // CRITICAL: Save using ID, not text
+            responses[question.id] = text;
 
             if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
@@ -1537,13 +1580,12 @@
         function selectRating(value) {
             const question = questions[currentQuestionIndex];
 
-            // CRITICAL: Save as number, not string
-            responses[question.text] = Number(value);
+            // CRITICAL: Save using ID and as number
+            responses[question.id] = Number(value);
 
             const circles = document.querySelectorAll('.rating-circle');
             circles.forEach(circle => {
                 const circleValue = parseInt(circle.dataset.value);
-                // Fill circles from bottom up (all values <= selected value)
                 if (circleValue <= value) {
                     circle.style.backgroundColor = '#FF00FF';
                     circle.style.color = '#0D0D0D';
@@ -1553,7 +1595,6 @@
                 }
             });
 
-            // Auto-complete quiz after rating selection
             setTimeout(() => {
                 completeQuiz();
             }, 300);
@@ -1563,7 +1604,8 @@
             const question = questions[currentQuestionIndex];
 
             if (question.type === 'yesno') {
-                responses[question.text] = answer;
+                // CRITICAL: Save using ID, not text
+                responses[question.id] = answer;
             }
 
             if (currentQuestionIndex < questions.length - 1) {
@@ -1578,7 +1620,7 @@
             const timestamp = new Date().toISOString();
             const data = {
                 timestamp,
-                ...responses
+                ...responses  // responses now use IDs as keys
             };
 
             await saveToSheet(data);
