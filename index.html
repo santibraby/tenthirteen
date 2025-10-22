@@ -90,6 +90,7 @@
             width: 100%;
             height: 100%;
             padding: 20px;
+            position: relative;
         }
 
         .header {
@@ -141,9 +142,39 @@
         .chart-container {
             flex: 1;
             position: relative;
-            padding: 0 20px 20px 20px;
+            padding: 0 20px 60px 20px;
             min-height: 0;
             height: calc(100% - 80px);
+        }
+
+        .view-toggle {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background-color: #1A1A1A;
+            border-radius: 20px;
+            padding: 4px;
+            display: flex;
+            gap: 4px;
+        }
+
+        .view-btn {
+            background-color: transparent;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Karla', sans-serif;
+            text-transform: lowercase;
+            cursor: pointer;
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+
+        .view-btn.active {
+            background-color: #FFFFFF;
+            color: #0D0D0D;
         }
 
         /* Quiz Screen */
@@ -244,6 +275,77 @@
             font-weight: 700;
             transition: all 0.2s;
             background-color: transparent;
+        }
+
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .slider-value {
+            font-size: 72px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .slider-wrapper {
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .hour-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+            background: #1A1A1A;
+        }
+
+        .hour-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .hour-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .slider-submit {
+            background-color: transparent;
+            border: 2px solid;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-family: 'Karla', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: lowercase;
+            transition: all 0.2s;
+        }
+
+        .slider-submit:active {
+            transform: scale(0.95);
         }
 
         .text-input-container {
@@ -381,6 +483,13 @@
             margin: 16px 0;
         }
 
+        .popup-hours {
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+            margin: 12px 0;
+        }
+
         .hidden {
             display: none;
         }
@@ -391,7 +500,7 @@
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
         <!-- UPDATE VERSION NUMBER HERE when artifact changes -->
-        <div class="version">v17</div>
+        <div class="version">v19</div>
         <button class="btn" onclick="handleGoogleLogin()">sign in with google</button>
     </div>
 
@@ -407,6 +516,10 @@
             </div>
             <div class="chart-container">
                 <canvas id="myChart"></canvas>
+                <div class="view-toggle">
+                    <button class="view-btn active" id="viewPercent" onclick="setChartMode('percent')">%</button>
+                    <button class="view-btn" id="viewHours" onclick="setChartMode('hours')">hours</button>
+                </div>
             </div>
         </div>
     </div>
@@ -438,7 +551,7 @@
             { section: 'morning', text: 'make bed?', color: 'M' },
             { section: 'morning', text: 'brush teeth?', color: 'C' },
             { section: 'morning', text: 'colostrum?', color: 'C' },
-            { section: 'morning', text: 'morning walk?', color: 'C' },
+            { section: 'morning', text: 'morning run?', color: 'C' },
             { section: 'morning', text: 'fruit / granola / yogurt?', color: 'C' },
             { section: 'morning', text: 'journal?', color: 'M' },
             { section: 'morning', text: 'shower?', color: 'C' },
@@ -449,10 +562,9 @@
             
             // evening section
             { section: 'evening', text: 'colostrum?', color: 'C' },
-            { section: 'evening', text: 'yoga / stretch?', color: 'C' },
+            { section: 'evening', text: 'body weight workout?', color: 'C' },
             { section: 'evening', text: 'shower / bath?', color: 'C' },
             { section: 'evening', text: 'rogaine?', color: 'C' },
-            { section: 'evening', text: 'shave?', color: 'M' },
             { section: 'evening', text: 'face lotion?', color: 'C' },
             { section: 'evening', text: 'clean ear?', color: 'C' },
             { section: 'evening', text: 'brush teeth?', color: 'C' },
@@ -463,11 +575,18 @@
             { section: 'daily', text: 'cannabis free ?', color: 'M' },
             { section: 'daily', text: 'alcohol free?', color: 'M' },
             { section: 'daily', text: 'caffeine?', color: 'M' },
+            { section: 'daily', text: 'Nootropics?', color: 'M' },           
             
             // daily social
             { section: 'daily', text: 'connect with friends?', color: 'Y' },
             { section: 'daily', text: 'connect with family?', color: 'Y' },
             { section: 'daily', text: 'quality time with Maria?', color: 'Y' },
+            
+            // hours tracking
+            { section: 'hours', text: 'pinkProportion Hours', color: 'M' },
+            { section: 'hours', text: 'Forma Rosa Studio Hours', color: 'C' },
+            { section: 'hours', text: 'Forma Rosa Creative Hours', color: 'Y' },
+            { section: 'hours', text: 'health', color: 'W' },
             
             // daily reflections
             { section: 'text', text: 'daily response', color: 'W' },
@@ -492,6 +611,7 @@
             'morning': 'Morning Checklist',
             'evening': 'Evening Checklist',
             'daily': 'Daily Checklist',
+            'hours': 'Hours Tracking',
             'text': 'Daily Response',
             'rating': 'Daily Rating'
         };
@@ -514,6 +634,7 @@
         let dragOffset = 0;
         let isDragging = false;
         let showAllData = false;
+        let chartMode = 'percent'; // 'percent' or 'hours'
         let quizData = [];
         let chart = null;
         let recognition = null;
@@ -524,6 +645,7 @@
             let type = 'yesno';
             if (q.section === 'rating') type = 'rating';
             if (q.section === 'text') type = 'text';
+            if (q.section === 'hours') type = 'hours';
             
             return {
                 ...q,
@@ -706,6 +828,13 @@
             updateChart();
         }
 
+        function setChartMode(mode) {
+            chartMode = mode;
+            document.getElementById('viewPercent').classList.toggle('active', mode === 'percent');
+            document.getElementById('viewHours').classList.toggle('active', mode === 'hours');
+            updateChart();
+        }
+
         // ============================================
         // DATA POPUP
         // ============================================
@@ -784,6 +913,20 @@
                 content += `</div>`;
             }
 
+            // Hours tracking
+            const hoursQuestions = questions.filter(q => q.section === 'hours');
+            if (hoursQuestions.length > 0 && hoursQuestions.some(q => entry[q.text])) {
+                content += `<div class="popup-section">`;
+                content += `<div class="popup-section-title"><span>Hours Tracking</span></div>`;
+                hoursQuestions.forEach(q => {
+                    const hours = entry[q.text];
+                    if (hours !== undefined && hours !== '') {
+                        content += `<div class="popup-hours" style="color: ${q.colorHex}">${q.text}: ${hours}h</div>`;
+                    }
+                });
+                content += `</div>`;
+            }
+
             // Morning section
             const morningQuestions = questions.filter(q => q.section === 'morning');
             if (morningQuestions.length > 0) {
@@ -847,58 +990,79 @@
                 filteredData = filteredData.filter(entry => new Date(entry.timestamp) >= thirtyDaysAgo);
             }
 
-            // Build chart data with original timestamps for lookup
-            const chartData = filteredData.map(entry => {
-                const timestamp = new Date(entry.timestamp);
+            let chartData;
+            
+            if (chartMode === 'percent') {
+                // Build percentage chart data
+                chartData = filteredData.map(entry => {
+                    const timestamp = new Date(entry.timestamp);
 
-                // Calculate percentages by color
-                const cyanQuestions = questions.filter(q => q.color === 'C' && q.type === 'yesno');
-                const magentaQuestions = questions.filter(q => q.color === 'M' && q.type === 'yesno');
-                const yellowQuestions = questions.filter(q => q.color === 'Y' && q.type === 'yesno');
+                    const cyanQuestions = questions.filter(q => q.color === 'C' && q.type === 'yesno');
+                    const magentaQuestions = questions.filter(q => q.color === 'M' && q.type === 'yesno');
+                    const yellowQuestions = questions.filter(q => q.color === 'Y' && q.type === 'yesno');
 
-                const cyanYes = cyanQuestions.filter(q => entry[q.text] === 'yes').length;
-                const magentaYes = magentaQuestions.filter(q => entry[q.text] === 'yes').length;
-                const yellowYes = yellowQuestions.filter(q => entry[q.text] === 'yes').length;
+                    const cyanYes = cyanQuestions.filter(q => entry[q.text] === 'yes').length;
+                    const magentaYes = magentaQuestions.filter(q => entry[q.text] === 'yes').length;
+                    const yellowYes = yellowQuestions.filter(q => entry[q.text] === 'yes').length;
 
-                const cyanPercent = cyanQuestions.length > 0 ? (cyanYes / cyanQuestions.length) * 100 : 0;
-                const magentaPercent = magentaQuestions.length > 0 ? (magentaYes / magentaQuestions.length) * 100 : 0;
-                const yellowPercent = yellowQuestions.length > 0 ? (yellowYes / yellowQuestions.length) * 100 : 0;
+                    const cyanPercent = cyanQuestions.length > 0 ? (cyanYes / cyanQuestions.length) * 100 : 0;
+                    const magentaPercent = magentaQuestions.length > 0 ? (magentaYes / magentaQuestions.length) * 100 : 0;
+                    const yellowPercent = yellowQuestions.length > 0 ? (yellowYes / yellowQuestions.length) * 100 : 0;
 
-                // Rating calculation - handle missing data properly
-                const rating = parseFloat(entry['daily rating']);
-                let ratingPercent;
+                    const rating = parseFloat(entry['daily rating']);
+                    let ratingPercent = isNaN(rating) || entry['daily rating'] === '' ? null : ((rating + 2) / 4) * 100;
 
-                if (isNaN(rating) || entry['daily rating'] === '' || entry['daily rating'] === undefined) {
-                    ratingPercent = null; // Don't plot missing data
-                } else {
-                    ratingPercent = ((rating + 2) / 4) * 100;
-                }
+                    const hasSubstanceUse = 
+                        entry['nicotine free ?'] === 'no' || 
+                        entry['cannabis free ?'] === 'no' || 
+                        entry['alcohol free?'] === 'no';
 
-                // Check for substance use (inverse logic)
-                const hasSubstanceUse = 
-                    entry['nicotine free ?'] === 'no' || 
-                    entry['cannabis free ?'] === 'no' || 
-                    entry['alcohol free?'] === 'no';
+                    return {
+                        x: timestamp,
+                        originalTimestamp: entry.timestamp,
+                        cyan: cyanPercent,
+                        magenta: magentaPercent,
+                        yellow: yellowPercent,
+                        rating: ratingPercent,
+                        hasSubstanceUse: hasSubstanceUse
+                    };
+                });
+            } else {
+                // Build hours chart data
+                chartData = filteredData.map(entry => {
+                    const timestamp = new Date(entry.timestamp);
 
-                return {
-                    x: timestamp,
-                    originalTimestamp: entry.timestamp,
-                    cyan: cyanPercent,
-                    magenta: magentaPercent,
-                    yellow: yellowPercent,
-                    rating: ratingPercent,
-                    hasSubstanceUse: hasSubstanceUse
-                };
-            });
+                    const pinkHours = parseFloat(entry['pinkProportion Hours']) || 0;
+                    const studioHours = parseFloat(entry['Forma Rosa Studio Hours']) || 0;
+                    const creativeHours = parseFloat(entry['Forma Rosa Creative Hours']) || 0;
+                    const healthHours = parseFloat(entry['health']) || 0;
+
+                    // Convert rating to 0-24 scale for overlay
+                    const rating = parseFloat(entry['daily rating']);
+                    let ratingScaled = isNaN(rating) || entry['daily rating'] === '' ? null : ((rating + 2) / 4) * 24;
+
+                    return {
+                        x: timestamp,
+                        originalTimestamp: entry.timestamp,
+                        magenta: pinkHours,
+                        cyan: studioHours,
+                        yellow: creativeHours,
+                        white: healthHours,
+                        rating: ratingScaled
+                    };
+                });
+            }
 
             if (chart) {
                 chart.destroy();
             }
 
-            // Substance line plugin
+            // Substance line plugin (only for percent mode)
             const substanceLinePlugin = {
                 id: 'substanceLines',
                 beforeDatasetsDraw(chart) {
+                    if (chartMode !== 'percent') return;
+                    
                     const { ctx, chartArea: { top, bottom }, scales: { x } } = chart;
                     const dataset = chart.data.datasets[0];
 
@@ -919,53 +1083,157 @@
                 }
             };
 
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    datasets: [
-                        {
-                            label: 'Cyan',
-                            data: chartData.map(d => ({ x: d.x, y: d.cyan })),
-                            borderColor: '#00FFFF',
-                            backgroundColor: '#00FFFF',
-                            borderWidth: 3,
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            tension: 0.1
-                        },
-                        {
-                            label: 'Magenta',
-                            data: chartData.map(d => ({ x: d.x, y: d.magenta })),
-                            borderColor: '#FF00FF',
-                            backgroundColor: '#FF00FF',
-                            borderWidth: 3,
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            tension: 0.1
-                        },
-                        {
-                            label: 'Yellow',
-                            data: chartData.map(d => ({ x: d.x, y: d.yellow })),
-                            borderColor: '#FFFF00',
-                            backgroundColor: '#FFFF00',
-                            borderWidth: 3,
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            tension: 0.1
-                        },
-                        {
-                            label: 'Rating',
-                            data: chartData.map(d => ({ x: d.x, y: d.rating })),
-                            borderColor: '#FFFFFF',
-                            backgroundColor: '#FFFFFF',
-                            borderWidth: 3,
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            tension: 0.1,
-                            spanGaps: false
+            const yAxisConfig = chartMode === 'percent' ? {
+                min: -5,
+                max: 105,
+                ticks: {
+                    color: '#FFFFFF',
+                    font: { size: 10 },
+                    callback: function(value) {
+                        if (value === 0 || value === 25 || value === 50 || value === 75 || value === 100) {
+                            return value;
                         }
-                    ]
+                        return '';
+                    }
                 },
+                grid: {
+                    color: function(context) {
+                        const value = context.tick.value;
+                        if (value === 0 || value === 25 || value === 50 || value === 75 || value === 100) {
+                            return '#333333';
+                        }
+                        return 'transparent';
+                    }
+                }
+            } : {
+                min: 0,
+                max: 24,
+                ticks: {
+                    color: '#FFFFFF',
+                    font: { size: 10 },
+                    stepSize: 4,
+                    callback: function(value) {
+                        if (value % 4 === 0) {
+                            return value;
+                        }
+                        return '';
+                    }
+                },
+                grid: {
+                    color: function(context) {
+                        const value = context.tick.value;
+                        if (value % 4 === 0) {
+                            return '#333333';
+                        }
+                        return 'transparent';
+                    }
+                }
+            };
+
+            const datasets = chartMode === 'percent' ? [
+                {
+                    label: 'Cyan',
+                    data: chartData.map(d => ({ x: d.x, y: d.cyan })),
+                    borderColor: '#00FFFF',
+                    backgroundColor: '#00FFFF',
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    tension: 0.1,
+                    spanGaps: false
+                },
+                {
+                    label: 'Magenta',
+                    data: chartData.map(d => ({ x: d.x, y: d.magenta })),
+                    borderColor: '#FF00FF',
+                    backgroundColor: '#FF00FF',
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    tension: 0.1,
+                    spanGaps: false
+                },
+                {
+                    label: 'Yellow',
+                    data: chartData.map(d => ({ x: d.x, y: d.yellow })),
+                    borderColor: '#FFFF00',
+                    backgroundColor: '#FFFF00',
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    tension: 0.1,
+                    spanGaps: false
+                },
+                {
+                    label: 'Rating',
+                    data: chartData.map(d => ({ x: d.x, y: d.rating })),
+                    borderColor: '#FFFFFF',
+                    backgroundColor: '#FFFFFF',
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    tension: 0.1,
+                    spanGaps: false
+                }
+            ] : [
+                {
+                    label: 'pinkProportion',
+                    data: chartData.map(d => ({ x: d.x, y: d.magenta })),
+                    backgroundColor: '#FF00FF',
+                    borderColor: '#FF00FF',
+                    borderWidth: 1,
+                    type: 'bar',
+                    stack: 'hours',
+                    barPercentage: 0.7
+                },
+                {
+                    label: 'Studio',
+                    data: chartData.map(d => ({ x: d.x, y: d.cyan })),
+                    backgroundColor: '#00FFFF',
+                    borderColor: '#00FFFF',
+                    borderWidth: 1,
+                    type: 'bar',
+                    stack: 'hours',
+                    barPercentage: 0.7
+                },
+                {
+                    label: 'Creative',
+                    data: chartData.map(d => ({ x: d.x, y: d.yellow })),
+                    backgroundColor: '#FFFF00',
+                    borderColor: '#FFFF00',
+                    borderWidth: 1,
+                    type: 'bar',
+                    stack: 'hours',
+                    barPercentage: 0.7
+                },
+                {
+                    label: 'Health',
+                    data: chartData.map(d => ({ x: d.x, y: d.white })),
+                    backgroundColor: '#FFFFFF',
+                    borderColor: '#FFFFFF',
+                    borderWidth: 1,
+                    type: 'bar',
+                    stack: 'hours',
+                    barPercentage: 0.7
+                },
+                {
+                    label: 'Daily Rating',
+                    data: chartData.map(d => ({ x: d.x, y: d.rating })),
+                    borderColor: '#FFFFFF',
+                    backgroundColor: 'transparent',
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    tension: 0.1,
+                    type: 'line',
+                    spanGaps: false,
+                    order: 0
+                }
+            ];
+
+            chart = new Chart(ctx, {
+                type: chartMode === 'percent' ? 'line' : 'bar',
+                data: { datasets: datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -977,35 +1245,12 @@
                         }
                     },
                     plugins: {
-                        legend: {
-                            display: false
-                        }
+                        legend: { display: false }
                     },
                     scales: {
                         y: {
-                            min: -5,
-                            max: 105,
-                            ticks: {
-                                color: '#FFFFFF',
-                                font: {
-                                    size: 10
-                                },
-                                callback: function(value) {
-                                    if (value === 0 || value === 25 || value === 50 || value === 75 || value === 100) {
-                                        return value;
-                                    }
-                                    return '';
-                                }
-                            },
-                            grid: {
-                                color: function(context) {
-                                    const value = context.tick.value;
-                                    if (value === 0 || value === 25 || value === 50 || value === 75 || value === 100) {
-                                        return '#333333';
-                                    }
-                                    return 'transparent';
-                                }
-                            }
+                            ...yAxisConfig,
+                            stacked: chartMode === 'hours'
                         },
                         x: {
                             type: 'time',
@@ -1020,15 +1265,14 @@
                             ticks: {
                                 source: 'data',
                                 color: '#FFFFFF',
-                                font: {
-                                    size: 8
-                                },
+                                font: { size: 8 },
                                 maxRotation: 90,
                                 minRotation: 90
                             },
                             grid: {
                                 color: '#333333'
-                            }
+                            },
+                            stacked: chartMode === 'hours'
                         }
                     }
                 },
@@ -1123,6 +1367,65 @@
                         </div>
                     `).join('')}
                 </div>`;
+            } else if (question.type === 'hours') {
+                cardContent.innerHTML = `
+                    <div class="slider-container">
+                        <div class="slider-value" id="sliderValue" style="color: ${question.colorHex}">0</div>
+                        <div class="slider-wrapper">
+                            <input 
+                                type="range" 
+                                min="0" 
+                                max="12" 
+                                value="0" 
+                                class="hour-slider" 
+                                id="hourSlider"
+                                style="background: linear-gradient(to right, ${question.colorHex} 0%, #1A1A1A 0%);"
+                                oninput="updateSliderValue(this.value, '${question.colorHex}')"
+                            />
+                            <div class="slider-labels">
+                                <span>0</span>
+                                <span>12</span>
+                            </div>
+                        </div>
+                        <button 
+                            class="slider-submit" 
+                            style="border-color: ${question.colorHex}; color: ${question.colorHex};"
+                            onclick="submitHours()"
+                        >
+                            submit
+                        </button>
+                    </div>
+                `;
+                
+                // Set thumb color
+                const style = document.createElement('style');
+                style.textContent = `
+                    #hourSlider::-webkit-slider-thumb { background: ${question.colorHex}; }
+                    #hourSlider::-moz-range-thumb { background: ${question.colorHex}; }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        function updateSliderValue(value, color) {
+            document.getElementById('sliderValue').textContent = value;
+            const slider = document.getElementById('hourSlider');
+            const percentage = (value / 12) * 100;
+            slider.style.background = `linear-gradient(to right, ${color} ${percentage}%, #1A1A1A ${percentage}%)`;
+        }
+
+        function submitHours() {
+            const slider = document.getElementById('hourSlider');
+            const value = parseInt(slider.value);
+            const question = questions[currentQuestionIndex];
+            
+            responses[question.text] = value;
+            
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                completeQuiz();
             }
         }
 
@@ -1252,7 +1555,7 @@
         // ============================================
         function startDrag(e) {
             const question = questions[currentQuestionIndex];
-            if (question.type === 'rating' || question.type === 'text') return;
+            if (question.type === 'rating' || question.type === 'text' || question.type === 'hours') return;
 
             e.preventDefault();
             isDragging = true;
