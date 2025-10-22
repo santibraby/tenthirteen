@@ -506,7 +506,7 @@
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
         <!-- UPDATE VERSION NUMBER HERE when artifact changes -->
-        <div class="version">v25</div>
+        <div class="version">v26</div>
         <button class="btn" onclick="handleLogin()">sign in with google</button>
     </div>
 
@@ -547,7 +547,6 @@
         </div>
     </div>
 
-    <script src="https://apis.google.com/js/api.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
         // ============================================
@@ -674,26 +673,17 @@
                 loginBtn.textContent = 'loading...';
             }
 
-            // Wait for both gapi and google.accounts to be available
+            // Wait for google.accounts to be available
             const waitForGoogleAPIs = setInterval(() => {
-                if (typeof gapi !== 'undefined' && typeof google !== 'undefined' && google.accounts) {
+                if (typeof google !== 'undefined' && google.accounts) {
                     clearInterval(waitForGoogleAPIs);
                     initializeAPIs();
                 }
             }, 100);
         }
 
-        async function initializeAPIs() {
+        function initializeAPIs() {
             try {
-                await new Promise((resolve) => {
-                    gapi.load('client', resolve);
-                });
-
-                await gapi.client.init({
-                    apiKey: 'AIzaSyBpN0xT7d8WPqZ8kQx0JN8yvX5hYJ3XKyM',
-                    discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4']
-                });
-
                 tokenClient = google.accounts.oauth2.initTokenClient({
                     client_id: CLIENT_ID,
                     scope: SCOPES,
@@ -729,13 +719,14 @@
             }
         }
 
-        function handleLogin() {
+        // Make handleLogin globally accessible
+        window.handleLogin = function() {
             if (!isAuthInitialized || !tokenClient) {
                 alert('Authentication is still loading. Please wait a moment and try again.');
                 return;
             }
             tokenClient.requestAccessToken({ prompt: 'consent' });
-        }
+        };
 
         // ============================================
         // DATA MANAGEMENT
