@@ -70,6 +70,12 @@
             border-radius: 8px;
             width: 100%;
             max-width: 300px;
+            transition: opacity 0.3s;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         /* Chart Screen */
@@ -500,7 +506,7 @@
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
         <!-- UPDATE VERSION NUMBER HERE when artifact changes -->
-        <div class="version">v24.2</div>
+        <div class="version">v25</div>
         <button class="btn" onclick="handleLogin()">sign in with google</button>
     </div>
 
@@ -541,6 +547,7 @@
         </div>
     </div>
 
+    <script src="https://apis.google.com/js/api.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
         // ============================================
@@ -642,6 +649,7 @@
         let chart = null;
         let recognition = null;
         let isRecording = false;
+        let isAuthInitialized = false;
 
         // Process questions to add type information
         const questions = QUESTIONS.map(q => {
@@ -660,7 +668,27 @@
         // GOOGLE AUTH
         // ============================================
         function initializeGoogleAuth() {
-            gapi.load('client', async () => {
+            const loginBtn = document.querySelector('.btn');
+            if (loginBtn) {
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'loading...';
+            }
+
+            // Wait for both gapi and google.accounts to be available
+            const waitForGoogleAPIs = setInterval(() => {
+                if (typeof gapi !== 'undefined' && typeof google !== 'undefined' && google.accounts) {
+                    clearInterval(waitForGoogleAPIs);
+                    initializeAPIs();
+                }
+            }, 100);
+        }
+
+        async function initializeAPIs() {
+            try {
+                await new Promise((resolve) => {
+                    gapi.load('client', resolve);
+                });
+
                 await gapi.client.init({
                     apiKey: 'AIzaSyBpN0xT7d8WPqZ8kQx0JN8yvX5hYJ3XKyM',
                     discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4']
@@ -672,6 +700,7 @@
                     callback: async (response) => {
                         if (response.error) {
                             console.error('Auth error:', response.error);
+                            alert('Authentication failed. Please try again.');
                             return;
                         }
                         accessToken = response.access_token;
@@ -679,10 +708,32 @@
                         showScreen('chartScreen');
                     }
                 });
-            });
+
+                isAuthInitialized = true;
+                
+                // Enable the login button
+                const loginBtn = document.querySelector('.btn');
+                if (loginBtn) {
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'sign in with google';
+                }
+
+                console.log('Google Auth initialized successfully');
+            } catch (error) {
+                console.error('Error initializing Google Auth:', error);
+                const loginBtn = document.querySelector('.btn');
+                if (loginBtn) {
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'sign in with google (retry)';
+                }
+            }
         }
 
         function handleLogin() {
+            if (!isAuthInitialized || !tokenClient) {
+                alert('Authentication is still loading. Please wait a moment and try again.');
+                return;
+            }
             tokenClient.requestAccessToken({ prompt: 'consent' });
         }
 
