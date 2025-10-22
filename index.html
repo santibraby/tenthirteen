@@ -500,7 +500,7 @@
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
         <!-- UPDATE VERSION NUMBER HERE when artifact changes -->
-        <div class="version">v19</div>
+        <div class="version">v20</div>
         <button class="btn" onclick="handleGoogleLogin()">sign in with google</button>
     </div>
 
@@ -1068,16 +1068,32 @@
 
                     dataset.data.forEach((point, index) => {
                         const dataPoint = chartData[index];
-                        if (dataPoint && dataPoint.hasSubstanceUse) {
+                        if (dataPoint) {
                             const xPos = x.getPixelForValue(point.x);
-                            ctx.save();
-                            ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
-                            ctx.lineWidth = 2;
-                            ctx.beginPath();
-                            ctx.moveTo(xPos, top);
-                            ctx.lineTo(xPos, bottom);
-                            ctx.stroke();
-                            ctx.restore();
+                            
+                            // Draw red line for harmful substances
+                            if (dataPoint.hasSubstanceUse) {
+                                ctx.save();
+                                ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+                                ctx.lineWidth = 2;
+                                ctx.beginPath();
+                                ctx.moveTo(xPos, top);
+                                ctx.lineTo(xPos, bottom);
+                                ctx.stroke();
+                                ctx.restore();
+                            }
+                            
+                            // Draw green line for nootropics
+                            if (dataPoint.hasNootropics) {
+                                ctx.save();
+                                ctx.strokeStyle = 'rgba(0, 255, 0, 0.5)';
+                                ctx.lineWidth = 2;
+                                ctx.beginPath();
+                                ctx.moveTo(xPos, top);
+                                ctx.lineTo(xPos, bottom);
+                                ctx.stroke();
+                                ctx.restore();
+                            }
                         }
                     });
                 }
