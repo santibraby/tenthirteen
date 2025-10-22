@@ -500,7 +500,7 @@
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
         <!-- UPDATE VERSION NUMBER HERE when artifact changes -->
-        <div class="version">v20</div>
+        <div class="version">v21</div>
         <button class="btn" onclick="handleGoogleLogin()">sign in with google</button>
     </div>
 
@@ -549,33 +549,33 @@
         const QUESTIONS = [
             // morning section
             { section: 'morning', text: 'make bed?', color: 'M' },
-            { section: 'morning', text: 'brush teeth?', color: 'C' },
-            { section: 'morning', text: 'colostrum?', color: 'C' },
+            { section: 'morning', text: 'brush teeth AM?', color: 'C' },
+            { section: 'morning', text: 'colostrum AM?', color: 'C' },
             { section: 'morning', text: 'morning run?', color: 'C' },
             { section: 'morning', text: 'fruit / granola / yogurt?', color: 'C' },
             { section: 'morning', text: 'journal?', color: 'M' },
-            { section: 'morning', text: 'shower?', color: 'C' },
-            { section: 'morning', text: 'rogaine?', color: 'C' },
+            { section: 'morning', text: 'shower AM?', color: 'C' },
+            { section: 'morning', text: 'rogaine AM?', color: 'C' },
             { section: 'morning', text: 'shave?', color: 'M' },
-            { section: 'morning', text: 'face lotion?', color: 'C' },
-            { section: 'morning', text: 'clean ear?', color: 'C' },
+            { section: 'morning', text: 'face lotion AM?', color: 'C' },
+            { section: 'morning', text: 'clean ear AM?', color: 'C' },
             
             // evening section
-            { section: 'evening', text: 'colostrum?', color: 'C' },
+            { section: 'evening', text: 'colostrum PM?', color: 'C' },
             { section: 'evening', text: 'body weight workout?', color: 'C' },
-            { section: 'evening', text: 'shower / bath?', color: 'C' },
-            { section: 'evening', text: 'rogaine?', color: 'C' },
-            { section: 'evening', text: 'face lotion?', color: 'C' },
-            { section: 'evening', text: 'clean ear?', color: 'C' },
-            { section: 'evening', text: 'brush teeth?', color: 'C' },
+            { section: 'evening', text: 'shower / bath PM?', color: 'C' },
+            { section: 'evening', text: 'rogaine PM?', color: 'C' },
+            { section: 'evening', text: 'face lotion PM?', color: 'C' },
+            { section: 'evening', text: 'clean ear PM?', color: 'C' },
+            { section: 'evening', text: 'brush teeth PM?', color: 'C' },
             { section: 'evening', text: 'read?', color: 'M' },
             
             // daily substances
-            { section: 'daily', text: 'nicotine free ?', color: 'M' },
-            { section: 'daily', text: 'cannabis free ?', color: 'M' },
+            { section: 'daily', text: 'nicotine free?', color: 'M' },
+            { section: 'daily', text: 'cannabis free?', color: 'M' },
             { section: 'daily', text: 'alcohol free?', color: 'M' },
             { section: 'daily', text: 'caffeine?', color: 'M' },
-            { section: 'daily', text: 'Nootropics?', color: 'M' },           
+            { section: 'daily', text: 'nootropics?', color: 'M' },           
             
             // daily social
             { section: 'daily', text: 'connect with friends?', color: 'Y' },
@@ -583,10 +583,10 @@
             { section: 'daily', text: 'quality time with Maria?', color: 'Y' },
             
             // hours tracking
-            { section: 'hours', text: 'pinkProportion Hours', color: 'M' },
-            { section: 'hours', text: 'Forma Rosa Studio Hours', color: 'C' },
-            { section: 'hours', text: 'Forma Rosa Creative Hours', color: 'Y' },
-            { section: 'hours', text: 'health', color: 'W' },
+            { section: 'hours', text: 'pinkProportion hours', color: 'M' },
+            { section: 'hours', text: 'forma rosa studio hours', color: 'C' },
+            { section: 'hours', text: 'forma rosa creative hours', color: 'Y' },
+            { section: 'hours', text: 'health hours', color: 'W' },
             
             // daily reflections
             { section: 'text', text: 'daily response', color: 'W' },
@@ -1032,10 +1032,10 @@
                 chartData = filteredData.map(entry => {
                     const timestamp = new Date(entry.timestamp);
 
-                    const pinkHours = parseFloat(entry['pinkProportion Hours']) || 0;
-                    const studioHours = parseFloat(entry['Forma Rosa Studio Hours']) || 0;
-                    const creativeHours = parseFloat(entry['Forma Rosa Creative Hours']) || 0;
-                    const healthHours = parseFloat(entry['health']) || 0;
+                    const pinkHours = parseFloat(entry['pinkProportion hours']) || 0;
+                    const studioHours = parseFloat(entry['forma rosa studio hours']) || 0;
+                    const creativeHours = parseFloat(entry['forma rosa creative hours']) || 0;
+                    const healthHours = parseFloat(entry['health hours']) || 0;
 
                     // Convert rating to 0-24 scale for overlay
                     const rating = parseFloat(entry['daily rating']);
