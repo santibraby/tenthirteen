@@ -500,7 +500,7 @@
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
         <!-- UPDATE VERSION NUMBER HERE when artifact changes -->
-        <div class="version">v21</div>
+        <div class="version">v22</div>
         <button class="btn" onclick="handleGoogleLogin()">sign in with google</button>
     </div>
 
@@ -744,13 +744,10 @@
         }
 
         async function saveToSheet(data) {
-            const headers = ['timestamp', ...questions.map(q => q.text)];
-            const row = [data.timestamp, ...questions.map(q => data[q.text] !== undefined ? data[q.text] : '')];
-
             try {
-                // Check if headers exist
+                // Get existing headers
                 const checkResponse = await fetch(
-                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A1:ZZ1`,
+                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!1:1`,
                     {
                         headers: {
                             Authorization: `Bearer ${accessToken}`
@@ -759,23 +756,44 @@
                 );
 
                 const checkData = await checkResponse.json();
+                let existingHeaders = checkData.values?.[0] || [];
 
-                // Add headers if they don't exist
-                if (!checkData.values || checkData.values.length === 0) {
+                // Build expected headers from current questions
+                const expectedHeaders = ['timestamp', ...questions.map(q => q.text)];
+
+                // Merge headers: keep all existing + add any new ones
+                const mergedHeaders = [...existingHeaders];
+                expectedHeaders.forEach(header => {
+                    if (!mergedHeaders.includes(header)) {
+                        mergedHeaders.push(header);
+                    }
+                });
+
+                // If headers changed, update the header row
+                if (mergedHeaders.length !== existingHeaders.length) {
+                    console.log('Updating headers with new columns:', mergedHeaders.filter(h => !existingHeaders.includes(h)));
                     await fetch(
-                        `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A1:append?valueInputOption=RAW`,
+                        `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!1:1?valueInputOption=RAW`,
                         {
-                            method: 'POST',
+                            method: 'PUT',
                             headers: {
                                 Authorization: `Bearer ${accessToken}`,
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify({
-                                values: [headers]
+                                values: [mergedHeaders]
                             })
                         }
                     );
                 }
+
+                // Build data row matching merged headers
+                const row = mergedHeaders.map(header => {
+                    if (data[header] !== undefined) {
+                        return data[header];
+                    }
+                    return '';
+                });
 
                 // Append data row
                 await fetch(
@@ -792,6 +810,7 @@
                     }
                 );
 
+                console.log('Data saved successfully');
                 await loadSheetData();
             } catch (error) {
                 console.error('Error saving to sheet:', error);
