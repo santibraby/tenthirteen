@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Karla:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://unpkg.com/globe.gl@2.27.0/dist/globe.gl.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -153,6 +154,53 @@
             height: calc(100% - 80px);
         }
 
+        #globeViz {
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+
+        #globeViz.active {
+            display: block;
+        }
+
+        .globe-legend {
+            position: absolute;
+            bottom: 70px;
+            left: 40px;
+            color: white;
+            font-size: 12px;
+            background: rgba(0,0,0,0.7);
+            padding: 12px 16px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .globe-legend.active {
+            display: block;
+        }
+
+        .legend-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-transform: lowercase;
+        }
+
+        .legend-gradient {
+            width: 120px;
+            height: 8px;
+            background: linear-gradient(90deg, #00FFFF, #FF00FF, #FFFF00);
+            border-radius: 4px;
+            margin-bottom: 4px;
+        }
+
+        .legend-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            opacity: 0.7;
+        }
+
         .view-toggle {
             position: absolute;
             bottom: 20px;
@@ -162,6 +210,7 @@
             padding: 4px;
             display: flex;
             gap: 4px;
+            z-index: 100;
         }
 
         .view-btn {
@@ -505,8 +554,7 @@
     <!-- Login Screen -->
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
-        <!-- UPDATE VERSION NUMBER HERE when artifact changes -->
-        <div class="version">v28</div>
+        <div class="version">v1.0.1</div>
         <button class="btn" onclick="handleLogin()">sign in with google</button>
     </div>
 
@@ -516,15 +564,26 @@
             <div class="header">
                 <div class="title" onclick="startQuiz()">10:13</div>
                 <div class="toggle">
-                    <button class="toggle-btn active" id="toggle30d" onclick="setChartView(false)">30d</button>
-                    <button class="toggle-btn" id="toggleAll" onclick="setChartView(true)">all</button>
+                    <button class="toggle-btn active" id="toggle1w" onclick="setTimeRange('1w')">1w</button>
+                    <button class="toggle-btn" id="toggle1m" onclick="setTimeRange('1m')">1m</button>
+                    <button class="toggle-btn" id="toggleAll" onclick="setTimeRange('all')">all</button>
                 </div>
             </div>
             <div class="chart-container">
                 <canvas id="myChart"></canvas>
+                <div id="globeViz"></div>
+                <div class="globe-legend" id="globeLegend">
+                    <div class="legend-title">entries over time</div>
+                    <div class="legend-gradient"></div>
+                    <div class="legend-labels">
+                        <span>oldest</span>
+                        <span>newest</span>
+                    </div>
+                </div>
                 <div class="view-toggle">
                     <button class="view-btn active" id="viewPercent" onclick="setChartMode('percent')">%</button>
                     <button class="view-btn" id="viewHours" onclick="setChartMode('hours')">hours</button>
+                    <button class="view-btn" id="viewLoc" onclick="setChartMode('loc')">loc</button>
                 </div>
             </div>
         </div>
@@ -550,52 +609,56 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
         // ============================================
-        // QUESTIONS CONFIGURATION - EDIT THIS SECTION
-        // ============================================
-        // ============================================
         // QUESTIONS CONFIGURATION
         // ============================================
         const QUESTIONS = [
-            // Morning (m1-m11)
+            // Morning (m1-m13, skipping m11 which was removed)
             { id: 'm1', section: 'morning', text: 'make bed?', color: 'M' },
             { id: 'm2', section: 'morning', text: 'brush teeth AM?', color: 'C' },
             { id: 'm3', section: 'morning', text: 'colostrum AM?', color: 'C' },
-            { id: 'm4', section: 'morning', text: 'morning run?', color: 'C' },
-            { id: 'm5', section: 'morning', text: 'fruit / granola / yogurt?', color: 'C' },
+            { id: 'm4', section: 'morning', text: 'morning walk?', color: 'M' },
+            { id: 'm5', section: 'morning', text: 'yogurt / fruit / granola?', color: 'C' },
             { id: 'm6', section: 'morning', text: 'journal?', color: 'M' },
             { id: 'm7', section: 'morning', text: 'shower AM?', color: 'C' },
-            { id: 'm8', section: 'morning', text: 'rogaine AM?', color: 'C' },
+            { id: 'm8', section: 'morning', text: 'hair AM?', color: 'C' },
             { id: 'm9', section: 'morning', text: 'shave?', color: 'M' },
-            { id: 'm10', section: 'morning', text: 'face lotion AM?', color: 'C' },
-            { id: 'm11', section: 'morning', text: 'clean ear AM?', color: 'C' },
+            { id: 'm10', section: 'morning', text: 'face / ear AM?', color: 'C' },
+            { id: 'm12', section: 'morning', text: 'rise at 6:30?', color: 'M' },
+            { id: 'm13', section: 'morning', text: 'daily vitamin?', color: 'M' },
             
-            // Evening (e1-e8)
+            // Evening (e1-e9, skipping e6 which was removed)
             { id: 'e1', section: 'evening', text: 'colostrum PM?', color: 'C' },
-            { id: 'e2', section: 'evening', text: 'body weight workout?', color: 'C' },
-            { id: 'e3', section: 'evening', text: 'shower / bath PM?', color: 'C' },
-            { id: 'e4', section: 'evening', text: 'rogaine PM?', color: 'C' },
-            { id: 'e5', section: 'evening', text: 'face lotion PM?', color: 'C' },
-            { id: 'e6', section: 'evening', text: 'clean ear PM?', color: 'C' },
+            { id: 'e2', section: 'evening', text: 'evening workout?', color: 'C' },
+            { id: 'e3', section: 'evening', text: 'shower PM?', color: 'C' },
+            { id: 'e4', section: 'evening', text: 'hair PM?', color: 'C' },
+            { id: 'e5', section: 'evening', text: 'face / ear PM?', color: 'C' },
             { id: 'e7', section: 'evening', text: 'brush teeth PM?', color: 'C' },
             { id: 'e8', section: 'evening', text: 'read?', color: 'M' },
+            { id: 'e9', section: 'evening', text: 'recline at 10:30?', color: 'M' },
             
             // Daily substances (d1-d5)
             { id: 'd1', section: 'daily', text: 'nicotine free?', color: 'M', substanceType: 'harmful' },
             { id: 'd2', section: 'daily', text: 'cannabis free?', color: 'M', substanceType: 'harmful' },
             { id: 'd3', section: 'daily', text: 'alcohol free?', color: 'M', substanceType: 'harmful' },
             { id: 'd4', section: 'daily', text: 'caffeine?', color: 'M' },
-            { id: 'd5', section: 'daily', text: 'nootropics?', color: 'M', substanceType: 'nootropic' },
+            { id: 'd5', section: 'daily', text: 'nootropics free?', color: 'M', substanceType: 'nootropic' },
             
-            // Daily social (d6-d8)
+            // Daily social (d6-d9)
             { id: 'd6', section: 'daily', text: 'connect with friends?', color: 'Y' },
             { id: 'd7', section: 'daily', text: 'connect with family?', color: 'Y' },
             { id: 'd8', section: 'daily', text: 'quality time with Maria?', color: 'Y' },
+            { id: 'd9', section: 'daily', text: 'take care of Peppa?', color: 'Y' },
             
-            // Hours (h1-h4)
+            // Daily intimacy (d10-d11)
+            { id: 'd10', section: 'daily', text: 'sex?', color: 'W', intimacyType: 'sex' },
+            { id: 'd11', section: 'daily', text: 'self sex?', color: 'W', intimacyType: 'selfSex' },
+            
+            // Hours (h1-h5)
             { id: 'h1', section: 'hours', text: 'pinkProportion hours', color: 'M' },
-            { id: 'h2', section: 'hours', text: 'forma rosa studio hours', color: 'C' },
-            { id: 'h3', section: 'hours', text: 'forma rosa creative hours', color: 'Y' },
+            { id: 'h2', section: 'hours', text: 'FR studio hours', color: 'C' },
+            { id: 'h3', section: 'hours', text: 'FR creative hours', color: 'Y' },
             { id: 'h4', section: 'hours', text: 'health hours', color: 'W' },
+            { id: 'h5', section: 'hours', text: 'sleep (last night)', color: 'M', barColor: 'black' },
             
             // Text and rating
             { id: 'text', section: 'text', text: 'daily response', color: 'W' },
@@ -642,10 +705,11 @@
         let dragStartX = 0;
         let dragOffset = 0;
         let isDragging = false;
-        let showAllData = false;
-        let chartMode = 'percent'; // 'percent' or 'hours'
+        let timeRange = '1w'; // '1w', '1m', or 'all'
+        let chartMode = 'percent'; // 'percent', 'hours', or 'loc'
         let quizData = [];
         let chart = null;
+        let globe = null;
         let recognition = null;
         let isRecording = false;
         let isAuthInitialized = false;
@@ -780,8 +844,8 @@
                 const checkData = await checkResponse.json();
                 let existingHeaders = checkData.values?.[0] || [];
 
-                // Build expected headers: timestamp + all question IDs
-                const expectedHeaders = ['timestamp', ...questions.map(q => q.id)];
+                // Build expected headers: timestamp + all question IDs + loc
+                const expectedHeaders = ['timestamp', ...questions.map(q => q.id), 'loc'];
 
                 // Merge headers: keep all existing + add any new ones
                 const mergedHeaders = [...existingHeaders];
@@ -840,6 +904,29 @@
         }
 
         // ============================================
+        // GEOLOCATION
+        // ============================================
+        function getLocation() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    resolve(null);
+                    return;
+                }
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        resolve(`${position.coords.latitude},${position.coords.longitude}`);
+                    },
+                    (error) => {
+                        console.log('Geolocation error:', error);
+                        resolve(null);
+                    },
+                    { timeout: 5000, enableHighAccuracy: true }
+                );
+            });
+        }
+
+        // ============================================
         // UI NAVIGATION
         // ============================================
         function showScreen(screenId) {
@@ -862,10 +949,11 @@
             }
         }
 
-        function setChartView(showAll) {
-            showAllData = showAll;
-            document.getElementById('toggle30d').classList.toggle('active', !showAll);
-            document.getElementById('toggleAll').classList.toggle('active', showAll);
+        function setTimeRange(range) {
+            timeRange = range;
+            document.getElementById('toggle1w').classList.toggle('active', range === '1w');
+            document.getElementById('toggle1m').classList.toggle('active', range === '1m');
+            document.getElementById('toggleAll').classList.toggle('active', range === 'all');
             updateChart();
         }
 
@@ -873,7 +961,24 @@
             chartMode = mode;
             document.getElementById('viewPercent').classList.toggle('active', mode === 'percent');
             document.getElementById('viewHours').classList.toggle('active', mode === 'hours');
-            updateChart();
+            document.getElementById('viewLoc').classList.toggle('active', mode === 'loc');
+            
+            // Toggle visibility of chart canvas and globe
+            const canvas = document.getElementById('myChart');
+            const globeViz = document.getElementById('globeViz');
+            const globeLegend = document.getElementById('globeLegend');
+            
+            if (mode === 'loc') {
+                canvas.style.display = 'none';
+                globeViz.classList.add('active');
+                globeLegend.classList.add('active');
+                updateGlobe();
+            } else {
+                canvas.style.display = 'block';
+                globeViz.classList.remove('active');
+                globeLegend.classList.remove('active');
+                updateChart();
+            }
         }
 
         // ============================================
@@ -959,6 +1064,14 @@
                 html += `</div>`;
             });
 
+            // Add location if available
+            if (entry.loc) {
+                html += `<div class="popup-section">`;
+                html += `<div class="popup-section-title">Location</div>`;
+                html += `<div class="popup-item">${entry.loc}</div>`;
+                html += `</div>`;
+            }
+
             content.innerHTML = html;
             popup.classList.add('active');
         }
@@ -968,19 +1081,106 @@
         }
 
         // ============================================
+        // GLOBE RENDERING
+        // ============================================
+        function getGlobeColor(t) {
+            // t is 0 to 1 (oldest to newest)
+            // cyan -> magenta -> yellow
+            if (t < 0.5) {
+                const r = Math.round(0 + (255 - 0) * (t * 2));
+                const g = Math.round(255 - (255 - 0) * (t * 2));
+                const b = 255;
+                return `rgb(${r}, ${g}, ${b})`;
+            } else {
+                const t2 = (t - 0.5) * 2;
+                const r = 255;
+                const g = Math.round(0 + (255 - 0) * t2);
+                const b = Math.round(255 - (255 - 0) * t2);
+                return `rgb(${r}, ${g}, ${b})`;
+            }
+        }
+
+        function updateGlobe() {
+            // Filter entries with location data
+            const entriesWithLoc = quizData
+                .filter(entry => entry.loc && entry.loc.includes(','))
+                .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+            if (entriesWithLoc.length === 0) {
+                // No location data yet
+                return;
+            }
+
+            // Process entries for globe
+            const points = entriesWithLoc.map((entry, index) => {
+                const [lat, lng] = entry.loc.split(',').map(Number);
+                const t = entriesWithLoc.length > 1 ? index / (entriesWithLoc.length - 1) : 1;
+                const color = getGlobeColor(t);
+                
+                // Rating -2 to +2 mapped to size 0.3 to 1.0
+                const rating = parseFloat(entry.rating) || 0;
+                const size = ((rating + 2) / 4) * 0.7 + 0.3;
+                
+                return {
+                    lat: lat,
+                    lng: lng,
+                    size: size,
+                    color: color,
+                    label: `${new Date(entry.timestamp).toLocaleDateString()}\nrating: ${rating > 0 ? '+' : ''}${rating}`
+                };
+            });
+
+            // Get latest entry for initial view
+            const latest = entriesWithLoc[entriesWithLoc.length - 1];
+            const [latestLat, latestLng] = latest.loc.split(',').map(Number);
+
+            // Create or update globe
+            if (!globe) {
+                globe = Globe()
+                    .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
+                    .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+                    .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
+                    .pointAltitude(0.01)
+                    .pointLabel('label')
+                    .atmosphereColor('#333333')
+                    .atmosphereAltitude(0.15)
+                    (document.getElementById('globeViz'));
+            }
+
+            globe
+                .pointsData(points)
+                .pointLat('lat')
+                .pointLng('lng')
+                .pointColor('color')
+                .pointRadius('size');
+
+            // Set view to latest entry
+            globe.pointOfView({ lat: latestLat, lng: latestLng, altitude: 1.5 }, 1000);
+        }
+
+        // ============================================
         // CHART RENDERING
         // ============================================
         function updateChart() {
+            if (chartMode === 'loc') return;
+            
             const canvas = document.getElementById('myChart');
             const ctx = canvas.getContext('2d');
 
             // Filter data by time range
             let filteredData = [...quizData].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-            if (!showAllData && filteredData.length > 0) {
-                const thirtyDaysAgo = new Date();
-                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-                filteredData = filteredData.filter(entry => new Date(entry.timestamp) >= thirtyDaysAgo);
+            if (timeRange !== 'all' && filteredData.length > 0) {
+                const now = new Date();
+                let cutoffDate = new Date();
+                
+                if (timeRange === '1w') {
+                    cutoffDate.setDate(now.getDate() - 7);
+                } else if (timeRange === '1m') {
+                    cutoffDate.setDate(now.getDate() - 30);
+                }
+                
+                filteredData = filteredData.filter(entry => new Date(entry.timestamp) >= cutoffDate);
             }
 
             let chartData;
@@ -990,10 +1190,10 @@
                 chartData = filteredData.map(entry => {
                     const timestamp = new Date(entry.timestamp);
 
-                    // Dynamically filter questions by color and type
-                    const cyanQuestions = questions.filter(q => q.color === 'C' && q.type === 'yesno');
-                    const magentaQuestions = questions.filter(q => q.color === 'M' && q.type === 'yesno');
-                    const yellowQuestions = questions.filter(q => q.color === 'Y' && q.type === 'yesno');
+                    // Dynamically filter questions by color and type (exclude intimacy from percentage)
+                    const cyanQuestions = questions.filter(q => q.color === 'C' && q.type === 'yesno' && !q.intimacyType);
+                    const magentaQuestions = questions.filter(q => q.color === 'M' && q.type === 'yesno' && !q.intimacyType);
+                    const yellowQuestions = questions.filter(q => q.color === 'Y' && q.type === 'yesno' && !q.intimacyType);
 
                     // Count "yes" responses for each color
                     const cyanYes = cyanQuestions.filter(q => entry[q.id] === 'yes').length;
@@ -1013,9 +1213,13 @@
                     const harmfulSubstanceQuestions = questions.filter(q => q.substanceType === 'harmful');
                     const hasSubstanceUse = harmfulSubstanceQuestions.some(q => entry[q.id] === 'no');
 
-                    // Detect nootropics use (answered "yes")
+                    // Detect nootropics use (answered "no" to "nootropics free?")
                     const nootropicQuestions = questions.filter(q => q.substanceType === 'nootropic');
-                    const hasNootropics = nootropicQuestions.some(q => entry[q.id] === 'yes');
+                    const hasNootropics = nootropicQuestions.some(q => entry[q.id] === 'no');
+
+                    // Detect intimacy
+                    const hasSex = entry['d10'] === 'yes';
+                    const hasSelfSex = entry['d11'] === 'yes';
 
                     return {
                         x: timestamp,
@@ -1025,7 +1229,9 @@
                         yellow: yellowPercent,
                         rating: ratingPercent,
                         hasSubstanceUse: hasSubstanceUse,
-                        hasNootropics: hasNootropics
+                        hasNootropics: hasNootropics,
+                        hasSex: hasSex,
+                        hasSelfSex: hasSelfSex
                     };
                 });
             } else {
@@ -1034,10 +1240,11 @@
                     const timestamp = new Date(entry.timestamp);
 
                     // Get hours from specific question IDs
-                    const pinkHours = parseFloat(entry['h1']) || 0;
-                    const studioHours = parseFloat(entry['h2']) || 0;
-                    const creativeHours = parseFloat(entry['h3']) || 0;
+                    const sleepHours = parseFloat(entry['h5']) || 0;
                     const healthHours = parseFloat(entry['h4']) || 0;
+                    const studioHours = parseFloat(entry['h2']) || 0;
+                    const pinkHours = parseFloat(entry['h1']) || 0;
+                    const creativeHours = parseFloat(entry['h3']) || 0;
 
                     // Convert rating to 0-24 scale for overlay
                     const rating = parseFloat(entry['rating']);
@@ -1046,10 +1253,11 @@
                     return {
                         x: timestamp,
                         originalTimestamp: entry.timestamp,
-                        magenta: pinkHours,
-                        cyan: studioHours,
-                        yellow: creativeHours,
+                        black: sleepHours,
                         white: healthHours,
+                        cyan: studioHours,
+                        magenta: pinkHours,
+                        yellow: creativeHours,
                         rating: ratingScaled
                     };
                 });
@@ -1059,9 +1267,9 @@
                 chart.destroy();
             }
 
-            // Substance line plugin (only for percent mode)
-            const substanceLinePlugin = {
-                id: 'substanceLines',
+            // Indicator lines plugin
+            const indicatorLinePlugin = {
+                id: 'indicatorLines',
                 beforeDatasetsDraw(chart) {
                     if (chartMode !== 'percent') return;
                     
@@ -1085,14 +1293,39 @@
                                 ctx.restore();
                             }
                             
-                            // Draw green line for nootropics
+                            // Draw green line for nootropics (when NOT free)
                             if (dataPoint.hasNootropics) {
                                 ctx.save();
                                 ctx.strokeStyle = 'rgba(0, 255, 0, 0.6)';
                                 ctx.lineWidth = 2;
                                 ctx.beginPath();
-                                ctx.moveTo(xPos + 3, top); // Offset slightly so both lines visible
+                                ctx.moveTo(xPos + 3, top);
                                 ctx.lineTo(xPos + 3, bottom);
+                                ctx.stroke();
+                                ctx.restore();
+                            }
+                            
+                            // Draw white solid line for sex
+                            if (dataPoint.hasSex) {
+                                ctx.save();
+                                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                                ctx.lineWidth = 2;
+                                ctx.beginPath();
+                                ctx.moveTo(xPos + 6, top);
+                                ctx.lineTo(xPos + 6, bottom);
+                                ctx.stroke();
+                                ctx.restore();
+                            }
+                            
+                            // Draw white dashed line for self sex
+                            if (dataPoint.hasSelfSex) {
+                                ctx.save();
+                                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                                ctx.lineWidth = 2;
+                                ctx.setLineDash([5, 5]);
+                                ctx.beginPath();
+                                ctx.moveTo(xPos + 9, top);
+                                ctx.lineTo(xPos + 9, bottom);
                                 ctx.stroke();
                                 ctx.restore();
                             }
@@ -1147,28 +1380,19 @@
                 }
             };
 
+            // Percent mode: line order (back to front): white, yellow, cyan, magenta
             const datasets = chartMode === 'percent' ? [
                 {
-                    label: 'Cyan',
-                    data: chartData.map(d => ({ x: d.x, y: d.cyan })),
-                    borderColor: '#00FFFF',
-                    backgroundColor: '#00FFFF',
+                    label: 'Rating',
+                    data: chartData.map(d => ({ x: d.x, y: d.rating })),
+                    borderColor: '#FFFFFF',
+                    backgroundColor: '#FFFFFF',
                     borderWidth: 3,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
+                    pointRadius: 2,
+                    pointHoverRadius: 4,
                     tension: 0.1,
-                    spanGaps: false
-                },
-                {
-                    label: 'Magenta',
-                    data: chartData.map(d => ({ x: d.x, y: d.magenta })),
-                    borderColor: '#FF00FF',
-                    backgroundColor: '#FF00FF',
-                    borderWidth: 3,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    tension: 0.1,
-                    spanGaps: false
+                    spanGaps: false,
+                    order: 4
                 },
                 {
                     label: 'Yellow',
@@ -1176,52 +1400,63 @@
                     borderColor: '#FFFF00',
                     backgroundColor: '#FFFF00',
                     borderWidth: 3,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
+                    pointRadius: 2,
+                    pointHoverRadius: 4,
                     tension: 0.1,
-                    spanGaps: false
+                    spanGaps: false,
+                    order: 3
                 },
                 {
-                    label: 'Rating',
-                    data: chartData.map(d => ({ x: d.x, y: d.rating })),
-                    borderColor: '#FFFFFF',
-                    backgroundColor: '#FFFFFF',
+                    label: 'Cyan',
+                    data: chartData.map(d => ({ x: d.x, y: d.cyan })),
+                    borderColor: '#00FFFF',
+                    backgroundColor: '#00FFFF',
                     borderWidth: 3,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
+                    pointRadius: 2,
+                    pointHoverRadius: 4,
                     tension: 0.1,
-                    spanGaps: false
+                    spanGaps: false,
+                    order: 2
+                },
+                {
+                    label: 'Magenta',
+                    data: chartData.map(d => ({ x: d.x, y: d.magenta })),
+                    borderColor: '#FF00FF',
+                    backgroundColor: '#FF00FF',
+                    borderWidth: 3,
+                    pointRadius: 2,
+                    pointHoverRadius: 4,
+                    tension: 0.1,
+                    spanGaps: false,
+                    order: 1
                 }
             ] : [
+                // Hours mode: rating line behind bars, no dots
                 {
-                    label: 'pinkProportion',
-                    data: chartData.map(d => ({ x: d.x, y: d.magenta })),
-                    backgroundColor: '#FF00FF',
-                    borderColor: '#FF00FF',
-                    borderWidth: 0,
-                    type: 'bar',
-                    stack: 'hours',
-                    barPercentage: 0.7
+                    label: 'Daily Rating',
+                    data: chartData.map(d => ({ x: d.x, y: d.rating })),
+                    borderColor: '#FFFFFF',
+                    backgroundColor: 'transparent',
+                    borderWidth: 3,
+                    pointRadius: 0,
+                    pointHoverRadius: 0,
+                    tension: 0.1,
+                    type: 'line',
+                    spanGaps: false,
+                    order: 6
                 },
+                // Stack order (bottom to top): black, white, cyan, magenta, yellow
                 {
-                    label: 'Studio',
-                    data: chartData.map(d => ({ x: d.x, y: d.cyan })),
-                    backgroundColor: '#00FFFF',
-                    borderColor: '#00FFFF',
-                    borderWidth: 0,
+                    label: 'Sleep',
+                    data: chartData.map(d => ({ x: d.x, y: d.black })),
+                    backgroundColor: '#000000',
+                    borderColor: '#333333',
+                    borderWidth: 1,
                     type: 'bar',
                     stack: 'hours',
-                    barPercentage: 0.7
-                },
-                {
-                    label: 'Creative',
-                    data: chartData.map(d => ({ x: d.x, y: d.yellow })),
-                    backgroundColor: '#FFFF00',
-                    borderColor: '#FFFF00',
-                    borderWidth: 0,
-                    type: 'bar',
-                    stack: 'hours',
-                    barPercentage: 0.7
+                    barPercentage: 1.0,
+                    categoryPercentage: 1.0,
+                    order: 5
                 },
                 {
                     label: 'Health',
@@ -1231,20 +1466,45 @@
                     borderWidth: 0,
                     type: 'bar',
                     stack: 'hours',
-                    barPercentage: 0.7
+                    barPercentage: 1.0,
+                    categoryPercentage: 1.0,
+                    order: 4
                 },
                 {
-                    label: 'Daily Rating',
-                    data: chartData.map(d => ({ x: d.x, y: d.rating })),
-                    borderColor: '#FFFFFF',
-                    backgroundColor: 'transparent',
-                    borderWidth: 3,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    tension: 0.1,
-                    type: 'line',
-                    spanGaps: false,
-                    order: 0
+                    label: 'Studio',
+                    data: chartData.map(d => ({ x: d.x, y: d.cyan })),
+                    backgroundColor: '#00FFFF',
+                    borderColor: '#00FFFF',
+                    borderWidth: 0,
+                    type: 'bar',
+                    stack: 'hours',
+                    barPercentage: 1.0,
+                    categoryPercentage: 1.0,
+                    order: 3
+                },
+                {
+                    label: 'pinkProportion',
+                    data: chartData.map(d => ({ x: d.x, y: d.magenta })),
+                    backgroundColor: '#FF00FF',
+                    borderColor: '#FF00FF',
+                    borderWidth: 0,
+                    type: 'bar',
+                    stack: 'hours',
+                    barPercentage: 1.0,
+                    categoryPercentage: 1.0,
+                    order: 2
+                },
+                {
+                    label: 'Creative',
+                    data: chartData.map(d => ({ x: d.x, y: d.yellow })),
+                    backgroundColor: '#FFFF00',
+                    borderColor: '#FFFF00',
+                    borderWidth: 0,
+                    type: 'bar',
+                    stack: 'hours',
+                    barPercentage: 1.0,
+                    categoryPercentage: 1.0,
+                    order: 1
                 }
             ];
 
@@ -1288,11 +1548,12 @@
                             },
                             grid: {
                                 display: false
-                            }
+                            },
+                            stacked: chartMode === 'hours'
                         }
                     }
                 },
-                plugins: [substanceLinePlugin]
+                plugins: [indicatorLinePlugin]
             });
         }
 
@@ -1471,10 +1732,18 @@
 
         async function completeQuiz() {
             const timestamp = new Date().toISOString();
+            
+            // Get location
+            const location = await getLocation();
+            
             const data = {
                 timestamp,
                 ...responses
             };
+            
+            if (location) {
+                data.loc = location;
+            }
 
             await saveToSheet(data);
             showScreen('chartScreen');
