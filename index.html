@@ -575,7 +575,7 @@
     <!-- Login Screen -->
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
-        <div class="version">v1.0.5</div>
+        <div class="version">v1.0.6</div>
         <button class="btn" onclick="handleLogin()">sign in with google</button>
     </div>
 
@@ -1402,24 +1402,21 @@
                     const dotRadius = 10;
                     const dotsPerGap = 3;
                     
-                    // Only process the colored lines (not the rating line which is index 0)
-                    const coloredDatasets = datasets.slice(1); // yellow, cyan, magenta
-                    const coloredMetas = metas.slice(1);
-                    
-                    const numPoints = coloredDatasets[0].data.length;
+                    // Include all 4 lines: rating (white), yellow, cyan, magenta
+                    const numPoints = datasets[0].data.length;
                     
                     for (let pointIdx = 0; pointIdx < numPoints; pointIdx++) {
                         // Get Y position of each line at this data point
                         const linesAtPoint = [];
                         
-                        for (let idx = 0; idx < coloredDatasets.length; idx++) {
-                            const meta = coloredMetas[idx];
+                        for (let idx = 0; idx < datasets.length; idx++) {
+                            const meta = metas[idx];
                             const point = meta.data[pointIdx];
                             if (point && point.y !== null && !isNaN(point.y)) {
                                 linesAtPoint.push({
                                     x: point.x,
                                     y: point.y,
-                                    color: coloredDatasets[idx].borderColor
+                                    color: datasets[idx].borderColor
                                 });
                             }
                         }
@@ -1752,11 +1749,7 @@
                                 tooltipFormat: 'MMM d, h:mm a'
                             },
                             ticks: {
-                                source: 'data',
-                                color: '#FFFFFF',
-                                font: { size: 10 },
-                                maxRotation: 90,
-                                minRotation: 90
+                                display: false
                             },
                             grid: {
                                 display: false
