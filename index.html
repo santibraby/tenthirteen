@@ -575,7 +575,7 @@
     <!-- Login Screen -->
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
-        <div class="version">v1.1.1</div>
+        <div class="version">v1.1.2</div>
         <button class="btn" onclick="handleLogin()">sign in with google</button>
     </div>
 
@@ -637,9 +637,8 @@
         // QUESTIONS CONFIGURATION
         // ============================================
         const QUESTIONS = [
-            // Morning (m1-m13, skipping m11 which was removed)
+            // Morning (m1-m13, skipping m2 and m11 which were removed)
             { id: 'm1', section: 'morning', text: 'make bed?', color: 'M' },
-            { id: 'm2', section: 'morning', text: 'brush teeth AM?', color: 'C' },
             { id: 'm3', section: 'morning', text: 'colostrum AM?', color: 'C' },
             { id: 'm4', section: 'morning', text: 'morning walk?', color: 'M' },
             { id: 'm5', section: 'morning', text: 'yogurt / fruit / granola?', color: 'C' },
@@ -651,13 +650,13 @@
             { id: 'm12', section: 'morning', text: 'rise at 6:30?', color: 'M' },
             { id: 'm13', section: 'morning', text: 'daily vitamin?', color: 'M' },
             
-            // Evening (e1-e9, skipping e6 which was removed)
+            // Evening (e1-e10, skipping e6 and e7 which were removed)
             { id: 'e1', section: 'evening', text: 'colostrum PM?', color: 'C' },
             { id: 'e2', section: 'evening', text: 'evening workout?', color: 'C' },
             { id: 'e3', section: 'evening', text: 'shower PM?', color: 'C' },
             { id: 'e4', section: 'evening', text: 'hair PM?', color: 'C' },
             { id: 'e5', section: 'evening', text: 'face / ear PM?', color: 'C' },
-            { id: 'e7', section: 'evening', text: 'brush teeth PM?', color: 'C' },
+            { id: 'e10', section: 'evening', text: 'drink bottle of water?', color: 'C' },
             { id: 'e8', section: 'evening', text: 'read?', color: 'M' },
             { id: 'e9', section: 'evening', text: 'recline at 10:30?', color: 'M' },
             
@@ -677,6 +676,16 @@
             // Daily intimacy (d10-d11)
             { id: 'd10', section: 'daily', text: 'sex?', color: 'W', intimacyType: 'sex' },
             { id: 'd11', section: 'daily', text: 'self sex?', color: 'W', intimacyType: 'selfSex' },
+            
+            // Relationship effort (d12-d16)
+            { id: 'd12', section: 'daily', text: 'initiated affection?', color: 'Y' },
+            { id: 'd13', section: 'daily', text: 'expressed appreciation?', color: 'Y' },
+            { id: 'd14', section: 'daily', text: 'let something go?', color: 'Y' },
+            { id: 'd15', section: 'daily', text: 'real conversation?', color: 'Y' },
+            { id: 'd16', section: 'daily', text: 'conflict with Maria?', color: 'Y', substanceType: 'conflict' },
+            
+            // Home (d17)
+            { id: 'd17', section: 'daily', text: 'left it better?', color: 'C' },
             
             // Hours (h1-h5)
             { id: 'h1', section: 'hours', text: 'pinkProportion hours', color: 'M' },
@@ -1256,6 +1265,10 @@
                     const nootropicQuestions = questions.filter(q => q.substanceType === 'nootropic');
                     const hasNootropics = nootropicQuestions.some(q => entry[q.id] === 'yes');
 
+                    // Detect conflict (answered "yes" to conflict questions)
+                    const conflictQuestions = questions.filter(q => q.substanceType === 'conflict');
+                    const hasConflict = conflictQuestions.some(q => entry[q.id] === 'yes');
+
                     // Detect intimacy
                     const hasSex = entry['d10'] === 'yes';
                     const hasSelfSex = entry['d11'] === 'yes';
@@ -1269,6 +1282,7 @@
                         rating: ratingPercent,
                         hasSubstanceUse: hasSubstanceUse,
                         hasNootropics: hasNootropics,
+                        hasConflict: hasConflict,
                         hasSex: hasSex,
                         hasSelfSex: hasSelfSex
                     };
@@ -1332,14 +1346,27 @@
                                 ctx.restore();
                             }
                             
+                            // Draw red dashed line for conflict
+                            if (dataPoint.hasConflict) {
+                                ctx.save();
+                                ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+                                ctx.lineWidth = 2;
+                                ctx.setLineDash([5, 5]);
+                                ctx.beginPath();
+                                ctx.moveTo(xPos + 3, top);
+                                ctx.lineTo(xPos + 3, bottom);
+                                ctx.stroke();
+                                ctx.restore();
+                            }
+                            
                             // Draw green line for nootropics (when NOT free)
                             if (dataPoint.hasNootropics) {
                                 ctx.save();
                                 ctx.strokeStyle = 'rgba(0, 255, 0, 0.6)';
                                 ctx.lineWidth = 2;
                                 ctx.beginPath();
-                                ctx.moveTo(xPos + 3, top);
-                                ctx.lineTo(xPos + 3, bottom);
+                                ctx.moveTo(xPos + 6, top);
+                                ctx.lineTo(xPos + 6, bottom);
                                 ctx.stroke();
                                 ctx.restore();
                             }
@@ -1350,8 +1377,8 @@
                                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
                                 ctx.lineWidth = 2;
                                 ctx.beginPath();
-                                ctx.moveTo(xPos + 6, top);
-                                ctx.lineTo(xPos + 6, bottom);
+                                ctx.moveTo(xPos + 9, top);
+                                ctx.lineTo(xPos + 9, bottom);
                                 ctx.stroke();
                                 ctx.restore();
                             }
@@ -1363,8 +1390,8 @@
                                 ctx.lineWidth = 2;
                                 ctx.setLineDash([5, 5]);
                                 ctx.beginPath();
-                                ctx.moveTo(xPos + 9, top);
-                                ctx.lineTo(xPos + 9, bottom);
+                                ctx.moveTo(xPos + 12, top);
+                                ctx.lineTo(xPos + 12, bottom);
                                 ctx.stroke();
                                 ctx.restore();
                             }
