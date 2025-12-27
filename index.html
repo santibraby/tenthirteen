@@ -149,7 +149,7 @@
         .chart-container {
             flex: 1;
             position: relative;
-            padding: 0 20px 20px 20px;
+            padding: 0 20px 90px 20px;
             min-height: 0;
             height: calc(100% - 80px);
         }
@@ -208,6 +208,30 @@
             border-radius: 20px;
             padding: 4px;
             gap: 4px;
+        }
+
+        .view-toggle-bottom {
+            position: absolute;
+            bottom: 50px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            background-color: #1A1A1A;
+            border-radius: 20px;
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .date-range {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            font-size: 12px;
+            color: #666;
         }
 
         .view-btn {
@@ -551,7 +575,7 @@
     <!-- Login Screen -->
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
-        <div class="version">v1.0.4</div>
+        <div class="version">v1.0.5</div>
         <button class="btn" onclick="handleLogin()">sign in with google</button>
     </div>
 
@@ -560,11 +584,6 @@
         <div class="chart-wrapper">
             <div class="header">
                 <div class="title" onclick="startQuiz()">10:13</div>
-                <div class="view-toggle-header">
-                    <button class="view-btn active" id="viewPercent" onclick="setChartMode('percent')">%</button>
-                    <button class="view-btn" id="viewHours" onclick="setChartMode('hours')">hours</button>
-                    <button class="view-btn" id="viewLoc" onclick="setChartMode('loc')">loc</button>
-                </div>
                 <div class="toggle">
                     <button class="toggle-btn active" id="toggle1w" onclick="setTimeRange('1w')">1w</button>
                     <button class="toggle-btn" id="toggle1m" onclick="setTimeRange('1m')">1m</button>
@@ -581,6 +600,15 @@
                         <span>oldest</span>
                         <span>newest</span>
                     </div>
+                </div>
+                <div class="view-toggle-bottom" id="viewToggle">
+                    <button class="view-btn active" id="viewPercent" onclick="setChartMode('percent')">%</button>
+                    <button class="view-btn" id="viewHours" onclick="setChartMode('hours')">hours</button>
+                    <button class="view-btn" id="viewLoc" onclick="setChartMode('loc')">loc</button>
+                </div>
+                <div class="date-range" id="dateRange">
+                    <span id="dateStart"></span>
+                    <span id="dateEnd"></span>
                 </div>
             </div>
         </div>
@@ -964,11 +992,13 @@
             const canvas = document.getElementById('myChart');
             const globeViz = document.getElementById('globeViz');
             const globeLegend = document.getElementById('globeLegend');
+            const dateRange = document.getElementById('dateRange');
             
             if (mode === 'loc') {
                 canvas.style.display = 'none';
                 globeViz.classList.add('active');
                 globeLegend.classList.add('active');
+                dateRange.style.display = 'none';
                 // Small delay to ensure container is visible before initializing globe
                 setTimeout(() => {
                     updateGlobe();
@@ -977,6 +1007,7 @@
                 canvas.style.display = 'block';
                 globeViz.classList.remove('active');
                 globeLegend.classList.remove('active');
+                dateRange.style.display = 'flex';
                 updateChart();
             }
         }
@@ -1368,7 +1399,7 @@
                     const datasets = chart.data.datasets;
                     const metas = datasets.map((ds, i) => chart.getDatasetMeta(i));
                     
-                    const dotRadius = 5;
+                    const dotRadius = 10;
                     const dotsPerGap = 3;
                     
                     // Only process the colored lines (not the rating line which is index 0)
@@ -1443,15 +1474,15 @@
                     const datasets = chart.data.datasets;
                     const metas = datasets.map((ds, i) => chart.getDatasetMeta(i));
                     
-                    const dotRadius = 5;
+                    const dotRadius = 10;
                     const dotsPerGap = 3;
                     
                     // Layer colors (bottom to top): sleep(black), health(white), studio(cyan), pink(magenta), creative(yellow)
                     const layerColors = ['#000000', '#FFFFFF', '#00FFFF', '#FF00FF', '#FFFF00'];
                     
-                    // Skip rating line (index 0), process stacked layers (indices 1-5)
-                    const stackedDatasets = datasets.slice(1);
-                    const stackedMetas = metas.slice(1);
+                    // Process stacked layers (first 5 datasets), skip rating line (last dataset)
+                    const stackedDatasets = datasets.slice(0, 5);
+                    const stackedMetas = metas.slice(0, 5);
                     const numPoints = stackedDatasets[0].data.length;
                     
                     for (let pointIdx = 0; pointIdx < numPoints; pointIdx++) {
@@ -1615,22 +1646,6 @@
                 }
             ] : [
                 // Hours mode: Stacked lines with transparent fill, dots drawn by plugin
-                // Rating line (dashed white)
-                {
-                    label: 'Daily Rating',
-                    data: chartData.map(d => ({ x: d.x, y: d.rating })),
-                    borderColor: '#FFFFFF',
-                    backgroundColor: 'transparent',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    pointRadius: 0,
-                    pointHoverRadius: 0,
-                    tension: 0.4,
-                    type: 'line',
-                    fill: false,
-                    spanGaps: false,
-                    order: 0
-                },
                 // Stacked layers (bottom to top): sleep, health, studio, pink, creative
                 {
                     label: 'Sleep',
@@ -1686,6 +1701,22 @@
                     tension: 0.4,
                     stack: 'hours',
                     order: 1
+                },
+                // Rating line (dashed white) - drawn on top
+                {
+                    label: 'Daily Rating',
+                    data: chartData.map(d => ({ x: d.x, y: d.rating })),
+                    borderColor: '#FFFFFF',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    pointRadius: 0,
+                    pointHoverRadius: 0,
+                    tension: 0.4,
+                    type: 'line',
+                    fill: false,
+                    spanGaps: false,
+                    order: 0
                 }
             ];
 
@@ -1736,6 +1767,18 @@
                 },
                 plugins: [indicatorLinePlugin, percentDotsPlugin, hoursDotsPlugin]
             });
+
+            // Update date range display
+            if (chartData.length > 0) {
+                const startDate = chartData[0].x;
+                const endDate = chartData[chartData.length - 1].x;
+                const formatDate = (d) => `${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(-2)}`;
+                document.getElementById('dateStart').textContent = formatDate(startDate);
+                document.getElementById('dateEnd').textContent = formatDate(endDate);
+            } else {
+                document.getElementById('dateStart').textContent = '';
+                document.getElementById('dateEnd').textContent = '';
+            }
         }
 
         // ============================================
