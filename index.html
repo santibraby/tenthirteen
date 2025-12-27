@@ -575,7 +575,7 @@
     <!-- Login Screen -->
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
-        <div class="version">v1.0.6</div>
+        <div class="version">v1.0.8</div>
         <button class="btn" onclick="handleLogin()">sign in with google</button>
     </div>
 
@@ -1400,7 +1400,7 @@
                     const metas = datasets.map((ds, i) => chart.getDatasetMeta(i));
                     
                     const dotRadius = 10;
-                    const dotsPerGap = 3;
+                    const dotsPerGap = 5;
                     
                     // Include all 4 lines: rating (white), yellow, cyan, magenta
                     const numPoints = datasets[0].data.length;
@@ -1472,9 +1472,9 @@
                     const metas = datasets.map((ds, i) => chart.getDatasetMeta(i));
                     
                     const dotRadius = 10;
-                    const dotsPerGap = 3;
+                    const dotsPerGap = 5;
                     
-                    // Layer colors (bottom to top): sleep(black), health(white), studio(cyan), pink(magenta), creative(yellow)
+                    // Layer colors matching dataset order: sleep(black), health(white), studio(cyan), pink(magenta), creative(yellow)
                     const layerColors = ['#000000', '#FFFFFF', '#00FFFF', '#FF00FF', '#FFFF00'];
                     
                     // Process stacked layers (first 5 datasets), skip rating line (last dataset)
@@ -1502,16 +1502,19 @@
                         const x = layerTops[0].x;
                         const bottom = scales.y.getPixelForValue(0);
                         
-                        // Build boundaries from bottom (0) up
+                        // Sort layerTops by Y position (descending = bottom of screen first, which is larger Y)
+                        layerTops.sort((a, b) => b.y - a.y);
+                        
+                        // Build boundaries from bottom (baseline) up, using sorted layer positions and colors
                         const boundaries = [{ y: bottom, color: '#000000' }];
                         for (let i = 0; i < layerTops.length; i++) {
                             boundaries.push({
                                 y: layerTops[i].y,
-                                color: layerColors[i]
+                                color: layerTops[i].color
                             });
                         }
                         
-                        // Draw 3 blended dots between each boundary pair FIRST
+                        // Draw 5 blended dots between each boundary pair FIRST
                         for (let b = 0; b < boundaries.length - 1; b++) {
                             const bottomBound = boundaries[b];
                             const topBound = boundaries[b + 1];
@@ -1643,7 +1646,8 @@
                 }
             ] : [
                 // Hours mode: Stacked lines with transparent fill, dots drawn by plugin
-                // Stacked layers (bottom to top): sleep, health, studio, pink, creative
+                // Dataset order determines visual stacking - first = bottom, last = top
+                // Desired bottom-to-top: black(sleep), white(health), cyan(studio), magenta(pink), yellow(creative)
                 {
                     label: 'Sleep',
                     data: chartData.map(d => ({ x: d.x, y: d.black })),
