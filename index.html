@@ -10,8 +10,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Karla:wght@700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://unpkg.com/globe.gl@2.27.0/dist/globe.gl.min.js"></script>
     <style>
         * {
@@ -152,6 +150,13 @@
             padding: 0 20px 90px 20px;
             min-height: 0;
             height: calc(100% - 80px);
+        }
+
+        #myChart {
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: pointer;
         }
 
         #globeViz {
@@ -575,7 +580,7 @@
     <!-- Login Screen -->
     <div id="loginScreen" class="login-screen">
         <div class="logo">10:13</div>
-        <div class="version">v1.1.2</div>
+        <div class="version">v1.1.3</div>
         <button class="btn" onclick="handleLogin()">sign in with google</button>
     </div>
 
@@ -742,11 +747,16 @@
         let timeRange = '1w'; // '1w', '1m', or 'all'
         let chartMode = 'percent'; // 'percent', 'hours', or 'loc'
         let quizData = [];
-        let chart = null;
         let globe = null;
         let recognition = null;
         let isRecording = false;
         let isAuthInitialized = false;
+        
+        // Chart state for click detection
+        let chartDataPoints = [];
+        let chartPadding = { top: 20, right: 20, bottom: 40, left: 45 };
+        let chartWidth = 0;
+        let chartHeight = 0;
 
         // Process questions to add type information
         const questions = QUESTIONS.map(q => {
@@ -762,6 +772,80 @@
         });
 
         // ============================================
+        // CHART DRAWING UTILITIES
+        // ============================================
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 255, g: 255, b: 255 };
+        }
+
+        function rgba(hex, alpha) {
+            const { r, g, b } = hexToRgb(hex);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        function setupCanvas(canvas) {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+            return { ctx, width: rect.width, height: rect.height };
+        }
+
+        function getControlPoints(points, tension = 0.3) {
+            const cp = [];
+            for (let i = 0; i < points.length; i++) {
+                const p0 = points[i === 0 ? 0 : i - 1];
+                const p1 = points[i];
+                const p2 = points[i === points.length - 1 ? i : i + 1];
+                const p3 = points[i >= points.length - 2 ? points.length - 1 : i + 2];
+                cp.push({
+                    cp1x: p1.x + (p2.x - p0.x) * tension,
+                    cp1y: p1.y + (p2.y - p0.y) * tension,
+                    cp2x: p2.x - (p3.x - p1.x) * tension,
+                    cp2y: p2.y - (p3.y - p1.y) * tension
+                });
+            }
+            return cp;
+        }
+
+        function drawSmoothLine(ctx, points) {
+            if (points.length < 2) return;
+            const cp = getControlPoints(points);
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            for (let i = 0; i < points.length - 1; i++) {
+                ctx.bezierCurveTo(cp[i].cp1x, cp[i].cp1y, cp[i].cp2x, cp[i].cp2y, points[i + 1].x, points[i + 1].y);
+            }
+            ctx.stroke();
+        }
+
+        function drawSmoothArea(ctx, topPoints, bottomPoints) {
+            if (topPoints.length < 2) return;
+            const cpTop = getControlPoints(topPoints);
+            const bottomRev = [...bottomPoints].reverse();
+            const cpBot = getControlPoints(bottomRev);
+
+            ctx.beginPath();
+            ctx.moveTo(topPoints[0].x, topPoints[0].y);
+            for (let i = 0; i < topPoints.length - 1; i++) {
+                ctx.bezierCurveTo(cpTop[i].cp1x, cpTop[i].cp1y, cpTop[i].cp2x, cpTop[i].cp2y, topPoints[i + 1].x, topPoints[i + 1].y);
+            }
+            ctx.lineTo(bottomRev[0].x, bottomRev[0].y);
+            for (let i = 0; i < bottomRev.length - 1; i++) {
+                ctx.bezierCurveTo(cpBot[i].cp1x, cpBot[i].cp1y, cpBot[i].cp2x, cpBot[i].cp2y, bottomRev[i + 1].x, bottomRev[i + 1].y);
+            }
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        // ============================================
         // GOOGLE AUTH
         // ============================================
         function initializeGoogleAuth() {
@@ -771,7 +855,6 @@
                 loginBtn.textContent = 'loading...';
             }
 
-            // Wait for google.accounts to be available
             const waitForGoogleAPIs = setInterval(() => {
                 if (typeof google !== 'undefined' && google.accounts) {
                     clearInterval(waitForGoogleAPIs);
@@ -799,7 +882,6 @@
 
                 isAuthInitialized = true;
                 
-                // Enable the login button
                 const loginBtn = document.querySelector('.btn');
                 if (loginBtn) {
                     loginBtn.disabled = false;
@@ -817,7 +899,6 @@
             }
         }
 
-        // Make handleLogin globally accessible
         window.handleLogin = function() {
             if (!isAuthInitialized || !tokenClient) {
                 alert('Authentication is still loading. Please wait a moment and try again.');
@@ -865,7 +946,6 @@
 
         async function saveToSheet(data) {
             try {
-                // Get existing headers
                 const checkResponse = await fetch(
                     `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!1:1`,
                     {
@@ -878,10 +958,8 @@
                 const checkData = await checkResponse.json();
                 let existingHeaders = checkData.values?.[0] || [];
 
-                // Build expected headers: timestamp + all question IDs + loc
                 const expectedHeaders = ['timestamp', ...questions.map(q => q.id), 'loc'];
 
-                // Merge headers: keep all existing + add any new ones
                 const mergedHeaders = [...existingHeaders];
                 expectedHeaders.forEach(header => {
                     if (!mergedHeaders.includes(header)) {
@@ -889,7 +967,6 @@
                     }
                 });
 
-                // If headers changed, update the header row
                 if (mergedHeaders.length !== existingHeaders.length || existingHeaders.length === 0) {
                     console.log('Updating headers:', mergedHeaders);
                     await fetch(
@@ -907,7 +984,6 @@
                     );
                 }
 
-                // Build data row matching merged headers
                 const row = mergedHeaders.map(header => {
                     if (data[header] !== undefined) {
                         return data[header];
@@ -915,7 +991,6 @@
                     return '';
                 });
 
-                // Append data row
                 await fetch(
                     `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A:ZZ:append?valueInputOption=RAW`,
                     {
@@ -964,7 +1039,6 @@
         // UI NAVIGATION
         // ============================================
         function showScreen(screenId) {
-            // Clean up when leaving quiz
             if (screenId !== 'quizScreen') {
                 stopRecording();
                 responses = {};
@@ -976,6 +1050,8 @@
 
             if (screenId === 'chartScreen') {
                 document.getElementById('chartScreen').classList.add('active');
+                // Redraw chart after screen is visible
+                setTimeout(updateChart, 50);
             } else if (screenId === 'quizScreen') {
                 document.getElementById('quizScreen').classList.add('active');
             } else {
@@ -997,7 +1073,6 @@
             document.getElementById('viewHours').classList.toggle('active', mode === 'hours');
             document.getElementById('viewLoc').classList.toggle('active', mode === 'loc');
             
-            // Toggle visibility of chart canvas and globe
             const canvas = document.getElementById('myChart');
             const globeViz = document.getElementById('globeViz');
             const globeLegend = document.getElementById('globeLegend');
@@ -1008,7 +1083,6 @@
                 globeViz.classList.add('active');
                 globeLegend.classList.add('active');
                 dateRange.style.display = 'none';
-                // Small delay to ensure container is visible before initializing globe
                 setTimeout(() => {
                     updateGlobe();
                 }, 100);
@@ -1072,7 +1146,6 @@
 
             let html = `<div class="popup-timestamp">${new Date(timestamp).toLocaleString()}</div>`;
 
-            // Group questions by section
             const sections = {};
             questions.forEach(q => {
                 if (!sections[q.section]) {
@@ -1081,7 +1154,6 @@
                 sections[q.section].push(q);
             });
 
-            // Display each section
             Object.keys(sections).forEach(sectionKey => {
                 html += `<div class="popup-section">`;
                 html += `<div class="popup-section-title">${SECTION_LABELS[sectionKey]}</div>`;
@@ -1104,7 +1176,6 @@
                 html += `</div>`;
             });
 
-            // Add location if available
             if (entry.loc) {
                 html += `<div class="popup-section">`;
                 html += `<div class="popup-section-title">Location</div>`;
@@ -1124,8 +1195,6 @@
         // GLOBE RENDERING
         // ============================================
         function getGlobeColor(t) {
-            // t is 0 to 1 (oldest to newest)
-            // cyan -> magenta -> yellow
             if (t < 0.5) {
                 const r = Math.round(0 + (255 - 0) * (t * 2));
                 const g = Math.round(255 - (255 - 0) * (t * 2));
@@ -1143,18 +1212,15 @@
         function updateGlobe() {
             const container = document.getElementById('globeViz');
             
-            // Filter entries with location data
             const entriesWithLoc = quizData
                 .filter(entry => entry.loc && entry.loc.includes(','))
                 .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-            // Process entries for globe
             const points = entriesWithLoc.map((entry, index) => {
                 const [lat, lng] = entry.loc.split(',').map(Number);
                 const t = entriesWithLoc.length > 1 ? index / (entriesWithLoc.length - 1) : 1;
                 const color = getGlobeColor(t);
                 
-                // Rating -2 to +2 mapped to size 0.3 to 1.0
                 const rating = parseFloat(entry.rating) || 0;
                 const size = ((rating + 2) / 4) * 0.7 + 0.3;
                 
@@ -1167,14 +1233,12 @@
                 };
             });
 
-            // Destroy existing globe if any
             if (globe) {
                 globe._destructor && globe._destructor();
                 container.innerHTML = '';
                 globe = null;
             }
 
-            // Create new globe
             globe = Globe()
                 .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
                 .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
@@ -1190,25 +1254,35 @@
                 .atmosphereAltitude(0.15)
                 (container);
 
-            // Set initial view
             if (entriesWithLoc.length > 0) {
                 const latest = entriesWithLoc[entriesWithLoc.length - 1];
                 const [latestLat, latestLng] = latest.loc.split(',').map(Number);
                 globe.pointOfView({ lat: latestLat, lng: latestLng, altitude: 1.5 }, 1000);
             } else {
-                // Default view if no location data
                 globe.pointOfView({ lat: 20, lng: 0, altitude: 2.5 }, 1000);
             }
         }
 
         // ============================================
-        // CHART RENDERING
+        // CHART RENDERING (Custom Canvas)
         // ============================================
         function updateChart() {
             if (chartMode === 'loc') return;
             
             const canvas = document.getElementById('myChart');
-            const ctx = canvas.getContext('2d');
+            const { ctx, width, height } = setupCanvas(canvas);
+            
+            // Store dimensions for click handling
+            chartWidth = width;
+            chartHeight = height;
+            
+            const padding = chartPadding;
+            const chartW = width - padding.left - padding.right;
+            const chartH = height - padding.top - padding.bottom;
+
+            // Clear canvas
+            ctx.fillStyle = '#0D0D0D';
+            ctx.fillRect(0, 0, width, height);
 
             // Filter data by time range
             let filteredData = [...quizData].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -1226,581 +1300,367 @@
                 filteredData = filteredData.filter(entry => new Date(entry.timestamp) >= cutoffDate);
             }
 
+            if (filteredData.length === 0) {
+                ctx.fillStyle = '#666';
+                ctx.font = '14px Karla';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data for this time range', width / 2, height / 2);
+                document.getElementById('dateStart').textContent = '';
+                document.getElementById('dateEnd').textContent = '';
+                return;
+            }
+
+            // Build chart data
             let chartData;
             
             if (chartMode === 'percent') {
-                // Build percentage chart data
                 chartData = filteredData.map(entry => {
-                    const timestamp = new Date(entry.timestamp);
-
-                    // Dynamically filter questions by color and type (exclude intimacy from percentage)
                     const cyanQuestions = questions.filter(q => q.color === 'C' && q.type === 'yesno' && !q.intimacyType);
                     const magentaQuestions = questions.filter(q => q.color === 'M' && q.type === 'yesno' && !q.intimacyType);
                     const yellowQuestions = questions.filter(q => q.color === 'Y' && q.type === 'yesno' && !q.intimacyType);
 
-                    // Count answered questions (has 'yes' or 'no' response, not empty)
                     const cyanAnswered = cyanQuestions.filter(q => entry[q.id] === 'yes' || entry[q.id] === 'no').length;
                     const magentaAnswered = magentaQuestions.filter(q => entry[q.id] === 'yes' || entry[q.id] === 'no').length;
                     const yellowAnswered = yellowQuestions.filter(q => entry[q.id] === 'yes' || entry[q.id] === 'no').length;
 
-                    // Count "yes" responses for each color
                     const cyanYes = cyanQuestions.filter(q => entry[q.id] === 'yes').length;
                     const magentaYes = magentaQuestions.filter(q => entry[q.id] === 'yes').length;
                     const yellowYes = yellowQuestions.filter(q => entry[q.id] === 'yes').length;
 
-                    // Calculate percentages based on answered questions only
                     const cyanPercent = cyanAnswered > 0 ? (cyanYes / cyanAnswered) * 100 : null;
                     const magentaPercent = magentaAnswered > 0 ? (magentaYes / magentaAnswered) * 100 : null;
                     const yellowPercent = yellowAnswered > 0 ? (yellowYes / yellowAnswered) * 100 : null;
 
-                    // Convert rating to percentage scale
                     const rating = parseFloat(entry['rating']);
                     let ratingPercent = isNaN(rating) || entry['rating'] === '' ? null : ((rating + 2) / 4) * 100;
 
-                    // Detect harmful substance use (answered "no" to "free?" questions)
                     const harmfulSubstanceQuestions = questions.filter(q => q.substanceType === 'harmful');
                     const hasSubstanceUse = harmfulSubstanceQuestions.some(q => entry[q.id] === 'no');
 
-                    // Detect nootropics use (answered "yes" to nootropics)
                     const nootropicQuestions = questions.filter(q => q.substanceType === 'nootropic');
                     const hasNootropics = nootropicQuestions.some(q => entry[q.id] === 'yes');
 
-                    // Detect conflict (answered "yes" to conflict questions)
                     const conflictQuestions = questions.filter(q => q.substanceType === 'conflict');
                     const hasConflict = conflictQuestions.some(q => entry[q.id] === 'yes');
 
-                    // Detect intimacy
                     const hasSex = entry['d10'] === 'yes';
                     const hasSelfSex = entry['d11'] === 'yes';
 
                     return {
-                        x: timestamp,
                         originalTimestamp: entry.timestamp,
                         cyan: cyanPercent,
                         magenta: magentaPercent,
                         yellow: yellowPercent,
                         rating: ratingPercent,
-                        hasSubstanceUse: hasSubstanceUse,
-                        hasNootropics: hasNootropics,
-                        hasConflict: hasConflict,
-                        hasSex: hasSex,
-                        hasSelfSex: hasSelfSex
+                        hasSubstanceUse,
+                        hasNootropics,
+                        hasConflict,
+                        hasSex,
+                        hasSelfSex
                     };
                 });
-            } else {
-                // Build hours chart data
-                chartData = filteredData.map(entry => {
-                    const timestamp = new Date(entry.timestamp);
 
-                    // Get hours from specific question IDs
+                drawPercentChart(ctx, chartData, padding, chartW, chartH);
+            } else {
+                chartData = filteredData.map(entry => {
                     const sleepHours = parseFloat(entry['h5']) || 0;
                     const healthHours = parseFloat(entry['h4']) || 0;
                     const studioHours = parseFloat(entry['h2']) || 0;
                     const pinkHours = parseFloat(entry['h1']) || 0;
                     const creativeHours = parseFloat(entry['h3']) || 0;
 
-                    // Convert rating to 0-24 scale for overlay
                     const rating = parseFloat(entry['rating']);
                     let ratingScaled = isNaN(rating) || entry['rating'] === '' ? null : ((rating + 2) / 4) * 24;
 
                     return {
-                        x: timestamp,
                         originalTimestamp: entry.timestamp,
-                        black: sleepHours,
-                        white: healthHours,
-                        cyan: studioHours,
-                        magenta: pinkHours,
-                        yellow: creativeHours,
+                        sleep: sleepHours,
+                        health: healthHours,
+                        studio: studioHours,
+                        pink: pinkHours,
+                        creative: creativeHours,
                         rating: ratingScaled
                     };
                 });
+
+                drawHoursChart(ctx, chartData, padding, chartW, chartH);
             }
 
-            if (chart) {
-                chart.destroy();
-            }
-
-            // Indicator lines plugin
-            const indicatorLinePlugin = {
-                id: 'indicatorLines',
-                beforeDatasetsDraw(chart) {
-                    if (chartMode !== 'percent') return;
-                    
-                    const { ctx, chartArea: { top, bottom }, scales: { x } } = chart;
-                    const dataset = chart.data.datasets[0];
-
-                    dataset.data.forEach((point, index) => {
-                        const dataPoint = chartData[index];
-                        if (dataPoint) {
-                            const xPos = x.getPixelForValue(point.x);
-                            
-                            // Draw red line for harmful substances
-                            if (dataPoint.hasSubstanceUse) {
-                                ctx.save();
-                                ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
-                                ctx.lineWidth = 2;
-                                ctx.beginPath();
-                                ctx.moveTo(xPos, top);
-                                ctx.lineTo(xPos, bottom);
-                                ctx.stroke();
-                                ctx.restore();
-                            }
-                            
-                            // Draw red dashed line for conflict
-                            if (dataPoint.hasConflict) {
-                                ctx.save();
-                                ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
-                                ctx.lineWidth = 2;
-                                ctx.setLineDash([5, 5]);
-                                ctx.beginPath();
-                                ctx.moveTo(xPos + 3, top);
-                                ctx.lineTo(xPos + 3, bottom);
-                                ctx.stroke();
-                                ctx.restore();
-                            }
-                            
-                            // Draw green line for nootropics (when NOT free)
-                            if (dataPoint.hasNootropics) {
-                                ctx.save();
-                                ctx.strokeStyle = 'rgba(0, 255, 0, 0.6)';
-                                ctx.lineWidth = 2;
-                                ctx.beginPath();
-                                ctx.moveTo(xPos + 6, top);
-                                ctx.lineTo(xPos + 6, bottom);
-                                ctx.stroke();
-                                ctx.restore();
-                            }
-                            
-                            // Draw white solid line for sex
-                            if (dataPoint.hasSex) {
-                                ctx.save();
-                                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-                                ctx.lineWidth = 2;
-                                ctx.beginPath();
-                                ctx.moveTo(xPos + 9, top);
-                                ctx.lineTo(xPos + 9, bottom);
-                                ctx.stroke();
-                                ctx.restore();
-                            }
-                            
-                            // Draw white dashed line for self sex
-                            if (dataPoint.hasSelfSex) {
-                                ctx.save();
-                                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-                                ctx.lineWidth = 2;
-                                ctx.setLineDash([5, 5]);
-                                ctx.beginPath();
-                                ctx.moveTo(xPos + 12, top);
-                                ctx.lineTo(xPos + 12, bottom);
-                                ctx.stroke();
-                                ctx.restore();
-                            }
-                        }
-                    });
-                }
-            };
-
-            // Helper function to blend two hex colors
-            function blendColors(color1, color2, ratio) {
-                const r1 = parseInt(color1.slice(1, 3), 16);
-                const g1 = parseInt(color1.slice(3, 5), 16);
-                const b1 = parseInt(color1.slice(5, 7), 16);
-                const r2 = parseInt(color2.slice(1, 3), 16);
-                const g2 = parseInt(color2.slice(3, 5), 16);
-                const b2 = parseInt(color2.slice(5, 7), 16);
-                
-                const r = Math.round(r1 + (r2 - r1) * ratio);
-                const g = Math.round(g1 + (g2 - g1) * ratio);
-                const b = Math.round(b1 + (b2 - b1) * ratio);
-                
-                return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-            }
-
-            // Percentage chart dots plugin
-            const percentDotsPlugin = {
-                id: 'percentDots',
-                afterDatasetsDraw(chart) {
-                    if (chartMode !== 'percent') return;
-                    
-                    const { ctx } = chart;
-                    const datasets = chart.data.datasets;
-                    const metas = datasets.map((ds, i) => chart.getDatasetMeta(i));
-                    
-                    const dotRadius = 7.5;  // 75% of original 10
-                    const smallDotRadius = 2.5;
-                    
-                    const numPoints = datasets[0].data.length;
-                    
-                    for (let pointIdx = 0; pointIdx < numPoints; pointIdx++) {
-                        const linesAtPoint = [];
-                        
-                        for (let idx = 0; idx < datasets.length; idx++) {
-                            const meta = metas[idx];
-                            const point = meta.data[pointIdx];
-                            if (point && point.y !== null && !isNaN(point.y)) {
-                                linesAtPoint.push({
-                                    x: point.x,
-                                    y: point.y,
-                                    color: datasets[idx].borderColor
-                                });
-                            }
-                        }
-                        
-                        if (linesAtPoint.length < 1) continue;
-                        
-                        // Draw non-white dots first
-                        for (let c = 0; c < linesAtPoint.length; c++) {
-                            const line = linesAtPoint[c];
-                            if (line.color === '#FFFFFF') continue;
-                            ctx.save();
-                            ctx.fillStyle = line.color;
-                            ctx.beginPath();
-                            ctx.arc(line.x, line.y, dotRadius, 0, Math.PI * 2);
-                            ctx.fill();
-                            ctx.restore();
-                        }
-
-                        // Draw white dots LAST (on top of everything)
-                        for (let c = 0; c < linesAtPoint.length; c++) {
-                            const line = linesAtPoint[c];
-                            if (line.color !== '#FFFFFF') continue;
-                            ctx.save();
-                            ctx.fillStyle = line.color;
-                            ctx.beginPath();
-                            ctx.arc(line.x, line.y, dotRadius, 0, Math.PI * 2);
-                            ctx.fill();
-                            ctx.restore();
-                        }
-
-                        // Draw small black dots on top of ALL datapoints
-                        for (let c = 0; c < linesAtPoint.length; c++) {
-                            const line = linesAtPoint[c];
-                            ctx.save();
-                            ctx.fillStyle = '#0D0D0D';
-                            ctx.beginPath();
-                            ctx.arc(line.x, line.y, smallDotRadius, 0, Math.PI * 2);
-                            ctx.fill();
-                            ctx.restore();
-                        }
-                    }
-                }
-            };
-
-            // Hours chart bars plugin  
-            const hoursDotsPlugin = {
-                id: 'hoursBars',
-                afterDatasetsDraw(chart) {
-                    if (chartMode !== 'hours') return;
-                    
-                    const { ctx, scales } = chart;
-                    const datasets = chart.data.datasets;
-                    const metas = datasets.map((ds, i) => chart.getDatasetMeta(i));
-                    
-                    const barWidth = 16;
-                    const cornerRadius = 8;
-                    
-                    // Fixed layer order (bottom to top): sleep(black), health(white), studio(cyan), pink(magenta), creative(yellow)
-                    const layerColors = ['#000000', '#FFFFFF', '#00FFFF', '#FF00FF', '#FFFF00'];
-                    
-                    // Process stacked layers (first 5 datasets), skip rating line (last dataset)
-                    const stackedDatasets = datasets.slice(0, 5);
-                    const numPoints = stackedDatasets[0].data.length;
-                    
-                    for (let pointIdx = 0; pointIdx < numPoints; pointIdx++) {
-                        // Get x position from first dataset's meta
-                        const firstPoint = metas[0].data[pointIdx];
-                        if (!firstPoint) continue;
-                        
-                        const x = firstPoint.x;
-                        const bottom = scales.y.getPixelForValue(0);
-                        
-                        // Calculate cumulative positions ourselves in fixed order
-                        let cumulative = 0;
-                        const boundaries = [{ y: bottom, color: '#000000' }];
-                        
-                        for (let idx = 0; idx < stackedDatasets.length; idx++) {
-                            const dataValue = stackedDatasets[idx].data[pointIdx].y || 0;
-                            cumulative += dataValue;
-                            boundaries.push({
-                                y: scales.y.getPixelForValue(cumulative),
-                                color: layerColors[idx]
-                            });
-                        }
-                        
-                        // Find the topmost non-zero layer
-                        let topLayerIdx = 0;
-                        for (let i = boundaries.length - 1; i >= 1; i--) {
-                            if (Math.abs(boundaries[i].y - boundaries[i-1].y) >= 1) {
-                                topLayerIdx = i;
-                                break;
-                            }
-                        }
-                        
-                        // Draw bars for each layer
-                        for (let i = 1; i < boundaries.length; i++) {
-                            const bottomY = boundaries[i-1].y;
-                            const topY = boundaries[i].y;
-                            const height = bottomY - topY;
-                            
-                            // Skip if layer has no height
-                            if (height < 1) continue;
-                            
-                            const color = boundaries[i].color;
-                            const isTopLayer = (i === topLayerIdx);
-                            
-                            ctx.save();
-                            ctx.fillStyle = color;
-                            ctx.beginPath();
-                            
-                            if (isTopLayer) {
-                                // Top layer: rounded top corners
-                                ctx.moveTo(x - barWidth/2, bottomY);
-                                ctx.lineTo(x - barWidth/2, topY + cornerRadius);
-                                ctx.quadraticCurveTo(x - barWidth/2, topY, x - barWidth/2 + cornerRadius, topY);
-                                ctx.lineTo(x + barWidth/2 - cornerRadius, topY);
-                                ctx.quadraticCurveTo(x + barWidth/2, topY, x + barWidth/2, topY + cornerRadius);
-                                ctx.lineTo(x + barWidth/2, bottomY);
-                                ctx.closePath();
-                            } else {
-                                // Other layers: simple rectangle
-                                ctx.rect(x - barWidth/2, topY, barWidth, height);
-                            }
-                            
-                            ctx.fill();
-                            ctx.restore();
-                        }
-                    }
-                }
-            };
-
-            const yAxisConfig = chartMode === 'percent' ? {
-                min: -5,
-                max: 105,
-                ticks: {
-                    color: '#FFFFFF',
-                    font: { size: 10 },
-                    callback: function(value) {
-                        if (value === 0 || value === 25 || value === 50 || value === 75 || value === 100) {
-                            return value;
-                        }
-                        return '';
-                    }
-                },
-                grid: {
-                    color: function(context) {
-                        const value = context.tick.value;
-                        if (value === 0 || value === 25 || value === 50 || value === 75 || value === 100) {
-                            return '#333333';
-                        }
-                        return 'transparent';
-                    }
-                }
-            } : {
-                min: 0,
-                max: 24,
-                ticks: {
-                    color: '#FFFFFF',
-                    font: { size: 10 },
-                    callback: function(value) {
-                        if (value === 0 || value === 24) {
-                            return value;
-                        }
-                        return '';
-                    }
-                },
-                grid: {
-                    color: function(context) {
-                        const value = context.tick.value;
-                        if (value === 0 || value === 24) {
-                            return '#333333';
-                        }
-                        return 'transparent';
-                    }
-                }
-            };
-
-            // Percent mode: line order (back to front): white, yellow, cyan, magenta
-            // Lines hidden (borderWidth: 0), dots drawn by plugin
-            const datasets = chartMode === 'percent' ? [
-                {
-                    label: 'Rating',
-                    data: chartData.map(d => ({ x: d.x, y: d.rating })),
-                    borderColor: '#FFFFFF',
-                    backgroundColor: '#FFFFFF',
-                    borderWidth: 1,
-                    pointRadius: 0,
-                    pointHoverRadius: 4,
-                    tension: 0.4,
-                    spanGaps: false,
-                    order: 4
-                },
-                {
-                    label: 'Yellow',
-                    data: chartData.map(d => ({ x: d.x, y: d.yellow })),
-                    borderColor: '#FFFF00',
-                    backgroundColor: '#FFFF00',
-                    borderWidth: 1,
-                    pointRadius: 0,
-                    pointHoverRadius: 4,
-                    tension: 0.4,
-                    spanGaps: false,
-                    order: 3
-                },
-                {
-                    label: 'Cyan',
-                    data: chartData.map(d => ({ x: d.x, y: d.cyan })),
-                    borderColor: '#00FFFF',
-                    backgroundColor: '#00FFFF',
-                    borderWidth: 1,
-                    pointRadius: 0,
-                    pointHoverRadius: 4,
-                    tension: 0.4,
-                    spanGaps: false,
-                    order: 2
-                },
-                {
-                    label: 'Magenta',
-                    data: chartData.map(d => ({ x: d.x, y: d.magenta })),
-                    borderColor: '#FF00FF',
-                    backgroundColor: '#FF00FF',
-                    borderWidth: 1,
-                    pointRadius: 0,
-                    pointHoverRadius: 4,
-                    tension: 0.4,
-                    spanGaps: false,
-                    order: 1
-                }
-            ] : [
-                // Hours mode: Stacked lines with transparent fill, dots drawn by plugin
-                // Dataset order determines visual stacking - first = bottom, last = top
-                // Desired bottom-to-top: black(sleep), white(health), cyan(studio), magenta(pink), yellow(creative)
-                {
-                    label: 'Sleep',
-                    data: chartData.map(d => ({ x: d.x, y: d.black })),
-                    borderWidth: 0,
-                    backgroundColor: 'transparent',
-                    fill: true,
-                    pointRadius: 0,
-                    tension: 0.4,
-                    stack: 'hours',
-                    order: 5
-                },
-                {
-                    label: 'Health',
-                    data: chartData.map(d => ({ x: d.x, y: d.white })),
-                    borderWidth: 0,
-                    backgroundColor: 'transparent',
-                    fill: true,
-                    pointRadius: 0,
-                    tension: 0.4,
-                    stack: 'hours',
-                    order: 4
-                },
-                {
-                    label: 'Studio',
-                    data: chartData.map(d => ({ x: d.x, y: d.cyan })),
-                    borderWidth: 0,
-                    backgroundColor: 'transparent',
-                    fill: true,
-                    pointRadius: 0,
-                    tension: 0.4,
-                    stack: 'hours',
-                    order: 3
-                },
-                {
-                    label: 'pinkProportion',
-                    data: chartData.map(d => ({ x: d.x, y: d.magenta })),
-                    borderWidth: 0,
-                    backgroundColor: 'transparent',
-                    fill: true,
-                    pointRadius: 0,
-                    tension: 0.4,
-                    stack: 'hours',
-                    order: 2
-                },
-                {
-                    label: 'Creative',
-                    data: chartData.map(d => ({ x: d.x, y: d.yellow })),
-                    borderWidth: 0,
-                    backgroundColor: 'transparent',
-                    fill: true,
-                    pointRadius: 0,
-                    tension: 0.4,
-                    stack: 'hours',
-                    order: 1
-                },
-                // Rating line (dashed white) - drawn on top
-                {
-                    label: 'Daily Rating',
-                    data: chartData.map(d => ({ x: d.x, y: d.rating })),
-                    borderColor: '#FFFFFF',
-                    backgroundColor: 'transparent',
-                    borderWidth: 1,
-                    borderDash: [5, 5],
-                    pointRadius: 0,
-                    pointHoverRadius: 0,
-                    tension: 0.4,
-                    type: 'line',
-                    fill: false,
-                    spanGaps: false,
-                    order: 0
-                }
-            ];
-
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: { datasets: datasets },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    onClick: (event, elements) => {
-                        if (elements.length > 0) {
-                            const dataIndex = elements[0].index;
-                            const timestamp = chartData[dataIndex].originalTimestamp;
-                            showDataPopup(timestamp);
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            ...yAxisConfig,
-                            stacked: chartMode === 'hours'
-                        },
-                        x: {
-                            type: 'time',
-                            time: {
-                                unit: 'hour',
-                                stepSize: 6,
-                                displayFormats: {
-                                    hour: 'M-d-yy'
-                                },
-                                tooltipFormat: 'MMM d, h:mm a'
-                            },
-                            ticks: {
-                                display: false
-                            },
-                            grid: {
-                                display: false
-                            },
-                            stacked: chartMode === 'hours'
-                        }
-                    }
-                },
-                plugins: [indicatorLinePlugin, percentDotsPlugin, hoursDotsPlugin]
-            });
+            // Store data points for click detection
+            chartDataPoints = chartData;
 
             // Update date range display
-            if (chartData.length > 0) {
-                const startDate = chartData[0].x;
-                const endDate = chartData[chartData.length - 1].x;
+            if (filteredData.length > 0) {
+                const startDate = new Date(filteredData[0].timestamp);
+                const endDate = new Date(filteredData[filteredData.length - 1].timestamp);
                 const formatDate = (d) => `${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(-2)}`;
                 document.getElementById('dateStart').textContent = formatDate(startDate);
                 document.getElementById('dateEnd').textContent = formatDate(endDate);
-            } else {
-                document.getElementById('dateStart').textContent = '';
-                document.getElementById('dateEnd').textContent = '';
+            }
+        }
+
+        function drawPercentChart(ctx, data, padding, chartW, chartH) {
+            const width = chartW + padding.left + padding.right;
+            const height = chartH + padding.top + padding.bottom;
+
+            // Y-axis labels
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.font = '10px Karla';
+            ctx.textAlign = 'right';
+            [100, 75, 50, 25, 0].forEach(v => {
+                const y = padding.top + chartH - (v / 100) * chartH;
+                ctx.fillText(v, padding.left - 8, y + 3);
+                
+                // Grid lines
+                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(padding.left + chartW, y);
+                ctx.stroke();
+            });
+
+            const colors = {
+                cyan: '#00FFFF',
+                magenta: '#FF00FF',
+                yellow: '#FFFF00',
+                white: '#FFFFFF'
+            };
+
+            const lines = [
+                { key: 'rating', color: colors.white },
+                { key: 'yellow', color: colors.yellow },
+                { key: 'magenta', color: colors.magenta },
+                { key: 'cyan', color: colors.cyan }
+            ];
+
+            const getPoints = (key) => data.map((d, i) => {
+                const val = d[key];
+                return {
+                    x: padding.left + (data.length > 1 ? (i / (data.length - 1)) * chartW : chartW / 2),
+                    y: val !== null ? padding.top + chartH - (val / 100) * chartH : null,
+                    index: i
+                };
+            }).filter(p => p.y !== null);
+
+            const allPoints = lines.map(l => ({ ...l, points: getPoints(l.key) }));
+
+            // Draw indicator lines first (behind everything)
+            data.forEach((d, i) => {
+                const x = padding.left + (data.length > 1 ? (i / (data.length - 1)) * chartW : chartW / 2);
+                
+                if (d.hasSubstanceUse) {
+                    ctx.strokeStyle = 'rgba(255, 0, 0, 0.4)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(x, padding.top);
+                    ctx.lineTo(x, padding.top + chartH);
+                    ctx.stroke();
+                }
+                
+                if (d.hasConflict) {
+                    ctx.strokeStyle = 'rgba(255, 0, 0, 0.4)';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                    ctx.beginPath();
+                    ctx.moveTo(x + 3, padding.top);
+                    ctx.lineTo(x + 3, padding.top + chartH);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+                
+                if (d.hasNootropics) {
+                    ctx.strokeStyle = 'rgba(0, 255, 0, 0.5)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(x + 6, padding.top);
+                    ctx.lineTo(x + 6, padding.top + chartH);
+                    ctx.stroke();
+                }
+                
+                if (d.hasSex) {
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(x + 9, padding.top);
+                    ctx.lineTo(x + 9, padding.top + chartH);
+                    ctx.stroke();
+                }
+                
+                if (d.hasSelfSex) {
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                    ctx.beginPath();
+                    ctx.moveTo(x + 12, padding.top);
+                    ctx.lineTo(x + 12, padding.top + chartH);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            });
+
+            // Gradient fills between lines
+            for (let i = 0; i < allPoints.length - 1; i++) {
+                const upper = allPoints[i + 1];
+                const lower = allPoints[i];
+                if (upper.points.length > 1 && lower.points.length > 1) {
+                    const grad = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartH);
+                    grad.addColorStop(0, rgba(upper.color, 0.15));
+                    grad.addColorStop(1, rgba(lower.color, 0.03));
+                    ctx.fillStyle = grad;
+                    drawSmoothArea(ctx, upper.points, lower.points);
+                }
+            }
+
+            // Bottom fill for lowest line
+            if (allPoints[0].points.length > 1) {
+                const basePoints = allPoints[0].points.map(p => ({ x: p.x, y: padding.top + chartH }));
+                const bottomGrad = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartH);
+                bottomGrad.addColorStop(0, rgba(allPoints[0].color, 0.08));
+                bottomGrad.addColorStop(1, 'transparent');
+                ctx.fillStyle = bottomGrad;
+                drawSmoothArea(ctx, allPoints[0].points, basePoints);
+            }
+
+            // Draw lines
+            allPoints.forEach(({ points, color }) => {
+                if (points.length > 1) {
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 1.5;
+                    drawSmoothLine(ctx, points);
+                }
+            });
+
+            // Draw dots (smaller for dense data)
+            const dotSize = data.length <= 7 ? 5 : data.length <= 30 ? 3 : 2;
+            allPoints.forEach(({ points, color }) => {
+                points.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, dotSize, 0, Math.PI * 2);
+                    ctx.fillStyle = color;
+                    ctx.fill();
+                });
+            });
+        }
+
+        function drawHoursChart(ctx, data, padding, chartW, chartH) {
+            // Y-axis labels
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.font = '10px Karla';
+            ctx.textAlign = 'right';
+            [24, 12, 0].forEach(v => {
+                const y = padding.top + chartH - (v / 24) * chartH;
+                ctx.fillText(v + 'h', padding.left - 8, y + 3);
+                
+                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(padding.left + chartW, y);
+                ctx.stroke();
+            });
+
+            const categories = [
+                { key: 'sleep', color: '#1a1a2e' },
+                { key: 'health', color: '#FFFFFF' },
+                { key: 'studio', color: '#00FFFF' },
+                { key: 'pink', color: '#FF00FF' },
+                { key: 'creative', color: '#FFFF00' }
+            ];
+
+            const barWidth = Math.max(4, Math.min(24, (chartW / data.length) * 0.6));
+            const barGap = chartW / data.length;
+
+            data.forEach((d, i) => {
+                const x = padding.left + i * barGap + (barGap - barWidth) / 2;
+                let y = padding.top + chartH;
+
+                categories.forEach((cat, ci) => {
+                    const hours = d[cat.key];
+                    const h = (hours / 24) * chartH;
+                    if (h < 1) return;
+                    y -= h;
+
+                    const rgb = hexToRgb(cat.color);
+                    const grad = ctx.createLinearGradient(x, y, x, y + h);
+                    grad.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 1)`);
+                    grad.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.6)`);
+                    ctx.fillStyle = grad;
+
+                    const isTop = ci === categories.length - 1 || categories.slice(ci + 1).every(c => d[c.key] < 0.1);
+                    const radius = isTop ? Math.min(barWidth / 2, 6) : 0;
+
+                    if (radius > 0) {
+                        ctx.beginPath();
+                        ctx.moveTo(x, y + h);
+                        ctx.lineTo(x, y + radius);
+                        ctx.quadraticCurveTo(x, y, x + radius, y);
+                        ctx.lineTo(x + barWidth - radius, y);
+                        ctx.quadraticCurveTo(x + barWidth, y, x + barWidth, y + radius);
+                        ctx.lineTo(x + barWidth, y + h);
+                        ctx.closePath();
+                        ctx.fill();
+                    } else {
+                        ctx.fillRect(x, y, barWidth, h);
+                    }
+                });
+            });
+
+            // Draw rating line overlay (dashed white)
+            const ratingPoints = data.map((d, i) => {
+                if (d.rating === null) return null;
+                return {
+                    x: padding.left + i * barGap + barGap / 2,
+                    y: padding.top + chartH - (d.rating / 24) * chartH
+                };
+            }).filter(p => p !== null);
+
+            if (ratingPoints.length > 1) {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([5, 5]);
+                drawSmoothLine(ctx, ratingPoints);
+                ctx.setLineDash([]);
+
+                // Small dots on rating line
+                ratingPoints.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fill();
+                });
+            }
+        }
+
+        // Chart click handler
+        function handleChartClick(e) {
+            if (chartMode === 'loc' || chartDataPoints.length === 0) return;
+            
+            const canvas = document.getElementById('myChart');
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            const x = (e.clientX - rect.left) * scaleX / (window.devicePixelRatio || 1);
+            const y = (e.clientY - rect.top) * scaleY / (window.devicePixelRatio || 1);
+            
+            const chartW = chartWidth - chartPadding.left - chartPadding.right;
+            
+            // Find closest data point
+            let closestIndex = -1;
+            let closestDist = Infinity;
+            
+            chartDataPoints.forEach((d, i) => {
+                const pointX = chartPadding.left + (chartDataPoints.length > 1 ? (i / (chartDataPoints.length - 1)) * chartW : chartW / 2);
+                const dist = Math.abs(x - pointX);
+                if (dist < closestDist && dist < 30) {
+                    closestDist = dist;
+                    closestIndex = i;
+                }
+            });
+            
+            if (closestIndex >= 0) {
+                showDataPopup(chartDataPoints[closestIndex].originalTimestamp);
             }
         }
 
@@ -1838,7 +1698,6 @@
             const cardContent = document.getElementById('cardContent');
             const progressBar = document.getElementById('progressBar');
 
-            // Stop recording if moving away from text card
             if (question.type !== 'text') {
                 stopRecording();
             }
@@ -1847,7 +1706,6 @@
             card.style.borderColor = COLOR_MAP[question.color];
             card.style.transform = 'none';
 
-            // Section label with icon
             let icon = '';
             if (question.section === 'morning') icon = SUN_ICON;
             else if (question.section === 'evening') icon = MOON_ICON;
@@ -1980,7 +1838,6 @@
         async function completeQuiz() {
             const timestamp = new Date().toISOString();
             
-            // Get location
             const location = await getLocation();
             
             const data = {
@@ -2155,6 +2012,16 @@
             initializeGoogleAuth();
             initPopupDragHandlers();
             initSpeechRecognition();
+            
+            // Add click handler for chart
+            const canvas = document.getElementById('myChart');
+            canvas.addEventListener('click', handleChartClick);
+            
+            // Redraw chart on resize
+            window.addEventListener('resize', () => {
+                clearTimeout(window.resizeTimer);
+                window.resizeTimer = setTimeout(updateChart, 100);
+            });
         };
     </script>
 </body>
