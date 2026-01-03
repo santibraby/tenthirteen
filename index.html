@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -21,555 +22,558 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        body {
-            font-family: 'Karla', sans-serif;
-            background-color: #0D0D0D;
-            color: #FFFFFF;
-            overflow: hidden;
-            width: 100vw;
-            height: 100vh;
-            touch-action: none;
-        }
-
-        /* Login Screen */
-        .login-screen {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        .logo {
-            font-size: 48px;
-            font-weight: 700;
-            text-transform: lowercase;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #00FFFF, #FF00FF, #FFFF00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .version {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 40px;
-            text-transform: lowercase;
-        }
-
-        .btn {
-            background-color: #FFFFFF;
-            color: #0D0D0D;
-            border: none;
-            padding: 16px 32px;
-            font-size: 18px;
-            font-weight: 700;
-            font-family: 'Karla', sans-serif;
-            text-transform: lowercase;
-            cursor: pointer;
-            border-radius: 8px;
-            width: 100%;
-            max-width: 300px;
-            transition: opacity 0.3s;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Chart Screen */
-        .chart-screen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-        }
-
-        .chart-screen.active {
-            display: block;
-        }
-
-        .chart-wrapper {
-            width: 100%;
-            height: 100%;
-            padding: 20px;
-            position: relative;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding: 0 20px;
-        }
-
-        .title {
-            font-size: 32px;
-            font-weight: 700;
-            text-transform: lowercase;
-            cursor: pointer;
-            background: linear-gradient(45deg, #00FFFF, #FF00FF, #FFFF00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .toggle {
-            display: flex;
-            align-items: center;
-            background-color: #1A1A1A;
-            border-radius: 20px;
-            padding: 4px;
-        }
-
-        .toggle-btn {
-            background-color: transparent;
-            color: #FFFFFF;
-            border: none;
-            padding: 8px 16px;
-            font-size: 14px;
-            font-weight: 700;
-            font-family: 'Karla', sans-serif;
-            text-transform: lowercase;
-            cursor: pointer;
-            border-radius: 16px;
-            transition: all 0.3s;
-        }
-
-        .toggle-btn.active {
-            background-color: #FFFFFF;
-            color: #0D0D0D;
-        }
-
-        .chart-container {
-            flex: 1;
-            position: relative;
-            padding: 0 20px 90px 20px;
-            min-height: 0;
-            height: calc(100% - 80px);
-        }
-
-        #globeViz {
-            width: 100%;
-            height: 100%;
-            display: none;
-        }
-
-        #globeViz.active {
-            display: block;
-        }
-
-        .globe-legend {
-            position: absolute;
-            bottom: 30px;
-            left: 40px;
-            color: white;
-            font-size: 12px;
-            background: rgba(0,0,0,0.7);
-            padding: 12px 16px;
-            border-radius: 8px;
-            display: none;
-        }
-
-        .globe-legend.active {
-            display: block;
-        }
-
-        .legend-title {
-            font-weight: 700;
-            margin-bottom: 8px;
-            text-transform: lowercase;
-        }
-
-        .legend-gradient {
-            width: 120px;
-            height: 8px;
-            background: linear-gradient(90deg, #00FFFF, #FF00FF, #FFFF00);
-            border-radius: 4px;
-            margin-bottom: 4px;
-        }
-
-        .legend-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            opacity: 0.7;
-        }
-
-        .view-toggle-header {
-            display: flex;
-            align-items: center;
-            background-color: #1A1A1A;
-            border-radius: 20px;
-            padding: 4px;
-            gap: 4px;
-        }
-
-        .view-toggle-bottom {
-            position: absolute;
-            bottom: 50px;
-            left: 20px;
-            display: flex;
-            align-items: center;
-            background-color: #1A1A1A;
-            border-radius: 20px;
-            padding: 4px;
-            gap: 4px;
-        }
-
-        .date-range {
-            position: absolute;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 20px;
-            font-size: 12px;
-            color: #666;
-        }
-
-        .view-btn {
-            background-color: transparent;
-            color: #FFFFFF;
-            border: none;
-            padding: 8px 16px;
-            font-size: 14px;
-            font-weight: 700;
-            font-family: 'Karla', sans-serif;
-            text-transform: lowercase;
-            cursor: pointer;
-            border-radius: 16px;
-            transition: all 0.3s;
-        }
-
-        .view-btn.active {
-            background-color: #FFFFFF;
-            color: #0D0D0D;
-        }
-
-        /* Quiz Screen */
-        .quiz-screen {
-            display: none;
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .quiz-screen.active {
-            display: block;
-        }
-
-        .progress-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 6px;
-            background: linear-gradient(90deg, #00FFFF, #FF00FF, #FFFF00);
-            transition: width 0.3s ease;
-            box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
-        }
-
-        .card-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-        }
-
-        .card {
-            width: 100%;
-            max-width: 400px;
-            height: 60%;
-            border-radius: 16px;
-            padding: 32px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            cursor: grab;
-            user-select: none;
-            transition: all 0.3s ease;
-            border: 2px solid;
-            background-color: #0D0D0D;
-        }
-
-        .card.dragging {
-            cursor: grabbing;
-            transition: none;
-        }
-
-        .section-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            text-transform: lowercase;
-            font-weight: 700;
-        }
-
-        .icon {
-            width: 20px;
-            height: 20px;
-        }
-
-        .question-text {
-            font-size: 48px;
-            font-weight: 700;
-            text-transform: lowercase;
-            line-height: 1.2;
-            text-align: center;
-            word-break: break-word;
-        }
-
-        .rating-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            flex: 1;
-            justify-content: center;
-        }
-
-        .rating-circle {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 3px solid;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: 700;
-            transition: all 0.2s;
-            background-color: transparent;
-        }
-
-        .slider-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 24px;
-            flex: 1;
-            justify-content: center;
-        }
-
-        .slider-value {
-            font-size: 72px;
-            font-weight: 700;
-            margin-bottom: 16px;
-        }
-
-        .slider-wrapper {
-            width: 100%;
-            max-width: 350px;
-        }
-
-        .hour-slider {
-            width: 100%;
-            height: 8px;
-            border-radius: 4px;
-            outline: none;
-            -webkit-appearance: none;
-            background: #1A1A1A;
-        }
-
-        .hour-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        .hour-slider::-moz-range-thumb {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: none;
-        }
-
-        .slider-labels {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 8px;
-            font-size: 12px;
-            color: #666;
-        }
-
-        .slider-submit {
-            background-color: transparent;
-            border: 2px solid;
-            padding: 12px 32px;
-            border-radius: 8px;
-            font-family: 'Karla', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            text-transform: lowercase;
-            transition: all 0.2s;
-        }
-
-        .slider-submit:active {
-            transform: scale(0.95);
-        }
-
-        .text-input-container {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            flex: 1;
-            justify-content: center;
-        }
-
-        .text-input {
-            width: 100%;
-            min-height: 150px;
-            background-color: transparent;
-            border: 2px solid #FFFFFF;
-            border-radius: 8px;
-            padding: 16px;
-            color: #FFFFFF;
-            font-family: 'Karla', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            resize: none;
-            outline: none;
-        }
-
-        .text-input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .input-controls {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-        }
-
-        .mic-btn, .submit-btn {
-            background-color: transparent;
-            border: 2px solid #FFFFFF;
-            color: #FFFFFF;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-family: 'Karla', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-
-        .mic-btn:active, .submit-btn:active {
-            background-color: #FFFFFF;
-            color: #0D0D0D;
-        }
-
-        .mic-btn.recording {
-            background-color: #FF0000;
-            border-color: #FF0000;
-            color: #FFFFFF;
-        }
-
-        /* Data Popup */
-        .data-popup {
-            position: fixed;
-            top: 5%;
-            left: 5%;
-            width: 90%;
-            height: 90%;
-            background-color: #0D0D0D;
-            border: 2px solid #FFFFFF;
-            border-radius: 16px;
-            padding: 32px;
-            overflow-y: auto;
-            z-index: 1000;
-            display: none;
-        }
-
-        .data-popup.active {
-            display: block;
-        }
-
-        .popup-date {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 20px;
-            text-transform: lowercase;
-        }
-
-        .popup-section {
-            margin-bottom: 24px;
-        }
-
-        .popup-section-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-transform: lowercase;
-        }
-
-        .popup-item {
-            margin-left: 28px;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .popup-item.yes {
-            opacity: 1;
-        }
-
-        .popup-item.no {
-            opacity: 0.3;
-        }
-
-        .popup-response {
-            background-color: #1A1A1A;
-            border: 2px solid #FFFFFF;
-            border-radius: 8px;
-            padding: 16px;
-            color: #FFFFFF;
-            font-size: 14px;
-            line-height: 1.6;
-            margin-top: 8px;
-            white-space: pre-wrap;
-        }
-
-        .popup-rating {
-            font-size: 48px;
-            font-weight: 700;
-            color: #FFFFFF;
-            text-align: center;
-            margin: 16px 0;
-        }
-
-        .popup-hours {
-            font-size: 32px;
-            font-weight: 700;
-            text-align: center;
-            margin: 12px 0;
-        }
-
-        .hidden {
-            display: none;
-        }
-    </style>
+```
+    body {
+        font-family: 'Karla', sans-serif;
+        background-color: #0D0D0D;
+        color: #FFFFFF;
+        overflow: hidden;
+        width: 100vw;
+        height: 100vh;
+        touch-action: none;
+    }
+
+    /* Login Screen */
+    .login-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    }
+
+    .logo {
+        font-size: 48px;
+        font-weight: 700;
+        text-transform: lowercase;
+        margin-bottom: 10px;
+        background: linear-gradient(45deg, #00FFFF, #FF00FF, #FFFF00);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .version {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 40px;
+        text-transform: lowercase;
+    }
+
+    .btn {
+        background-color: #FFFFFF;
+        color: #0D0D0D;
+        border: none;
+        padding: 16px 32px;
+        font-size: 18px;
+        font-weight: 700;
+        font-family: 'Karla', sans-serif;
+        text-transform: lowercase;
+        cursor: pointer;
+        border-radius: 8px;
+        width: 100%;
+        max-width: 300px;
+        transition: opacity 0.3s;
+    }
+
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Chart Screen */
+    .chart-screen {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .chart-screen.active {
+        display: block;
+    }
+
+    .chart-wrapper {
+        width: 100%;
+        height: 100%;
+        padding: 20px;
+        position: relative;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 0 20px;
+    }
+
+    .title {
+        font-size: 32px;
+        font-weight: 700;
+        text-transform: lowercase;
+        cursor: pointer;
+        background: linear-gradient(45deg, #00FFFF, #FF00FF, #FFFF00);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .toggle {
+        display: flex;
+        align-items: center;
+        background-color: #1A1A1A;
+        border-radius: 20px;
+        padding: 4px;
+    }
+
+    .toggle-btn {
+        background-color: transparent;
+        color: #FFFFFF;
+        border: none;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 700;
+        font-family: 'Karla', sans-serif;
+        text-transform: lowercase;
+        cursor: pointer;
+        border-radius: 16px;
+        transition: all 0.3s;
+    }
+
+    .toggle-btn.active {
+        background-color: #FFFFFF;
+        color: #0D0D0D;
+    }
+
+    .chart-container {
+        flex: 1;
+        position: relative;
+        padding: 0 20px 90px 20px;
+        min-height: 0;
+        height: calc(100% - 80px);
+    }
+
+    #globeViz {
+        width: 100%;
+        height: 100%;
+        display: none;
+    }
+
+    #globeViz.active {
+        display: block;
+    }
+
+    .globe-legend {
+        position: absolute;
+        bottom: 30px;
+        left: 40px;
+        color: white;
+        font-size: 12px;
+        background: rgba(0,0,0,0.7);
+        padding: 12px 16px;
+        border-radius: 8px;
+        display: none;
+    }
+
+    .globe-legend.active {
+        display: block;
+    }
+
+    .legend-title {
+        font-weight: 700;
+        margin-bottom: 8px;
+        text-transform: lowercase;
+    }
+
+    .legend-gradient {
+        width: 120px;
+        height: 8px;
+        background: linear-gradient(90deg, #00FFFF, #FF00FF, #FFFF00);
+        border-radius: 4px;
+        margin-bottom: 4px;
+    }
+
+    .legend-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+        opacity: 0.7;
+    }
+
+    .view-toggle-header {
+        display: flex;
+        align-items: center;
+        background-color: #1A1A1A;
+        border-radius: 20px;
+        padding: 4px;
+        gap: 4px;
+    }
+
+    .view-toggle-bottom {
+        position: absolute;
+        bottom: 50px;
+        left: 20px;
+        display: flex;
+        align-items: center;
+        background-color: #1A1A1A;
+        border-radius: 20px;
+        padding: 4px;
+        gap: 4px;
+    }
+
+    .date-range {
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20px;
+        font-size: 12px;
+        color: #666;
+    }
+
+    .view-btn {
+        background-color: transparent;
+        color: #FFFFFF;
+        border: none;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 700;
+        font-family: 'Karla', sans-serif;
+        text-transform: lowercase;
+        cursor: pointer;
+        border-radius: 16px;
+        transition: all 0.3s;
+    }
+
+    .view-btn.active {
+        background-color: #FFFFFF;
+        color: #0D0D0D;
+    }
+
+    /* Quiz Screen */
+    .quiz-screen {
+        display: none;
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .quiz-screen.active {
+        display: block;
+    }
+
+    .progress-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 6px;
+        background: linear-gradient(90deg, #00FFFF, #FF00FF, #FFFF00);
+        transition: width 0.3s ease;
+        box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+    }
+
+    .card-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px;
+    }
+
+    .card {
+        width: 100%;
+        max-width: 400px;
+        height: 60%;
+        border-radius: 16px;
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        cursor: grab;
+        user-select: none;
+        transition: all 0.3s ease;
+        border: 2px solid;
+        background-color: #0D0D0D;
+    }
+
+    .card.dragging {
+        cursor: grabbing;
+        transition: none;
+    }
+
+    .section-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        text-transform: lowercase;
+        font-weight: 700;
+    }
+
+    .icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .question-text {
+        font-size: 48px;
+        font-weight: 700;
+        text-transform: lowercase;
+        line-height: 1.2;
+        text-align: center;
+        word-break: break-word;
+    }
+
+    .rating-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        flex: 1;
+        justify-content: center;
+    }
+
+    .rating-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: 3px solid;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 700;
+        transition: all 0.2s;
+        background-color: transparent;
+    }
+
+    .slider-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+        flex: 1;
+        justify-content: center;
+    }
+
+    .slider-value {
+        font-size: 72px;
+        font-weight: 700;
+        margin-bottom: 16px;
+    }
+
+    .slider-wrapper {
+        width: 100%;
+        max-width: 350px;
+    }
+
+    .hour-slider {
+        width: 100%;
+        height: 8px;
+        border-radius: 4px;
+        outline: none;
+        -webkit-appearance: none;
+        background: #1A1A1A;
+    }
+
+    .hour-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .hour-slider::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: none;
+    }
+
+    .slider-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 8px;
+        font-size: 12px;
+        color: #666;
+    }
+
+    .slider-submit {
+        background-color: transparent;
+        border: 2px solid;
+        padding: 12px 32px;
+        border-radius: 8px;
+        font-family: 'Karla', sans-serif;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        text-transform: lowercase;
+        transition: all 0.2s;
+    }
+
+    .slider-submit:active {
+        transform: scale(0.95);
+    }
+
+    .text-input-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        flex: 1;
+        justify-content: center;
+    }
+
+    .text-input {
+        width: 100%;
+        min-height: 150px;
+        background-color: transparent;
+        border: 2px solid #FFFFFF;
+        border-radius: 8px;
+        padding: 16px;
+        color: #FFFFFF;
+        font-family: 'Karla', sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        resize: none;
+        outline: none;
+    }
+
+    .text-input::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .input-controls {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+    }
+
+    .mic-btn, .submit-btn {
+        background-color: transparent;
+        border: 2px solid #FFFFFF;
+        color: #FFFFFF;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-family: 'Karla', sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+
+    .mic-btn:active, .submit-btn:active {
+        background-color: #FFFFFF;
+        color: #0D0D0D;
+    }
+
+    .mic-btn.recording {
+        background-color: #FF0000;
+        border-color: #FF0000;
+        color: #FFFFFF;
+    }
+
+    /* Data Popup */
+    .data-popup {
+        position: fixed;
+        top: 5%;
+        left: 5%;
+        width: 90%;
+        height: 90%;
+        background-color: #0D0D0D;
+        border: 2px solid #FFFFFF;
+        border-radius: 16px;
+        padding: 32px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+    }
+
+    .data-popup.active {
+        display: block;
+    }
+
+    .popup-date {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 20px;
+        text-transform: lowercase;
+    }
+
+    .popup-section {
+        margin-bottom: 24px;
+    }
+
+    .popup-section-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-transform: lowercase;
+    }
+
+    .popup-item {
+        margin-left: 28px;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .popup-item.yes {
+        opacity: 1;
+    }
+
+    .popup-item.no {
+        opacity: 0.3;
+    }
+
+    .popup-response {
+        background-color: #1A1A1A;
+        border: 2px solid #FFFFFF;
+        border-radius: 8px;
+        padding: 16px;
+        color: #FFFFFF;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-top: 8px;
+        white-space: pre-wrap;
+    }
+
+    .popup-rating {
+        font-size: 48px;
+        font-weight: 700;
+        color: #FFFFFF;
+        text-align: center;
+        margin: 16px 0;
+    }
+
+    .popup-hours {
+        font-size: 32px;
+        font-weight: 700;
+        text-align: center;
+        margin: 12px 0;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+```
+
 </head>
 <body>
     <!-- Login Screen -->
@@ -579,1429 +583,1479 @@
         <button class="btn" onclick="handleLogin()">sign in with google</button>
     </div>
 
-    <!-- Chart Screen -->
-    <div id="chartScreen" class="chart-screen">
-        <div class="chart-wrapper">
-            <div class="header">
-                <div class="title" onclick="startQuiz()">10:13</div>
-                <div class="toggle">
-                    <button class="toggle-btn active" id="toggle1w" onclick="setTimeRange('1w')">1w</button>
-                    <button class="toggle-btn" id="toggle1m" onclick="setTimeRange('1m')">1m</button>
-                    <button class="toggle-btn" id="toggleAll" onclick="setTimeRange('all')">all</button>
+```
+<!-- Chart Screen -->
+<div id="chartScreen" class="chart-screen">
+    <div class="chart-wrapper">
+        <div class="header">
+            <div class="title" onclick="startQuiz()">10:13</div>
+            <div class="toggle">
+                <button class="toggle-btn active" id="toggle1w" onclick="setTimeRange('1w')">1w</button>
+                <button class="toggle-btn" id="toggle1m" onclick="setTimeRange('1m')">1m</button>
+                <button class="toggle-btn" id="toggleAll" onclick="setTimeRange('all')">all</button>
+            </div>
+        </div>
+        <div class="chart-container">
+            <canvas id="myChart"></canvas>
+            <div id="globeViz"></div>
+            <div class="globe-legend" id="globeLegend">
+                <div class="legend-title">entries over time</div>
+                <div class="legend-gradient"></div>
+                <div class="legend-labels">
+                    <span>oldest</span>
+                    <span>newest</span>
                 </div>
             </div>
-            <div class="chart-container">
-                <canvas id="myChart"></canvas>
-                <div id="globeViz"></div>
-                <div class="globe-legend" id="globeLegend">
-                    <div class="legend-title">entries over time</div>
-                    <div class="legend-gradient"></div>
-                    <div class="legend-labels">
-                        <span>oldest</span>
-                        <span>newest</span>
-                    </div>
-                </div>
-                <div class="view-toggle-bottom" id="viewToggle">
-                    <button class="view-btn active" id="viewPercent" onclick="setChartMode('percent')">%</button>
-                    <button class="view-btn" id="viewHours" onclick="setChartMode('hours')">hours</button>
-                    <button class="view-btn" id="viewLoc" onclick="setChartMode('loc')">loc</button>
-                </div>
-                <div class="date-range" id="dateRange">
-                    <span id="dateStart"></span>
-                    <span id="dateEnd"></span>
-                </div>
+            <div class="view-toggle-bottom" id="viewToggle">
+                <button class="view-btn active" id="viewPercent" onclick="setChartMode('percent')">%</button>
+                <button class="view-btn" id="viewHours" onclick="setChartMode('hours')">hours</button>
+                <button class="view-btn" id="viewLoc" onclick="setChartMode('loc')">loc</button>
+            </div>
+            <div class="date-range" id="dateRange">
+                <span id="dateStart"></span>
+                <span id="dateEnd"></span>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Data Popup -->
-    <div id="dataPopup" class="data-popup">
-        <div id="popupContent"></div>
-    </div>
+<!-- Data Popup -->
+<div id="dataPopup" class="data-popup">
+    <div id="popupContent"></div>
+</div>
 
-    <!-- Quiz Screen -->
-    <div id="quizScreen" class="quiz-screen">
-        <div class="progress-bar" id="progressBar"></div>
-        <div class="card-container">
-            <div class="card" id="card">
-                <div class="section-label" id="sectionLabel"></div>
-                <div id="cardContent"></div>
-                <div></div>
-            </div>
+<!-- Quiz Screen -->
+<div id="quizScreen" class="quiz-screen">
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="card-container">
+        <div class="card" id="card">
+            <div class="section-label" id="sectionLabel"></div>
+            <div id="cardContent"></div>
+            <div></div>
         </div>
     </div>
+</div>
 
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script>
-        // ============================================
-        // QUESTIONS CONFIGURATION
-        // ============================================
-        const QUESTIONS = [
-            // Morning (m1-m13, skipping m2 and m11 which were removed)
-            { id: 'm1', section: 'morning', text: 'make bed?', color: 'M' },
-            { id: 'm3', section: 'morning', text: 'colostrum AM?', color: 'C' },
-            { id: 'm4', section: 'morning', text: 'morning walk?', color: 'M' },
-            { id: 'm5', section: 'morning', text: 'yogurt / fruit / granola?', color: 'C' },
-            { id: 'm6', section: 'morning', text: 'journal?', color: 'M' },
-            { id: 'm7', section: 'morning', text: 'shower AM?', color: 'C' },
-            { id: 'm8', section: 'morning', text: 'hair AM?', color: 'C' },
-            { id: 'm9', section: 'morning', text: 'shave?', color: 'M' },
-            { id: 'm10', section: 'morning', text: 'face / ear AM?', color: 'C' },
-            { id: 'm12', section: 'morning', text: 'rise at 6:30?', color: 'M' },
-            { id: 'm13', section: 'morning', text: 'daily vitamin?', color: 'M' },
-            
-            // Evening (e1-e10, skipping e6 and e7 which were removed)
-            { id: 'e1', section: 'evening', text: 'colostrum PM?', color: 'C' },
-            { id: 'e2', section: 'evening', text: 'evening workout?', color: 'C' },
-            { id: 'e3', section: 'evening', text: 'shower PM?', color: 'C' },
-            { id: 'e4', section: 'evening', text: 'hair PM?', color: 'C' },
-            { id: 'e5', section: 'evening', text: 'face / ear PM?', color: 'C' },
-            { id: 'e10', section: 'evening', text: 'drink bottle of water?', color: 'C' },
-            { id: 'e8', section: 'evening', text: 'read?', color: 'M' },
-            { id: 'e9', section: 'evening', text: 'recline at 10:30?', color: 'M' },
-            
-            // Daily substances (d1-d5)
-            { id: 'd1', section: 'daily', text: 'nicotine free?', color: 'M', substanceType: 'harmful' },
-            { id: 'd2', section: 'daily', text: 'cannabis free?', color: 'M', substanceType: 'harmful' },
-            { id: 'd3', section: 'daily', text: 'alcohol free?', color: 'M', substanceType: 'harmful' },
-            { id: 'd4', section: 'daily', text: 'caffeine?', color: 'M' },
-            { id: 'd5', section: 'daily', text: 'nootropics?', color: 'M', substanceType: 'nootropic' },
-            
-            // Daily social (d6-d9)
-            { id: 'd6', section: 'daily', text: 'connect with friends?', color: 'Y' },
-            { id: 'd7', section: 'daily', text: 'connect with family?', color: 'Y' },
-            { id: 'd8', section: 'daily', text: 'quality time with Maria?', color: 'Y' },
-            { id: 'd9', section: 'daily', text: 'take care of Peppa?', color: 'Y' },
-            
-            // Daily intimacy (d10-d11)
-            { id: 'd10', section: 'daily', text: 'sex?', color: 'W', intimacyType: 'sex' },
-            { id: 'd11', section: 'daily', text: 'self sex?', color: 'W', intimacyType: 'selfSex' },
-            
-            // Relationship effort (d12-d16)
-            { id: 'd12', section: 'daily', text: 'initiated affection?', color: 'Y' },
-            { id: 'd13', section: 'daily', text: 'expressed appreciation?', color: 'Y' },
-            { id: 'd14', section: 'daily', text: 'let something go?', color: 'Y' },
-            { id: 'd15', section: 'daily', text: 'real conversation?', color: 'Y' },
-            { id: 'd16', section: 'daily', text: 'conflict with Maria?', color: 'Y', substanceType: 'conflict' },
-            
-            // Home (d17)
-            { id: 'd17', section: 'daily', text: 'left it better?', color: 'C' },
-            
-            // Hours (h1-h5)
-            { id: 'h1', section: 'hours', text: 'pinkProportion hours', color: 'M' },
-            { id: 'h2', section: 'hours', text: 'FR studio hours', color: 'C' },
-            { id: 'h3', section: 'hours', text: 'FR creative hours', color: 'Y' },
-            { id: 'h4', section: 'hours', text: 'health hours', color: 'W' },
-            { id: 'h5', section: 'hours', text: 'sleep (last night)', color: 'M', barColor: 'black' },
-            
-            // Text and rating
-            { id: 'text', section: 'text', text: 'daily response', color: 'W' },
-            { id: 'rating', section: 'rating', text: 'daily rating', color: 'W' }
-        ];
-
-        // ============================================
-        // APP CONFIGURATION
-        // ============================================
-        const CLIENT_ID = '785091900263-bqe75ticj4pr0uovtb1b0c5d8ogpnvm8.apps.googleusercontent.com';
-        const SPREADSHEET_ID = '1JfphEjMpGi16ALOGdbLIu5II1Ns5eRjUxdUb9HLTFu8';
-        const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
-
-        const COLOR_MAP = {
-            'C': '#00FFFF',  // Cyan
-            'M': '#FF00FF',  // Magenta
-            'Y': '#FFFF00',  // Yellow
-            'W': '#FFFFFF'   // White
-        };
-
-        const SECTION_LABELS = {
-            'morning': 'Morning Checklist',
-            'evening': 'Evening Checklist',
-            'daily': 'Daily Checklist',
-            'hours': 'Hours Tracking',
-            'text': 'Daily Response',
-            'rating': 'Daily Rating'
-        };
-
-        // SVG Icons
-        const SUN_ICON = '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+    // ============================================
+    // QUESTIONS CONFIGURATION
+    // ============================================
+    const QUESTIONS = [
+        // Morning (m1-m13, skipping m2 and m11 which were removed)
+        { id: 'm1', section: 'morning', text: 'make bed?', color: 'M' },
+        { id: 'm3', section: 'morning', text: 'colostrum AM?', color: 'C' },
+        { id: 'm4', section: 'morning', text: 'morning walk?', color: 'M' },
+        { id: 'm5', section: 'morning', text: 'yogurt / fruit / granola?', color: 'C' },
+        { id: 'm6', section: 'morning', text: 'journal?', color: 'M' },
+        { id: 'm7', section: 'morning', text: 'shower AM?', color: 'C' },
+        { id: 'm8', section: 'morning', text: 'hair AM?', color: 'C' },
+        { id: 'm9', section: 'morning', text: 'shave?', color: 'M' },
+        { id: 'm10', section: 'morning', text: 'face / ear AM?', color: 'C' },
+        { id: 'm12', section: 'morning', text: 'rise at 6:30?', color: 'M' },
+        { id: 'm13', section: 'morning', text: 'daily vitamin?', color: 'M' },
         
-        const MOON_ICON = '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+        // Evening (e1-e10, skipping e6 and e7 which were removed)
+        { id: 'e1', section: 'evening', text: 'colostrum PM?', color: 'C' },
+        { id: 'e2', section: 'evening', text: 'evening workout?', color: 'C' },
+        { id: 'e3', section: 'evening', text: 'shower PM?', color: 'C' },
+        { id: 'e4', section: 'evening', text: 'hair PM?', color: 'C' },
+        { id: 'e5', section: 'evening', text: 'face / ear PM?', color: 'C' },
+        { id: 'e10', section: 'evening', text: 'drink bottle of water?', color: 'C' },
+        { id: 'e8', section: 'evening', text: 'read?', color: 'M' },
+        { id: 'e9', section: 'evening', text: 'recline at 10:30?', color: 'M' },
         
-        const MIC_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>';
+        // Daily substances (d1-d5)
+        { id: 'd1', section: 'daily', text: 'nicotine free?', color: 'M', substanceType: 'harmful' },
+        { id: 'd2', section: 'daily', text: 'cannabis free?', color: 'M', substanceType: 'harmful' },
+        { id: 'd3', section: 'daily', text: 'alcohol free?', color: 'M', substanceType: 'harmful' },
+        { id: 'd4', section: 'daily', text: 'caffeine?', color: 'M' },
+        { id: 'd5', section: 'daily', text: 'nootropics?', color: 'M', substanceType: 'nootropic' },
+        
+        // Daily social (d6-d9)
+        { id: 'd6', section: 'daily', text: 'connect with friends?', color: 'Y' },
+        { id: 'd7', section: 'daily', text: 'connect with family?', color: 'Y' },
+        { id: 'd8', section: 'daily', text: 'quality time with Maria?', color: 'Y' },
+        { id: 'd9', section: 'daily', text: 'take care of Peppa?', color: 'Y' },
+        
+        // Daily intimacy (d10-d11)
+        { id: 'd10', section: 'daily', text: 'sex?', color: 'W', intimacyType: 'sex' },
+        { id: 'd11', section: 'daily', text: 'self sex?', color: 'W', intimacyType: 'selfSex' },
+        
+        // Relationship effort (d12-d16)
+        { id: 'd12', section: 'daily', text: 'initiated affection?', color: 'Y' },
+        { id: 'd13', section: 'daily', text: 'expressed appreciation?', color: 'Y' },
+        { id: 'd14', section: 'daily', text: 'let something go?', color: 'Y' },
+        { id: 'd15', section: 'daily', text: 'real conversation?', color: 'Y' },
+        { id: 'd16', section: 'daily', text: 'conflict with Maria?', color: 'Y', substanceType: 'conflict' },
+        
+        // Home (d17)
+        { id: 'd17', section: 'daily', text: 'left it better?', color: 'C' },
+        
+        // Hours (h1-h5)
+        { id: 'h1', section: 'hours', text: 'pinkProportion hours', color: 'M' },
+        { id: 'h2', section: 'hours', text: 'FR studio hours', color: 'C' },
+        { id: 'h3', section: 'hours', text: 'FR creative hours', color: 'Y' },
+        { id: 'h4', section: 'hours', text: 'health hours', color: 'W' },
+        { id: 'h5', section: 'hours', text: 'sleep (last night)', color: 'M', barColor: 'black' },
+        
+        // Text and rating
+        { id: 'text', section: 'text', text: 'daily response', color: 'W' },
+        { id: 'rating', section: 'rating', text: 'daily rating', color: 'W' }
+    ];
 
-        // ============================================
-        // APP STATE
-        // ============================================
-        let accessToken = null;
-        let tokenClient = null;
-        let currentQuestionIndex = 0;
-        let responses = {};
-        let dragStartX = 0;
-        let dragOffset = 0;
-        let isDragging = false;
-        let timeRange = '1w'; // '1w', '1m', or 'all'
-        let chartMode = 'percent'; // 'percent', 'hours', or 'loc'
-        let quizData = [];
-        let chart = null;
-        let globe = null;
-        let recognition = null;
-        let isRecording = false;
-        let isAuthInitialized = false;
+    // ============================================
+    // APP CONFIGURATION
+    // ============================================
+    const CLIENT_ID = '785091900263-bqe75ticj4pr0uovtb1b0c5d8ogpnvm8.apps.googleusercontent.com';
+    const SPREADSHEET_ID = '1JfphEjMpGi16ALOGdbLIu5II1Ns5eRjUxdUb9HLTFu8';
+    const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
 
-        // Process questions to add type information
-        const questions = QUESTIONS.map(q => {
-            let type = 'yesno';
-            if (q.section === 'rating') type = 'rating';
-            if (q.section === 'text') type = 'text';
-            if (q.section === 'hours') type = 'hours';
+    const COLOR_MAP = {
+        'C': '#00FFFF',  // Cyan
+        'M': '#FF00FF',  // Magenta
+        'Y': '#FFFF00',  // Yellow
+        'W': '#FFFFFF'   // White
+    };
+
+    const SECTION_LABELS = {
+        'morning': 'Morning Checklist',
+        'evening': 'Evening Checklist',
+        'daily': 'Daily Checklist',
+        'hours': 'Hours Tracking',
+        'text': 'Daily Response',
+        'rating': 'Daily Rating'
+    };
+
+    // SVG Icons
+    const SUN_ICON = '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+    
+    const MOON_ICON = '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+    
+    const MIC_ICON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>';
+
+    // ============================================
+    // APP STATE
+    // ============================================
+    let accessToken = null;
+    let tokenClient = null;
+    let currentQuestionIndex = 0;
+    let responses = {};
+    let dragStartX = 0;
+    let dragOffset = 0;
+    let isDragging = false;
+    let timeRange = '1w'; // '1w', '1m', or 'all'
+    let chartMode = 'percent'; // 'percent', 'hours', or 'loc'
+    let quizData = [];
+    let chart = null;
+    let globe = null;
+    let recognition = null;
+    let isRecording = false;
+    let isAuthInitialized = false;
+
+    // Process questions to add type information
+    const questions = QUESTIONS.map(q => {
+        let type = 'yesno';
+        if (q.section === 'rating') type = 'rating';
+        if (q.section === 'text') type = 'text';
+        if (q.section === 'hours') type = 'hours';
+        
+        return {
+            ...q,
+            type: type
+        };
+    });
+
+    // ============================================
+    // GOOGLE AUTH
+    // ============================================
+    function initializeGoogleAuth() {
+        const loginBtn = document.querySelector('.btn');
+        if (loginBtn) {
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'loading...';
+        }
+
+        // Wait for google.accounts to be available
+        const waitForGoogleAPIs = setInterval(() => {
+            if (typeof google !== 'undefined' && google.accounts) {
+                clearInterval(waitForGoogleAPIs);
+                initializeAPIs();
+            }
+        }, 100);
+    }
+
+    function initializeAPIs() {
+        try {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                callback: async (response) => {
+                    if (response.error) {
+                        console.error('Auth error:', response.error);
+                        alert('Authentication failed. Please try again.');
+                        return;
+                    }
+                    accessToken = response.access_token;
+                    await loadSheetData();
+                    showScreen('chartScreen');
+                }
+            });
+
+            isAuthInitialized = true;
             
-            return {
-                ...q,
-                type: type
-            };
-        });
-
-        // ============================================
-        // GOOGLE AUTH
-        // ============================================
-        function initializeGoogleAuth() {
+            // Enable the login button
             const loginBtn = document.querySelector('.btn');
             if (loginBtn) {
-                loginBtn.disabled = true;
-                loginBtn.textContent = 'loading...';
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'sign in with google';
             }
 
-            // Wait for google.accounts to be available
-            const waitForGoogleAPIs = setInterval(() => {
-                if (typeof google !== 'undefined' && google.accounts) {
-                    clearInterval(waitForGoogleAPIs);
-                    initializeAPIs();
-                }
-            }, 100);
-        }
-
-        function initializeAPIs() {
-            try {
-                tokenClient = google.accounts.oauth2.initTokenClient({
-                    client_id: CLIENT_ID,
-                    scope: SCOPES,
-                    callback: async (response) => {
-                        if (response.error) {
-                            console.error('Auth error:', response.error);
-                            alert('Authentication failed. Please try again.');
-                            return;
-                        }
-                        accessToken = response.access_token;
-                        await loadSheetData();
-                        showScreen('chartScreen');
-                    }
-                });
-
-                isAuthInitialized = true;
-                
-                // Enable the login button
-                const loginBtn = document.querySelector('.btn');
-                if (loginBtn) {
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = 'sign in with google';
-                }
-
-                console.log('Google Auth initialized successfully');
-            } catch (error) {
-                console.error('Error initializing Google Auth:', error);
-                const loginBtn = document.querySelector('.btn');
-                if (loginBtn) {
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = 'sign in with google (retry)';
-                }
+            console.log('Google Auth initialized successfully');
+        } catch (error) {
+            console.error('Error initializing Google Auth:', error);
+            const loginBtn = document.querySelector('.btn');
+            if (loginBtn) {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'sign in with google (retry)';
             }
         }
+    }
 
-        // Make handleLogin globally accessible
-        window.handleLogin = function() {
-            if (!isAuthInitialized || !tokenClient) {
-                alert('Authentication is still loading. Please wait a moment and try again.');
-                return;
-            }
-            tokenClient.requestAccessToken({ prompt: 'consent' });
-        };
+    // Make handleLogin globally accessible
+    window.handleLogin = function() {
+        if (!isAuthInitialized || !tokenClient) {
+            alert('Authentication is still loading. Please wait a moment and try again.');
+            return;
+        }
+        tokenClient.requestAccessToken({ prompt: 'consent' });
+    };
 
-        // ============================================
-        // DATA MANAGEMENT
-        // ============================================
-        async function loadSheetData() {
-            try {
-                const response = await fetch(
-                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A:ZZ`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`
-                        }
+    // ============================================
+    // DATA MANAGEMENT
+    // ============================================
+    async function loadSheetData() {
+        try {
+            const response = await fetch(
+                `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A:ZZ`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`
                     }
-                );
+                }
+            );
 
-                const data = await response.json();
+            const data = await response.json();
 
-                if (data.values && data.values.length > 1) {
-                    const headers = data.values[0];
-                    quizData = data.values.slice(1).map(row => {
-                        const entry = {};
-                        headers.forEach((header, index) => {
-                            entry[header] = row[index] || '';
-                        });
-                        return entry;
+            if (data.values && data.values.length > 1) {
+                const headers = data.values[0];
+                quizData = data.values.slice(1).map(row => {
+                    const entry = {};
+                    headers.forEach((header, index) => {
+                        entry[header] = row[index] || '';
                     });
-                } else {
-                    quizData = [];
-                }
-
-                updateChart();
-            } catch (error) {
-                console.error('Error loading sheet data:', error);
+                    return entry;
+                });
+            } else {
                 quizData = [];
-                updateChart();
             }
+
+            updateChart();
+        } catch (error) {
+            console.error('Error loading sheet data:', error);
+            quizData = [];
+            updateChart();
         }
+    }
 
-        async function saveToSheet(data) {
-            try {
-                // Get existing headers
-                const checkResponse = await fetch(
-                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!1:1`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`
-                        }
+    async function saveToSheet(data) {
+        try {
+            // Get existing headers
+            const checkResponse = await fetch(
+                `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!1:1`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`
                     }
-                );
-
-                const checkData = await checkResponse.json();
-                let existingHeaders = checkData.values?.[0] || [];
-
-                // Build expected headers: timestamp + all question IDs + loc
-                const expectedHeaders = ['timestamp', ...questions.map(q => q.id), 'loc'];
-
-                // Merge headers: keep all existing + add any new ones
-                const mergedHeaders = [...existingHeaders];
-                expectedHeaders.forEach(header => {
-                    if (!mergedHeaders.includes(header)) {
-                        mergedHeaders.push(header);
-                    }
-                });
-
-                // If headers changed, update the header row
-                if (mergedHeaders.length !== existingHeaders.length || existingHeaders.length === 0) {
-                    console.log('Updating headers:', mergedHeaders);
-                    await fetch(
-                        `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!1:1?valueInputOption=RAW`,
-                        {
-                            method: 'PUT',
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                values: [mergedHeaders]
-                            })
-                        }
-                    );
                 }
+            );
 
-                // Build data row matching merged headers
-                const row = mergedHeaders.map(header => {
-                    if (data[header] !== undefined) {
-                        return data[header];
-                    }
-                    return '';
-                });
+            const checkData = await checkResponse.json();
+            let existingHeaders = checkData.values?.[0] || [];
 
-                // Append data row
+            // Build expected headers: timestamp + all question IDs + loc
+            const expectedHeaders = ['timestamp', ...questions.map(q => q.id), 'loc'];
+
+            // Merge headers: keep all existing + add any new ones
+            const mergedHeaders = [...existingHeaders];
+            expectedHeaders.forEach(header => {
+                if (!mergedHeaders.includes(header)) {
+                    mergedHeaders.push(header);
+                }
+            });
+
+            // If headers changed, update the header row
+            if (mergedHeaders.length !== existingHeaders.length || existingHeaders.length === 0) {
+                console.log('Updating headers:', mergedHeaders);
                 await fetch(
-                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A:ZZ:append?valueInputOption=RAW`,
+                    `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!1:1?valueInputOption=RAW`,
                     {
-                        method: 'POST',
+                        method: 'PUT',
                         headers: {
                             Authorization: `Bearer ${accessToken}`,
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            values: [row]
+                            values: [mergedHeaders]
                         })
                     }
                 );
-
-                console.log('Data saved successfully');
-                await loadSheetData();
-            } catch (error) {
-                console.error('Error saving to sheet:', error);
             }
-        }
 
-        // ============================================
-        // GEOLOCATION
-        // ============================================
-        function getLocation() {
-            return new Promise((resolve, reject) => {
-                if (!navigator.geolocation) {
-                    resolve(null);
-                    return;
+            // Build data row matching merged headers
+            const row = mergedHeaders.map(header => {
+                if (data[header] !== undefined) {
+                    return data[header];
                 }
-                
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        resolve(`${position.coords.latitude},${position.coords.longitude}`);
-                    },
-                    (error) => {
-                        console.log('Geolocation error:', error);
-                        resolve(null);
-                    },
-                    { timeout: 5000, enableHighAccuracy: true }
-                );
+                return '';
             });
+
+            // Append data row
+            await fetch(
+                `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Sheet1!A:ZZ:append?valueInputOption=RAW`,
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        values: [row]
+                    })
+                }
+            );
+
+            console.log('Data saved successfully');
+            await loadSheetData();
+        } catch (error) {
+            console.error('Error saving to sheet:', error);
+        }
+    }
+
+    // ============================================
+    // GEOLOCATION
+    // ============================================
+    function getLocation() {
+        return new Promise((resolve, reject) => {
+            if (!navigator.geolocation) {
+                resolve(null);
+                return;
+            }
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    resolve(`${position.coords.latitude},${position.coords.longitude}`);
+                },
+                (error) => {
+                    console.log('Geolocation error:', error);
+                    resolve(null);
+                },
+                { timeout: 5000, enableHighAccuracy: true }
+            );
+        });
+    }
+
+    // ============================================
+    // UI NAVIGATION
+    // ============================================
+    function showScreen(screenId) {
+        // Clean up when leaving quiz
+        if (screenId !== 'quizScreen') {
+            stopRecording();
+            responses = {};
         }
 
-        // ============================================
-        // UI NAVIGATION
-        // ============================================
-        function showScreen(screenId) {
-            // Clean up when leaving quiz
-            if (screenId !== 'quizScreen') {
-                stopRecording();
-                responses = {};
-            }
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('chartScreen').classList.remove('active');
+        document.getElementById('quizScreen').classList.remove('active');
 
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('chartScreen').classList.remove('active');
-            document.getElementById('quizScreen').classList.remove('active');
-
-            if (screenId === 'chartScreen') {
-                document.getElementById('chartScreen').classList.add('active');
-            } else if (screenId === 'quizScreen') {
-                document.getElementById('quizScreen').classList.add('active');
-            } else {
-                document.getElementById(screenId).classList.remove('hidden');
-            }
+        if (screenId === 'chartScreen') {
+            document.getElementById('chartScreen').classList.add('active');
+        } else if (screenId === 'quizScreen') {
+            document.getElementById('quizScreen').classList.add('active');
+        } else {
+            document.getElementById(screenId).classList.remove('hidden');
         }
+    }
 
-        function setTimeRange(range) {
-            timeRange = range;
-            document.getElementById('toggle1w').classList.toggle('active', range === '1w');
-            document.getElementById('toggle1m').classList.toggle('active', range === '1m');
-            document.getElementById('toggleAll').classList.toggle('active', range === 'all');
+    function setTimeRange(range) {
+        timeRange = range;
+        document.getElementById('toggle1w').classList.toggle('active', range === '1w');
+        document.getElementById('toggle1m').classList.toggle('active', range === '1m');
+        document.getElementById('toggleAll').classList.toggle('active', range === 'all');
+        updateChart();
+    }
+
+    function setChartMode(mode) {
+        chartMode = mode;
+        document.getElementById('viewPercent').classList.toggle('active', mode === 'percent');
+        document.getElementById('viewHours').classList.toggle('active', mode === 'hours');
+        document.getElementById('viewLoc').classList.toggle('active', mode === 'loc');
+        
+        // Toggle visibility of chart canvas and globe
+        const canvas = document.getElementById('myChart');
+        const globeViz = document.getElementById('globeViz');
+        const globeLegend = document.getElementById('globeLegend');
+        const dateRange = document.getElementById('dateRange');
+        
+        if (mode === 'loc') {
+            canvas.style.display = 'none';
+            globeViz.classList.add('active');
+            globeLegend.classList.add('active');
+            dateRange.style.display = 'none';
+            // Small delay to ensure container is visible before initializing globe
+            setTimeout(() => {
+                updateGlobe();
+            }, 100);
+        } else {
+            canvas.style.display = 'block';
+            globeViz.classList.remove('active');
+            globeLegend.classList.remove('active');
+            dateRange.style.display = 'flex';
             updateChart();
         }
+    }
 
-        function setChartMode(mode) {
-            chartMode = mode;
-            document.getElementById('viewPercent').classList.toggle('active', mode === 'percent');
-            document.getElementById('viewHours').classList.toggle('active', mode === 'hours');
-            document.getElementById('viewLoc').classList.toggle('active', mode === 'loc');
-            
-            // Toggle visibility of chart canvas and globe
-            const canvas = document.getElementById('myChart');
-            const globeViz = document.getElementById('globeViz');
-            const globeLegend = document.getElementById('globeLegend');
-            const dateRange = document.getElementById('dateRange');
-            
-            if (mode === 'loc') {
-                canvas.style.display = 'none';
-                globeViz.classList.add('active');
-                globeLegend.classList.add('active');
-                dateRange.style.display = 'none';
-                // Small delay to ensure container is visible before initializing globe
-                setTimeout(() => {
-                    updateGlobe();
-                }, 100);
-            } else {
-                canvas.style.display = 'block';
-                globeViz.classList.remove('active');
-                globeLegend.classList.remove('active');
-                dateRange.style.display = 'flex';
-                updateChart();
-            }
-        }
+    // ============================================
+    // DATA POPUP
+    // ============================================
+    function initPopupDragHandlers() {
+        const popup = document.getElementById('dataPopup');
+        let popupDragStartX = 0;
+        let popupDragOffset = 0;
+        let popupIsDragging = false;
 
-        // ============================================
-        // DATA POPUP
-        // ============================================
-        function initPopupDragHandlers() {
-            const popup = document.getElementById('dataPopup');
-            let popupDragStartX = 0;
-            let popupDragOffset = 0;
-            let popupIsDragging = false;
-
-            const startPopupDrag = (e) => {
-                if (e.target.id === 'dataPopup') {
-                    popupIsDragging = true;
-                    popupDragStartX = e.touches ? e.touches[0].clientX : e.clientX;
-                    popupDragOffset = 0;
-                }
-            };
-
-            const popupDrag = (e) => {
-                if (!popupIsDragging) return;
-                const currentX = e.touches ? e.touches[0].clientX : e.clientX;
-                popupDragOffset = currentX - popupDragStartX;
-            };
-
-            const endPopupDrag = () => {
-                if (!popupIsDragging) return;
-
-                if (Math.abs(popupDragOffset) > 100) {
-                    closeDataPopup();
-                }
-
-                popupIsDragging = false;
+        const startPopupDrag = (e) => {
+            if (e.target.id === 'dataPopup') {
+                popupIsDragging = true;
+                popupDragStartX = e.touches ? e.touches[0].clientX : e.clientX;
                 popupDragOffset = 0;
-            };
+            }
+        };
 
-            popup.addEventListener('touchstart', startPopupDrag, { passive: false });
-            popup.addEventListener('touchmove', popupDrag, { passive: false });
-            popup.addEventListener('touchend', endPopupDrag);
-            popup.addEventListener('mousedown', startPopupDrag);
-            document.addEventListener('mousemove', popupDrag);
-            document.addEventListener('mouseup', endPopupDrag);
-        }
+        const popupDrag = (e) => {
+            if (!popupIsDragging) return;
+            const currentX = e.touches ? e.touches[0].clientX : e.clientX;
+            popupDragOffset = currentX - popupDragStartX;
+        };
 
-        function showDataPopup(timestamp) {
-            const entry = quizData.find(e => e.timestamp === timestamp);
-            if (!entry) return;
+        const endPopupDrag = () => {
+            if (!popupIsDragging) return;
 
-            const popup = document.getElementById('dataPopup');
-            const content = document.getElementById('popupContent');
-
-            let html = `<div class="popup-timestamp">${new Date(timestamp).toLocaleString()}</div>`;
-
-            // Group questions by section
-            const sections = {};
-            questions.forEach(q => {
-                if (!sections[q.section]) {
-                    sections[q.section] = [];
-                }
-                sections[q.section].push(q);
-            });
-
-            // Display each section
-            Object.keys(sections).forEach(sectionKey => {
-                html += `<div class="popup-section">`;
-                html += `<div class="popup-section-title">${SECTION_LABELS[sectionKey]}</div>`;
-                
-                sections[sectionKey].forEach(q => {
-                    const value = entry[q.id] || '-';
-                    const color = COLOR_MAP[q.color];
-                    
-                    if (q.type === 'rating') {
-                        html += `<div class="popup-item"><span class="popup-label">${q.text}:</span> <span style="color: ${color}">${value}</span></div>`;
-                    } else if (q.type === 'text') {
-                        html += `<div class="popup-item"><span class="popup-label">${q.text}:</span> <span style="color: ${color}">${value || 'none'}</span></div>`;
-                    } else if (q.type === 'hours') {
-                        html += `<div class="popup-item"><span class="popup-label">${q.text}:</span> <span style="color: ${color}">${value}h</span></div>`;
-                    } else {
-                        html += `<div class="popup-item"><span class="popup-label">${q.text}:</span> <span style="color: ${color}">${value}</span></div>`;
-                    }
-                });
-                
-                html += `</div>`;
-            });
-
-            // Add location if available
-            if (entry.loc) {
-                html += `<div class="popup-section">`;
-                html += `<div class="popup-section-title">Location</div>`;
-                html += `<div class="popup-item">${entry.loc}</div>`;
-                html += `</div>`;
+            if (Math.abs(popupDragOffset) > 100) {
+                closeDataPopup();
             }
 
-            content.innerHTML = html;
-            popup.classList.add('active');
-        }
+            popupIsDragging = false;
+            popupDragOffset = 0;
+        };
 
-        function closeDataPopup() {
-            document.getElementById('dataPopup').classList.remove('active');
-        }
+        popup.addEventListener('touchstart', startPopupDrag, { passive: false });
+        popup.addEventListener('touchmove', popupDrag, { passive: false });
+        popup.addEventListener('touchend', endPopupDrag);
+        popup.addEventListener('mousedown', startPopupDrag);
+        document.addEventListener('mousemove', popupDrag);
+        document.addEventListener('mouseup', endPopupDrag);
+    }
 
-        // ============================================
-        // GLOBE RENDERING
-        // ============================================
-        function getGlobeColor(t) {
-            // t is 0 to 1 (oldest to newest)
-            // cyan -> magenta -> yellow
-            if (t < 0.5) {
-                const r = Math.round(0 + (255 - 0) * (t * 2));
-                const g = Math.round(255 - (255 - 0) * (t * 2));
-                const b = 255;
-                return `rgb(${r}, ${g}, ${b})`;
-            } else {
-                const t2 = (t - 0.5) * 2;
-                const r = 255;
-                const g = Math.round(0 + (255 - 0) * t2);
-                const b = Math.round(255 - (255 - 0) * t2);
-                return `rgb(${r}, ${g}, ${b})`;
+    function showDataPopup(timestamp) {
+        const entry = quizData.find(e => e.timestamp === timestamp);
+        if (!entry) return;
+
+        const popup = document.getElementById('dataPopup');
+        const content = document.getElementById('popupContent');
+
+        let html = `<div class="popup-timestamp">${new Date(timestamp).toLocaleString()}</div>`;
+
+        // Group questions by section
+        const sections = {};
+        questions.forEach(q => {
+            if (!sections[q.section]) {
+                sections[q.section] = [];
             }
-        }
+            sections[q.section].push(q);
+        });
 
-        function updateGlobe() {
-            const container = document.getElementById('globeViz');
+        // Display each section
+        Object.keys(sections).forEach(sectionKey => {
+            html += `<div class="popup-section">`;
+            html += `<div class="popup-section-title">${SECTION_LABELS[sectionKey]}</div>`;
             
-            // Filter entries with location data
-            const entriesWithLoc = quizData
-                .filter(entry => entry.loc && entry.loc.includes(','))
-                .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            sections[sectionKey].forEach(q => {
+                const value = entry[q.id] || '-';
+                const color = COLOR_MAP[q.color];
+                
+                if (q.type === 'rating') {
+                    html += `<div class="popup-item"><span class="popup-label">${q.text}:</span> <span style="color: ${color}">${value}</span></div>`;
+                } else if (q.type === 'text') {
+                    html += `<div class="popup-item"><span class="popup-label">${q.text}:</span> <span style="color: ${color}">${value || 'none'}</span></div>`;
+                } else if (q.type === 'hours') {
+                    html += `<div class="popup-item"><span class="popup-label">${q.text}:</span> <span style="color: ${color}">${value}h</span></div>`;
+                } else {
+                    html += `<div class="popup-item"><span class="popup-label">${q.text}:</span> <span style="color: ${color}">${value}</span></div>`;
+                }
+            });
+            
+            html += `</div>`;
+        });
 
-            // Process entries for globe
-            const points = entriesWithLoc.map((entry, index) => {
-                const [lat, lng] = entry.loc.split(',').map(Number);
-                const t = entriesWithLoc.length > 1 ? index / (entriesWithLoc.length - 1) : 1;
-                const color = getGlobeColor(t);
-                
-                // Rating -2 to +2 mapped to size 0.3 to 1.0
-                const rating = parseFloat(entry.rating) || 0;
-                const size = ((rating + 2) / 4) * 0.7 + 0.3;
-                
+        // Add location if available
+        if (entry.loc) {
+            html += `<div class="popup-section">`;
+            html += `<div class="popup-section-title">Location</div>`;
+            html += `<div class="popup-item">${entry.loc}</div>`;
+            html += `</div>`;
+        }
+
+        content.innerHTML = html;
+        popup.classList.add('active');
+    }
+
+    function closeDataPopup() {
+        document.getElementById('dataPopup').classList.remove('active');
+    }
+
+    // ============================================
+    // GLOBE RENDERING
+    // ============================================
+    function getGlobeColor(t) {
+        // t is 0 to 1 (oldest to newest)
+        // cyan -> magenta -> yellow
+        if (t < 0.5) {
+            const r = Math.round(0 + (255 - 0) * (t * 2));
+            const g = Math.round(255 - (255 - 0) * (t * 2));
+            const b = 255;
+            return `rgb(${r}, ${g}, ${b})`;
+        } else {
+            const t2 = (t - 0.5) * 2;
+            const r = 255;
+            const g = Math.round(0 + (255 - 0) * t2);
+            const b = Math.round(255 - (255 - 0) * t2);
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+    }
+
+    function updateGlobe() {
+        const container = document.getElementById('globeViz');
+        
+        // Filter entries with location data
+        const entriesWithLoc = quizData
+            .filter(entry => entry.loc && entry.loc.includes(','))
+            .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+        // Process entries for globe
+        const points = entriesWithLoc.map((entry, index) => {
+            const [lat, lng] = entry.loc.split(',').map(Number);
+            const t = entriesWithLoc.length > 1 ? index / (entriesWithLoc.length - 1) : 1;
+            const color = getGlobeColor(t);
+            
+            // Rating -2 to +2 mapped to size 0.3 to 1.0
+            const rating = parseFloat(entry.rating) || 0;
+            const size = ((rating + 2) / 4) * 0.7 + 0.3;
+            
+            return {
+                lat: lat,
+                lng: lng,
+                size: size,
+                color: color,
+                label: `${new Date(entry.timestamp).toLocaleDateString()}\nrating: ${rating > 0 ? '+' : ''}${rating}`
+            };
+        });
+
+        // Destroy existing globe if any
+        if (globe) {
+            globe._destructor && globe._destructor();
+            container.innerHTML = '';
+            globe = null;
+        }
+
+        // Create new globe
+        globe = Globe()
+            .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
+            .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+            .backgroundColor('#0D0D0D')
+            .pointsData(points)
+            .pointLat('lat')
+            .pointLng('lng')
+            .pointColor('color')
+            .pointAltitude(0.01)
+            .pointRadius('size')
+            .pointLabel('label')
+            .atmosphereColor('#333333')
+            .atmosphereAltitude(0.15)
+            (container);
+
+        // Set initial view
+        if (entriesWithLoc.length > 0) {
+            const latest = entriesWithLoc[entriesWithLoc.length - 1];
+            const [latestLat, latestLng] = latest.loc.split(',').map(Number);
+            globe.pointOfView({ lat: latestLat, lng: latestLng, altitude: 1.5 }, 1000);
+        } else {
+            // Default view if no location data
+            globe.pointOfView({ lat: 20, lng: 0, altitude: 2.5 }, 1000);
+        }
+    }
+
+    // ============================================
+    // CHART RENDERING
+    // ============================================
+    function updateChart() {
+        if (chartMode === 'loc') return;
+        
+        const canvas = document.getElementById('myChart');
+        const ctx = canvas.getContext('2d');
+
+        // Filter data by time range
+        let filteredData = [...quizData].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+        if (timeRange !== 'all' && filteredData.length > 0) {
+            const now = new Date();
+            let cutoffDate = new Date();
+            
+            if (timeRange === '1w') {
+                cutoffDate.setDate(now.getDate() - 7);
+            } else if (timeRange === '1m') {
+                cutoffDate.setDate(now.getDate() - 30);
+            }
+            
+            filteredData = filteredData.filter(entry => new Date(entry.timestamp) >= cutoffDate);
+        }
+
+        let chartData;
+        
+        if (chartMode === 'percent') {
+            // Build percentage chart data
+            chartData = filteredData.map(entry => {
+                const timestamp = new Date(entry.timestamp);
+
+                // Dynamically filter questions by color and type (exclude intimacy from percentage)
+                const cyanQuestions = questions.filter(q => q.color === 'C' && q.type === 'yesno' && !q.intimacyType);
+                const magentaQuestions = questions.filter(q => q.color === 'M' && q.type === 'yesno' && !q.intimacyType);
+                const yellowQuestions = questions.filter(q => q.color === 'Y' && q.type === 'yesno' && !q.intimacyType);
+
+                // Count answered questions (has 'yes' or 'no' response, not empty)
+                const cyanAnswered = cyanQuestions.filter(q => entry[q.id] === 'yes' || entry[q.id] === 'no').length;
+                const magentaAnswered = magentaQuestions.filter(q => entry[q.id] === 'yes' || entry[q.id] === 'no').length;
+                const yellowAnswered = yellowQuestions.filter(q => entry[q.id] === 'yes' || entry[q.id] === 'no').length;
+
+                // Count "yes" responses for each color
+                const cyanYes = cyanQuestions.filter(q => entry[q.id] === 'yes').length;
+                const magentaYes = magentaQuestions.filter(q => entry[q.id] === 'yes').length;
+                const yellowYes = yellowQuestions.filter(q => entry[q.id] === 'yes').length;
+
+                // Calculate percentages based on answered questions only
+                const cyanPercent = cyanAnswered > 0 ? (cyanYes / cyanAnswered) * 100 : null;
+                const magentaPercent = magentaAnswered > 0 ? (magentaYes / magentaAnswered) * 100 : null;
+                const yellowPercent = yellowAnswered > 0 ? (yellowYes / yellowAnswered) * 100 : null;
+
+                // Convert rating to percentage scale
+                const rating = parseFloat(entry['rating']);
+                let ratingPercent = isNaN(rating) || entry['rating'] === '' ? null : ((rating + 2) / 4) * 100;
+
+                // Detect harmful substance use (answered "no" to "free?" questions)
+                const harmfulSubstanceQuestions = questions.filter(q => q.substanceType === 'harmful');
+                const hasSubstanceUse = harmfulSubstanceQuestions.some(q => entry[q.id] === 'no');
+
+                // Detect nootropics use (answered "yes" to nootropics)
+                const nootropicQuestions = questions.filter(q => q.substanceType === 'nootropic');
+                const hasNootropics = nootropicQuestions.some(q => entry[q.id] === 'yes');
+
+                // Detect conflict (answered "yes" to conflict questions)
+                const conflictQuestions = questions.filter(q => q.substanceType === 'conflict');
+                const hasConflict = conflictQuestions.some(q => entry[q.id] === 'yes');
+
+                // Detect intimacy
+                const hasSex = entry['d10'] === 'yes';
+                const hasSelfSex = entry['d11'] === 'yes';
+
                 return {
-                    lat: lat,
-                    lng: lng,
-                    size: size,
-                    color: color,
-                    label: `${new Date(entry.timestamp).toLocaleDateString()}\nrating: ${rating > 0 ? '+' : ''}${rating}`
+                    x: timestamp,
+                    originalTimestamp: entry.timestamp,
+                    cyan: cyanPercent,
+                    magenta: magentaPercent,
+                    yellow: yellowPercent,
+                    rating: ratingPercent,
+                    hasSubstanceUse: hasSubstanceUse,
+                    hasNootropics: hasNootropics,
+                    hasConflict: hasConflict,
+                    hasSex: hasSex,
+                    hasSelfSex: hasSelfSex
                 };
             });
+        } else {
+            // Build hours chart data
+            chartData = filteredData.map(entry => {
+                const timestamp = new Date(entry.timestamp);
 
-            // Destroy existing globe if any
-            if (globe) {
-                globe._destructor && globe._destructor();
-                container.innerHTML = '';
-                globe = null;
-            }
+                // Get hours from specific question IDs
+                const sleepHours = parseFloat(entry['h5']) || 0;
+                const healthHours = parseFloat(entry['h4']) || 0;
+                const studioHours = parseFloat(entry['h2']) || 0;
+                const pinkHours = parseFloat(entry['h1']) || 0;
+                const creativeHours = parseFloat(entry['h3']) || 0;
 
-            // Create new globe
-            globe = Globe()
-                .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
-                .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
-                .backgroundColor('#0D0D0D')
-                .pointsData(points)
-                .pointLat('lat')
-                .pointLng('lng')
-                .pointColor('color')
-                .pointAltitude(0.01)
-                .pointRadius('size')
-                .pointLabel('label')
-                .atmosphereColor('#333333')
-                .atmosphereAltitude(0.15)
-                (container);
+                // Convert rating to 0-24 scale for overlay
+                const rating = parseFloat(entry['rating']);
+                let ratingScaled = isNaN(rating) || entry['rating'] === '' ? null : ((rating + 2) / 4) * 24;
 
-            // Set initial view
-            if (entriesWithLoc.length > 0) {
-                const latest = entriesWithLoc[entriesWithLoc.length - 1];
-                const [latestLat, latestLng] = latest.loc.split(',').map(Number);
-                globe.pointOfView({ lat: latestLat, lng: latestLng, altitude: 1.5 }, 1000);
-            } else {
-                // Default view if no location data
-                globe.pointOfView({ lat: 20, lng: 0, altitude: 2.5 }, 1000);
-            }
+                return {
+                    x: timestamp,
+                    originalTimestamp: entry.timestamp,
+                    black: sleepHours,
+                    white: healthHours,
+                    cyan: studioHours,
+                    magenta: pinkHours,
+                    yellow: creativeHours,
+                    rating: ratingScaled
+                };
+            });
         }
 
-        // ============================================
-        // CHART RENDERING
-        // ============================================
-        function updateChart() {
-            if (chartMode === 'loc') return;
-            
-            const canvas = document.getElementById('myChart');
-            const ctx = canvas.getContext('2d');
+        if (chart) {
+            chart.destroy();
+        }
 
-            // Filter data by time range
-            let filteredData = [...quizData].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-            if (timeRange !== 'all' && filteredData.length > 0) {
-                const now = new Date();
-                let cutoffDate = new Date();
+        // Indicator lines plugin
+        const indicatorLinePlugin = {
+            id: 'indicatorLines',
+            beforeDatasetsDraw(chart) {
+                if (chartMode !== 'percent') return;
                 
-                if (timeRange === '1w') {
-                    cutoffDate.setDate(now.getDate() - 7);
-                } else if (timeRange === '1m') {
-                    cutoffDate.setDate(now.getDate() - 30);
-                }
-                
-                filteredData = filteredData.filter(entry => new Date(entry.timestamp) >= cutoffDate);
-            }
+                const { ctx, chartArea: { top, bottom }, scales: { x } } = chart;
+                const dataset = chart.data.datasets[0];
 
-            let chartData;
-            
-            if (chartMode === 'percent') {
-                // Build percentage chart data
-                chartData = filteredData.map(entry => {
-                    const timestamp = new Date(entry.timestamp);
-
-                    // Dynamically filter questions by color and type (exclude intimacy from percentage)
-                    const cyanQuestions = questions.filter(q => q.color === 'C' && q.type === 'yesno' && !q.intimacyType);
-                    const magentaQuestions = questions.filter(q => q.color === 'M' && q.type === 'yesno' && !q.intimacyType);
-                    const yellowQuestions = questions.filter(q => q.color === 'Y' && q.type === 'yesno' && !q.intimacyType);
-
-                    // Count answered questions (has 'yes' or 'no' response, not empty)
-                    const cyanAnswered = cyanQuestions.filter(q => entry[q.id] === 'yes' || entry[q.id] === 'no').length;
-                    const magentaAnswered = magentaQuestions.filter(q => entry[q.id] === 'yes' || entry[q.id] === 'no').length;
-                    const yellowAnswered = yellowQuestions.filter(q => entry[q.id] === 'yes' || entry[q.id] === 'no').length;
-
-                    // Count "yes" responses for each color
-                    const cyanYes = cyanQuestions.filter(q => entry[q.id] === 'yes').length;
-                    const magentaYes = magentaQuestions.filter(q => entry[q.id] === 'yes').length;
-                    const yellowYes = yellowQuestions.filter(q => entry[q.id] === 'yes').length;
-
-                    // Calculate percentages based on answered questions only
-                    const cyanPercent = cyanAnswered > 0 ? (cyanYes / cyanAnswered) * 100 : null;
-                    const magentaPercent = magentaAnswered > 0 ? (magentaYes / magentaAnswered) * 100 : null;
-                    const yellowPercent = yellowAnswered > 0 ? (yellowYes / yellowAnswered) * 100 : null;
-
-                    // Convert rating to percentage scale
-                    const rating = parseFloat(entry['rating']);
-                    let ratingPercent = isNaN(rating) || entry['rating'] === '' ? null : ((rating + 2) / 4) * 100;
-
-                    // Detect harmful substance use (answered "no" to "free?" questions)
-                    const harmfulSubstanceQuestions = questions.filter(q => q.substanceType === 'harmful');
-                    const hasSubstanceUse = harmfulSubstanceQuestions.some(q => entry[q.id] === 'no');
-
-                    // Detect nootropics use (answered "yes" to nootropics)
-                    const nootropicQuestions = questions.filter(q => q.substanceType === 'nootropic');
-                    const hasNootropics = nootropicQuestions.some(q => entry[q.id] === 'yes');
-
-                    // Detect conflict (answered "yes" to conflict questions)
-                    const conflictQuestions = questions.filter(q => q.substanceType === 'conflict');
-                    const hasConflict = conflictQuestions.some(q => entry[q.id] === 'yes');
-
-                    // Detect intimacy
-                    const hasSex = entry['d10'] === 'yes';
-                    const hasSelfSex = entry['d11'] === 'yes';
-
-                    return {
-                        x: timestamp,
-                        originalTimestamp: entry.timestamp,
-                        cyan: cyanPercent,
-                        magenta: magentaPercent,
-                        yellow: yellowPercent,
-                        rating: ratingPercent,
-                        hasSubstanceUse: hasSubstanceUse,
-                        hasNootropics: hasNootropics,
-                        hasConflict: hasConflict,
-                        hasSex: hasSex,
-                        hasSelfSex: hasSelfSex
-                    };
-                });
-            } else {
-                // Build hours chart data
-                chartData = filteredData.map(entry => {
-                    const timestamp = new Date(entry.timestamp);
-
-                    // Get hours from specific question IDs
-                    const sleepHours = parseFloat(entry['h5']) || 0;
-                    const healthHours = parseFloat(entry['h4']) || 0;
-                    const studioHours = parseFloat(entry['h2']) || 0;
-                    const pinkHours = parseFloat(entry['h1']) || 0;
-                    const creativeHours = parseFloat(entry['h3']) || 0;
-
-                    // Convert rating to 0-24 scale for overlay
-                    const rating = parseFloat(entry['rating']);
-                    let ratingScaled = isNaN(rating) || entry['rating'] === '' ? null : ((rating + 2) / 4) * 24;
-
-                    return {
-                        x: timestamp,
-                        originalTimestamp: entry.timestamp,
-                        black: sleepHours,
-                        white: healthHours,
-                        cyan: studioHours,
-                        magenta: pinkHours,
-                        yellow: creativeHours,
-                        rating: ratingScaled
-                    };
-                });
-            }
-
-            if (chart) {
-                chart.destroy();
-            }
-
-            // Indicator lines plugin
-            const indicatorLinePlugin = {
-                id: 'indicatorLines',
-                beforeDatasetsDraw(chart) {
-                    if (chartMode !== 'percent') return;
-                    
-                    const { ctx, chartArea: { top, bottom }, scales: { x } } = chart;
-                    const dataset = chart.data.datasets[0];
-
-                    dataset.data.forEach((point, index) => {
-                        const dataPoint = chartData[index];
-                        if (dataPoint) {
-                            const xPos = x.getPixelForValue(point.x);
-                            
-                            // Draw red line for harmful substances
-                            if (dataPoint.hasSubstanceUse) {
-                                ctx.save();
-                                ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
-                                ctx.lineWidth = 2;
-                                ctx.beginPath();
-                                ctx.moveTo(xPos, top);
-                                ctx.lineTo(xPos, bottom);
-                                ctx.stroke();
-                                ctx.restore();
-                            }
-                            
-                            // Draw red dashed line for conflict
-                            if (dataPoint.hasConflict) {
-                                ctx.save();
-                                ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
-                                ctx.lineWidth = 2;
-                                ctx.setLineDash([5, 5]);
-                                ctx.beginPath();
-                                ctx.moveTo(xPos + 3, top);
-                                ctx.lineTo(xPos + 3, bottom);
-                                ctx.stroke();
-                                ctx.restore();
-                            }
-                            
-                            // Draw green line for nootropics (when NOT free)
-                            if (dataPoint.hasNootropics) {
-                                ctx.save();
-                                ctx.strokeStyle = 'rgba(0, 255, 0, 0.6)';
-                                ctx.lineWidth = 2;
-                                ctx.beginPath();
-                                ctx.moveTo(xPos + 6, top);
-                                ctx.lineTo(xPos + 6, bottom);
-                                ctx.stroke();
-                                ctx.restore();
-                            }
-                            
-                            // Draw white solid line for sex
-                            if (dataPoint.hasSex) {
-                                ctx.save();
-                                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-                                ctx.lineWidth = 2;
-                                ctx.beginPath();
-                                ctx.moveTo(xPos + 9, top);
-                                ctx.lineTo(xPos + 9, bottom);
-                                ctx.stroke();
-                                ctx.restore();
-                            }
-                            
-                            // Draw white dashed line for self sex
-                            if (dataPoint.hasSelfSex) {
-                                ctx.save();
-                                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-                                ctx.lineWidth = 2;
-                                ctx.setLineDash([5, 5]);
-                                ctx.beginPath();
-                                ctx.moveTo(xPos + 12, top);
-                                ctx.lineTo(xPos + 12, bottom);
-                                ctx.stroke();
-                                ctx.restore();
-                            }
-                        }
-                    });
-                }
-            };
-
-            // Helper function to blend two hex colors
-            function blendColors(color1, color2, ratio) {
-                const r1 = parseInt(color1.slice(1, 3), 16);
-                const g1 = parseInt(color1.slice(3, 5), 16);
-                const b1 = parseInt(color1.slice(5, 7), 16);
-                const r2 = parseInt(color2.slice(1, 3), 16);
-                const g2 = parseInt(color2.slice(3, 5), 16);
-                const b2 = parseInt(color2.slice(5, 7), 16);
-                
-                const r = Math.round(r1 + (r2 - r1) * ratio);
-                const g = Math.round(g1 + (g2 - g1) * ratio);
-                const b = Math.round(b1 + (b2 - b1) * ratio);
-                
-                return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-            }
-
-            // Percentage chart dots plugin
-            const percentDotsPlugin = {
-                id: 'percentDots',
-                afterDatasetsDraw(chart) {
-                    if (chartMode !== 'percent') return;
-                    
-                    const { ctx } = chart;
-                    const datasets = chart.data.datasets;
-                    const metas = datasets.map((ds, i) => chart.getDatasetMeta(i));
-                    
-                    const dotRadius = 10;
-                    const smallDotRadius = 3;
-                    const dotsPerGap = 10;
-                    
-                    // Include all 4 lines: rating (white), yellow, cyan, magenta
-                    const numPoints = datasets[0].data.length;
-                    
-                    for (let pointIdx = 0; pointIdx < numPoints; pointIdx++) {
-                        // Get Y position of each line at this data point
-                        const linesAtPoint = [];
+                dataset.data.forEach((point, index) => {
+                    const dataPoint = chartData[index];
+                    if (dataPoint) {
+                        const xPos = x.getPixelForValue(point.x);
                         
-                        for (let idx = 0; idx < datasets.length; idx++) {
-                            const meta = metas[idx];
-                            const point = meta.data[pointIdx];
-                            if (point && point.y !== null && !isNaN(point.y)) {
-                                linesAtPoint.push({
-                                    x: point.x,
-                                    y: point.y,
-                                    color: datasets[idx].borderColor
-                                });
-                            }
-                        }
-                        
-                        if (linesAtPoint.length < 2) continue;
-                        
-                        // Sort by y (top to bottom on screen = lower y value first)
-                        linesAtPoint.sort((a, b) => a.y - b.y);
-                        
-                        const x = linesAtPoint[0].x;
-                        
-                        // Draw blended dots between each adjacent pair FIRST
-                        for (let c = 0; c < linesAtPoint.length - 1; c++) {
-                            const topLine = linesAtPoint[c];
-                            const bottomLine = linesAtPoint[c + 1];
-                            
-                            for (let d = 1; d <= dotsPerGap; d++) {
-                                const ratio = d / (dotsPerGap + 1);
-                                const y = topLine.y + (bottomLine.y - topLine.y) * ratio;
-                                const blendedColor = blendColors(topLine.color, bottomLine.color, ratio);
-                                
-                                ctx.save();
-                                ctx.fillStyle = blendedColor;
-                                ctx.beginPath();
-                                ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
-                                ctx.fill();
-                                ctx.restore();
-                            }
-                        }
-                        
-                        // Draw non-white dots first
-                        for (let c = 0; c < linesAtPoint.length; c++) {
-                            const line = linesAtPoint[c];
-                            if (line.color === '#FFFFFF') continue;
+                        // Draw red line for harmful substances
+                        if (dataPoint.hasSubstanceUse) {
                             ctx.save();
-                            ctx.fillStyle = line.color;
+                            ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+                            ctx.lineWidth = 2;
                             ctx.beginPath();
-                            ctx.arc(line.x, line.y, dotRadius, 0, Math.PI * 2);
-                            ctx.fill();
+                            ctx.moveTo(xPos, top);
+                            ctx.lineTo(xPos, bottom);
+                            ctx.stroke();
                             ctx.restore();
                         }
-
-                        // Draw white dots LAST (on top of everything)
-                        for (let c = 0; c < linesAtPoint.length; c++) {
-                            const line = linesAtPoint[c];
-                            if (line.color !== '#FFFFFF') continue;
+                        
+                        // Draw red dashed line for conflict
+                        if (dataPoint.hasConflict) {
                             ctx.save();
-                            ctx.fillStyle = line.color;
+                            ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+                            ctx.lineWidth = 2;
+                            ctx.setLineDash([5, 5]);
                             ctx.beginPath();
-                            ctx.arc(line.x, line.y, dotRadius, 0, Math.PI * 2);
-                            ctx.fill();
+                            ctx.moveTo(xPos + 3, top);
+                            ctx.lineTo(xPos + 3, bottom);
+                            ctx.stroke();
                             ctx.restore();
                         }
-
-                        // Draw small white dots on top of ALL datapoints
-                        for (let c = 0; c < linesAtPoint.length; c++) {
-                            const line = linesAtPoint[c];
+                        
+                        // Draw green line for nootropics (when NOT free)
+                        if (dataPoint.hasNootropics) {
                             ctx.save();
-                            ctx.fillStyle = '#FFFFFF';
+                            ctx.strokeStyle = 'rgba(0, 255, 0, 0.6)';
+                            ctx.lineWidth = 2;
                             ctx.beginPath();
-                            ctx.arc(line.x, line.y, smallDotRadius, 0, Math.PI * 2);
-                            ctx.fill();
+                            ctx.moveTo(xPos + 6, top);
+                            ctx.lineTo(xPos + 6, bottom);
+                            ctx.stroke();
+                            ctx.restore();
+                        }
+                        
+                        // Draw white solid line for sex
+                        if (dataPoint.hasSex) {
+                            ctx.save();
+                            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                            ctx.lineWidth = 2;
+                            ctx.beginPath();
+                            ctx.moveTo(xPos + 9, top);
+                            ctx.lineTo(xPos + 9, bottom);
+                            ctx.stroke();
+                            ctx.restore();
+                        }
+                        
+                        // Draw white dashed line for self sex
+                        if (dataPoint.hasSelfSex) {
+                            ctx.save();
+                            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                            ctx.lineWidth = 2;
+                            ctx.setLineDash([5, 5]);
+                            ctx.beginPath();
+                            ctx.moveTo(xPos + 12, top);
+                            ctx.lineTo(xPos + 12, bottom);
+                            ctx.stroke();
                             ctx.restore();
                         }
                     }
-                }
-            };
+                });
+            }
+        };
 
-            // Hours chart dots plugin  
-            const hoursDotsPlugin = {
-                id: 'hoursDots',
-                afterDatasetsDraw(chart) {
-                    if (chartMode !== 'hours') return;
+        // Helper function to blend two hex colors
+        function blendColors(color1, color2, ratio) {
+            const r1 = parseInt(color1.slice(1, 3), 16);
+            const g1 = parseInt(color1.slice(3, 5), 16);
+            const b1 = parseInt(color1.slice(5, 7), 16);
+            const r2 = parseInt(color2.slice(1, 3), 16);
+            const g2 = parseInt(color2.slice(3, 5), 16);
+            const b2 = parseInt(color2.slice(5, 7), 16);
+            
+            const r = Math.round(r1 + (r2 - r1) * ratio);
+            const g = Math.round(g1 + (g2 - g1) * ratio);
+            const b = Math.round(b1 + (b2 - b1) * ratio);
+            
+            return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        }
+
+        // Percentage chart dots plugin
+        const percentDotsPlugin = {
+            id: 'percentDots',
+            afterDatasetsDraw(chart) {
+                if (chartMode !== 'percent') return;
+                
+                const { ctx } = chart;
+                const datasets = chart.data.datasets;
+                const metas = datasets.map((ds, i) => chart.getDatasetMeta(i));
+                
+                const dotRadius = 7.5;  // 75% of original 10
+                const smallDotRadius = 2.5;
+                
+                const numPoints = datasets[0].data.length;
+                
+                for (let pointIdx = 0; pointIdx < numPoints; pointIdx++) {
+                    const linesAtPoint = [];
                     
-                    const { ctx, scales } = chart;
-                    const datasets = chart.data.datasets;
-                    const metas = datasets.map((ds, i) => chart.getDatasetMeta(i));
-                    
-                    const dotRadius = 10;
-                    const smallDotRadius = 3;
-                    const dotsPerGap = 10;
-                    
-                    // Fixed layer order (bottom to top): sleep(black), health(white), studio(cyan), pink(magenta), creative(yellow)
-                    const layerColors = ['#000000', '#FFFFFF', '#00FFFF', '#FF00FF', '#FFFF00'];
-                    
-                    // Process stacked layers (first 5 datasets), skip rating line (last dataset)
-                    const stackedDatasets = datasets.slice(0, 5);
-                    const numPoints = stackedDatasets[0].data.length;
-                    
-                    for (let pointIdx = 0; pointIdx < numPoints; pointIdx++) {
-                        // Get x position from first dataset's meta
-                        const firstPoint = metas[0].data[pointIdx];
-                        if (!firstPoint) continue;
-                        
-                        const x = firstPoint.x;
-                        const bottom = scales.y.getPixelForValue(0);
-                        
-                        // Calculate cumulative positions ourselves in fixed order
-                        // This ensures black→white→cyan→magenta→yellow always stacks bottom to top
-                        let cumulative = 0;
-                        const boundaries = [{ y: bottom, color: '#000000' }];
-                        
-                        for (let idx = 0; idx < stackedDatasets.length; idx++) {
-                            const dataValue = stackedDatasets[idx].data[pointIdx].y || 0;
-                            cumulative += dataValue;
-                            boundaries.push({
-                                y: scales.y.getPixelForValue(cumulative),
-                                color: layerColors[idx]
+                    for (let idx = 0; idx < datasets.length; idx++) {
+                        const meta = metas[idx];
+                        const point = meta.data[pointIdx];
+                        if (point && point.y !== null && !isNaN(point.y)) {
+                            linesAtPoint.push({
+                                x: point.x,
+                                y: point.y,
+                                color: datasets[idx].borderColor
                             });
                         }
+                    }
+                    
+                    if (linesAtPoint.length < 1) continue;
+                    
+                    // Draw non-white dots first
+                    for (let c = 0; c < linesAtPoint.length; c++) {
+                        const line = linesAtPoint[c];
+                        if (line.color === '#FFFFFF') continue;
+                        ctx.save();
+                        ctx.fillStyle = line.color;
+                        ctx.beginPath();
+                        ctx.arc(line.x, line.y, dotRadius, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.restore();
+                    }
+
+                    // Draw white dots LAST (on top of everything)
+                    for (let c = 0; c < linesAtPoint.length; c++) {
+                        const line = linesAtPoint[c];
+                        if (line.color !== '#FFFFFF') continue;
+                        ctx.save();
+                        ctx.fillStyle = line.color;
+                        ctx.beginPath();
+                        ctx.arc(line.x, line.y, dotRadius, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.restore();
+                    }
+
+                    // Draw small black dots on top of ALL datapoints
+                    for (let c = 0; c < linesAtPoint.length; c++) {
+                        const line = linesAtPoint[c];
+                        ctx.save();
+                        ctx.fillStyle = '#0D0D0D';
+                        ctx.beginPath();
+                        ctx.arc(line.x, line.y, smallDotRadius, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.restore();
+                    }
+                }
+            }
+        };
+
+        // Hours chart bars plugin  
+        const hoursDotsPlugin = {
+            id: 'hoursBars',
+            afterDatasetsDraw(chart) {
+                if (chartMode !== 'hours') return;
+                
+                const { ctx, scales } = chart;
+                const datasets = chart.data.datasets;
+                const metas = datasets.map((ds, i) => chart.getDatasetMeta(i));
+                
+                const barWidth = 16;
+                const cornerRadius = 8;
+                
+                // Fixed layer order (bottom to top): sleep(black), health(white), studio(cyan), pink(magenta), creative(yellow)
+                const layerColors = ['#000000', '#FFFFFF', '#00FFFF', '#FF00FF', '#FFFF00'];
+                
+                // Process stacked layers (first 5 datasets), skip rating line (last dataset)
+                const stackedDatasets = datasets.slice(0, 5);
+                const numPoints = stackedDatasets[0].data.length;
+                
+                for (let pointIdx = 0; pointIdx < numPoints; pointIdx++) {
+                    // Get x position from first dataset's meta
+                    const firstPoint = metas[0].data[pointIdx];
+                    if (!firstPoint) continue;
+                    
+                    const x = firstPoint.x;
+                    const bottom = scales.y.getPixelForValue(0);
+                    
+                    // Calculate cumulative positions ourselves in fixed order
+                    let cumulative = 0;
+                    const boundaries = [{ y: bottom, color: '#000000' }];
+                    
+                    for (let idx = 0; idx < stackedDatasets.length; idx++) {
+                        const dataValue = stackedDatasets[idx].data[pointIdx].y || 0;
+                        cumulative += dataValue;
+                        boundaries.push({
+                            y: scales.y.getPixelForValue(cumulative),
+                            color: layerColors[idx]
+                        });
+                    }
+                    
+                    // Find the topmost non-zero layer
+                    let topLayerIdx = 0;
+                    for (let i = boundaries.length - 1; i >= 1; i--) {
+                        if (Math.abs(boundaries[i].y - boundaries[i-1].y) >= 1) {
+                            topLayerIdx = i;
+                            break;
+                        }
+                    }
+                    
+                    // Draw bars for each layer
+                    for (let i = 1; i < boundaries.length; i++) {
+                        const bottomY = boundaries[i-1].y;
+                        const topY = boundaries[i].y;
+                        const height = bottomY - topY;
                         
-                        // Draw blended dots between each boundary pair FIRST
-                        for (let b = 0; b < boundaries.length - 1; b++) {
-                            const bottomBound = boundaries[b];
-                            const topBound = boundaries[b + 1];
-                            
-                            // Skip if layer has no height
-                            if (Math.abs(bottomBound.y - topBound.y) < 1) continue;
-                            
-                            for (let d = 1; d <= dotsPerGap; d++) {
-                                const ratio = d / (dotsPerGap + 1);
-                                const y = bottomBound.y + (topBound.y - bottomBound.y) * ratio;
-                                const blendedColor = blendColors(bottomBound.color, topBound.color, ratio);
-                                
-                                ctx.save();
-                                ctx.fillStyle = blendedColor;
-                                ctx.beginPath();
-                                ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
-                                ctx.fill();
-                                ctx.restore();
-                            }
+                        // Skip if layer has no height
+                        if (height < 1) continue;
+                        
+                        const color = boundaries[i].color;
+                        const isTopLayer = (i === topLayerIdx);
+                        
+                        ctx.save();
+                        ctx.fillStyle = color;
+                        ctx.beginPath();
+                        
+                        if (isTopLayer) {
+                            // Top layer: rounded top corners
+                            ctx.moveTo(x - barWidth/2, bottomY);
+                            ctx.lineTo(x - barWidth/2, topY + cornerRadius);
+                            ctx.quadraticCurveTo(x - barWidth/2, topY, x - barWidth/2 + cornerRadius, topY);
+                            ctx.lineTo(x + barWidth/2 - cornerRadius, topY);
+                            ctx.quadraticCurveTo(x + barWidth/2, topY, x + barWidth/2, topY + cornerRadius);
+                            ctx.lineTo(x + barWidth/2, bottomY);
+                            ctx.closePath();
+                        } else {
+                            // Other layers: simple rectangle
+                            ctx.rect(x - barWidth/2, topY, barWidth, height);
                         }
                         
-                        // Draw solid dots at each layer boundary ON TOP
-                        for (let i = 1; i < boundaries.length; i++) {
-                            // Skip if this layer has same position as previous (0 hours)
-                            if (Math.abs(boundaries[i].y - boundaries[i-1].y) < 1) continue;
-                            
-                            ctx.save();
-                            ctx.fillStyle = boundaries[i].color;
-                            ctx.beginPath();
-                            ctx.arc(x, boundaries[i].y, dotRadius, 0, Math.PI * 2);
-                            ctx.fill();
-                            ctx.restore();
-                        }
+                        ctx.fill();
+                        ctx.restore();
+                    }
+                }
+            }
+        };
 
-                        // Draw small white dots on top of ALL boundaries
-                        for (let i = 1; i < boundaries.length; i++) {
-                            // Skip if this layer has same position as previous (0 hours)
-                            if (Math.abs(boundaries[i].y - boundaries[i-1].y) < 1) continue;
-                            
-                            ctx.save();
-                            ctx.fillStyle = '#FFFFFF';
-                            ctx.beginPath();
-                            ctx.arc(x, boundaries[i].y, smallDotRadius, 0, Math.PI * 2);
-                            ctx.fill();
-                            ctx.restore();
-                        }
+        const yAxisConfig = chartMode === 'percent' ? {
+            min: -5,
+            max: 105,
+            ticks: {
+                color: '#FFFFFF',
+                font: { size: 10 },
+                callback: function(value) {
+                    if (value === 0 || value === 25 || value === 50 || value === 75 || value === 100) {
+                        return value;
                     }
+                    return '';
                 }
-            };
+            },
+            grid: {
+                color: function(context) {
+                    const value = context.tick.value;
+                    if (value === 0 || value === 25 || value === 50 || value === 75 || value === 100) {
+                        return '#333333';
+                    }
+                    return 'transparent';
+                }
+            }
+        } : {
+            min: 0,
+            max: 24,
+            ticks: {
+                color: '#FFFFFF',
+                font: { size: 10 },
+                callback: function(value) {
+                    if (value === 0 || value === 24) {
+                        return value;
+                    }
+                    return '';
+                }
+            },
+            grid: {
+                color: function(context) {
+                    const value = context.tick.value;
+                    if (value === 0 || value === 24) {
+                        return '#333333';
+                    }
+                    return 'transparent';
+                }
+            }
+        };
 
-            const yAxisConfig = chartMode === 'percent' ? {
-                min: -5,
-                max: 105,
-                ticks: {
-                    color: '#FFFFFF',
-                    font: { size: 10 },
-                    callback: function(value) {
-                        if (value === 0 || value === 25 || value === 50 || value === 75 || value === 100) {
-                            return value;
-                        }
-                        return '';
-                    }
-                },
-                grid: {
-                    color: function(context) {
-                        const value = context.tick.value;
-                        if (value === 0 || value === 25 || value === 50 || value === 75 || value === 100) {
-                            return '#333333';
-                        }
-                        return 'transparent';
-                    }
-                }
-            } : {
-                min: 0,
-                max: 24,
-                ticks: {
-                    color: '#FFFFFF',
-                    font: { size: 10 },
-                    callback: function(value) {
-                        if (value === 0 || value === 24) {
-                            return value;
-                        }
-                        return '';
-                    }
-                },
-                grid: {
-                    color: function(context) {
-                        const value = context.tick.value;
-                        if (value === 0 || value === 24) {
-                            return '#333333';
-                        }
-                        return 'transparent';
-                    }
-                }
-            };
-
-            // Percent mode: line order (back to front): white, yellow, cyan, magenta
-            // Lines hidden (borderWidth: 0), dots drawn by plugin
-            const datasets = chartMode === 'percent' ? [
-                {
-                    label: 'Rating',
-                    data: chartData.map(d => ({ x: d.x, y: d.rating })),
-                    borderColor: '#FFFFFF',
-                    backgroundColor: '#FFFFFF',
-                    borderWidth: 1,
-                    pointRadius: 0,
-                    pointHoverRadius: 4,
-                    tension: 0.4,
-                    spanGaps: false,
-                    order: 4
-                },
-                {
-                    label: 'Yellow',
-                    data: chartData.map(d => ({ x: d.x, y: d.yellow })),
-                    borderColor: '#FFFF00',
-                    backgroundColor: '#FFFF00',
-                    borderWidth: 1,
-                    pointRadius: 0,
-                    pointHoverRadius: 4,
-                    tension: 0.4,
-                    spanGaps: false,
-                    order: 3
-                },
-                {
-                    label: 'Cyan',
-                    data: chartData.map(d => ({ x: d.x, y: d.cyan })),
-                    borderColor: '#00FFFF',
-                    backgroundColor: '#00FFFF',
-                    borderWidth: 1,
-                    pointRadius: 0,
-                    pointHoverRadius: 4,
-                    tension: 0.4,
-                    spanGaps: false,
-                    order: 2
-                },
-                {
-                    label: 'Magenta',
-                    data: chartData.map(d => ({ x: d.x, y: d.magenta })),
-                    borderColor: '#FF00FF',
-                    backgroundColor: '#FF00FF',
-                    borderWidth: 1,
-                    pointRadius: 0,
-                    pointHoverRadius: 4,
-                    tension: 0.4,
-                    spanGaps: false,
-                    order: 1
-                }
-            ] : [
-                // Hours mode: Stacked lines with transparent fill, dots drawn by plugin
-                // Dataset order determines visual stacking - first = bottom, last = top
-                // Desired bottom-to-top: black(sleep), white(health), cyan(studio), magenta(pink), yellow(creative)
-                {
-                    label: 'Sleep',
-                    data: chartData.map(d => ({ x: d.x, y: d.black })),
-                    borderWidth: 0,
-                    backgroundColor: 'transparent',
-                    fill: true,
-                    pointRadius: 0,
-                    tension: 0.4,
-                    stack: 'hours',
-                    order: 5
-                },
-                {
-                    label: 'Health',
-                    data: chartData.map(d => ({ x: d.x, y: d.white })),
-                    borderWidth: 0,
-                    backgroundColor: 'transparent',
-                    fill: true,
-                    pointRadius: 0,
-                    tension: 0.4,
-                    stack: 'hours',
-                    order: 4
-                },
-                {
-                    label: 'Studio',
-                    data: chartData.map(d => ({ x: d.x, y: d.cyan })),
-                    borderWidth: 0,
-                    backgroundColor: 'transparent',
-                    fill: true,
-                    pointRadius: 0,
-                    tension: 0.4,
-                    stack: 'hours',
-                    order: 3
-                },
-                {
-                    label: 'pinkProportion',
-                    data: chartData.map(d => ({ x: d.x, y: d.magenta })),
-                    borderWidth: 0,
-                    backgroundColor: 'transparent',
-                    fill: true,
-                    pointRadius: 0,
-                    tension: 0.4,
-                    stack: 'hours',
-                    order: 2
-                },
-                {
-                    label: 'Creative',
-                    data: chartData.map(d => ({ x: d.x, y: d.yellow })),
-                    borderWidth: 0,
-                    backgroundColor: 'transparent',
-                    fill: true,
-                    pointRadius: 0,
-                    tension: 0.4,
-                    stack: 'hours',
-                    order: 1
-                },
-                // Rating line (dashed white) - drawn on top
-                {
-                    label: 'Daily Rating',
-                    data: chartData.map(d => ({ x: d.x, y: d.rating })),
-                    borderColor: '#FFFFFF',
-                    backgroundColor: 'transparent',
-                    borderWidth: 1,
-                    borderDash: [5, 5],
-                    pointRadius: 0,
-                    pointHoverRadius: 0,
-                    tension: 0.4,
-                    type: 'line',
-                    fill: false,
-                    spanGaps: false,
-                    order: 0
-                }
-            ];
-
-            chart = new Chart(ctx, {
+        // Percent mode: line order (back to front): white, yellow, cyan, magenta
+        // Lines hidden (borderWidth: 0), dots drawn by plugin
+        const datasets = chartMode === 'percent' ? [
+            {
+                label: 'Rating',
+                data: chartData.map(d => ({ x: d.x, y: d.rating })),
+                borderColor: '#FFFFFF',
+                backgroundColor: '#FFFFFF',
+                borderWidth: 1,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                tension: 0.4,
+                spanGaps: false,
+                order: 4
+            },
+            {
+                label: 'Yellow',
+                data: chartData.map(d => ({ x: d.x, y: d.yellow })),
+                borderColor: '#FFFF00',
+                backgroundColor: '#FFFF00',
+                borderWidth: 1,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                tension: 0.4,
+                spanGaps: false,
+                order: 3
+            },
+            {
+                label: 'Cyan',
+                data: chartData.map(d => ({ x: d.x, y: d.cyan })),
+                borderColor: '#00FFFF',
+                backgroundColor: '#00FFFF',
+                borderWidth: 1,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                tension: 0.4,
+                spanGaps: false,
+                order: 2
+            },
+            {
+                label: 'Magenta',
+                data: chartData.map(d => ({ x: d.x, y: d.magenta })),
+                borderColor: '#FF00FF',
+                backgroundColor: '#FF00FF',
+                borderWidth: 1,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                tension: 0.4,
+                spanGaps: false,
+                order: 1
+            }
+        ] : [
+            // Hours mode: Stacked lines with transparent fill, dots drawn by plugin
+            // Dataset order determines visual stacking - first = bottom, last = top
+            // Desired bottom-to-top: black(sleep), white(health), cyan(studio), magenta(pink), yellow(creative)
+            {
+                label: 'Sleep',
+                data: chartData.map(d => ({ x: d.x, y: d.black })),
+                borderWidth: 0,
+                backgroundColor: 'transparent',
+                fill: true,
+                pointRadius: 0,
+                tension: 0.4,
+                stack: 'hours',
+                order: 5
+            },
+            {
+                label: 'Health',
+                data: chartData.map(d => ({ x: d.x, y: d.white })),
+                borderWidth: 0,
+                backgroundColor: 'transparent',
+                fill: true,
+                pointRadius: 0,
+                tension: 0.4,
+                stack: 'hours',
+                order: 4
+            },
+            {
+                label: 'Studio',
+                data: chartData.map(d => ({ x: d.x, y: d.cyan })),
+                borderWidth: 0,
+                backgroundColor: 'transparent',
+                fill: true,
+                pointRadius: 0,
+                tension: 0.4,
+                stack: 'hours',
+                order: 3
+            },
+            {
+                label: 'pinkProportion',
+                data: chartData.map(d => ({ x: d.x, y: d.magenta })),
+                borderWidth: 0,
+                backgroundColor: 'transparent',
+                fill: true,
+                pointRadius: 0,
+                tension: 0.4,
+                stack: 'hours',
+                order: 2
+            },
+            {
+                label: 'Creative',
+                data: chartData.map(d => ({ x: d.x, y: d.yellow })),
+                borderWidth: 0,
+                backgroundColor: 'transparent',
+                fill: true,
+                pointRadius: 0,
+                tension: 0.4,
+                stack: 'hours',
+                order: 1
+            },
+            // Rating line (dashed white) - drawn on top
+            {
+                label: 'Daily Rating',
+                data: chartData.map(d => ({ x: d.x, y: d.rating })),
+                borderColor: '#FFFFFF',
+                backgroundColor: 'transparent',
+                borderWidth: 1,
+                borderDash: [5, 5],
+                pointRadius: 0,
+                pointHoverRadius: 0,
+                tension: 0.4,
                 type: 'line',
-                data: { datasets: datasets },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    onClick: (event, elements) => {
-                        if (elements.length > 0) {
-                            const dataIndex = elements[0].index;
-                            const timestamp = chartData[dataIndex].originalTimestamp;
-                            showDataPopup(timestamp);
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            ...yAxisConfig,
-                            stacked: chartMode === 'hours'
-                        },
-                        x: {
-                            type: 'time',
-                            time: {
-                                unit: 'hour',
-                                stepSize: 6,
-                                displayFormats: {
-                                    hour: 'M-d-yy'
-                                },
-                                tooltipFormat: 'MMM d, h:mm a'
-                            },
-                            ticks: {
-                                display: false
-                            },
-                            grid: {
-                                display: false
-                            },
-                            stacked: chartMode === 'hours'
-                        }
+                fill: false,
+                spanGaps: false,
+                order: 0
+            }
+        ];
+
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: { datasets: datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                onClick: (event, elements) => {
+                    if (elements.length > 0) {
+                        const dataIndex = elements[0].index;
+                        const timestamp = chartData[dataIndex].originalTimestamp;
+                        showDataPopup(timestamp);
                     }
                 },
-                plugins: [indicatorLinePlugin, percentDotsPlugin, hoursDotsPlugin]
-            });
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        ...yAxisConfig,
+                        stacked: chartMode === 'hours'
+                    },
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'hour',
+                            stepSize: 6,
+                            displayFormats: {
+                                hour: 'M-d-yy'
+                            },
+                            tooltipFormat: 'MMM d, h:mm a'
+                        },
+                        ticks: {
+                            display: false
+                        },
+                        grid: {
+                            display: false
+                        },
+                        stacked: chartMode === 'hours'
+                    }
+                }
+            },
+            plugins: [indicatorLinePlugin, percentDotsPlugin, hoursDotsPlugin]
+        });
 
-            // Update date range display
-            if (chartData.length > 0) {
-                const startDate = chartData[0].x;
-                const endDate = chartData[chartData.length - 1].x;
-                const formatDate = (d) => `${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(-2)}`;
-                document.getElementById('dateStart').textContent = formatDate(startDate);
-                document.getElementById('dateEnd').textContent = formatDate(endDate);
-            } else {
-                document.getElementById('dateStart').textContent = '';
-                document.getElementById('dateEnd').textContent = '';
-            }
+        // Update date range display
+        if (chartData.length > 0) {
+            const startDate = chartData[0].x;
+            const endDate = chartData[chartData.length - 1].x;
+            const formatDate = (d) => `${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(-2)}`;
+            document.getElementById('dateStart').textContent = formatDate(startDate);
+            document.getElementById('dateEnd').textContent = formatDate(endDate);
+        } else {
+            document.getElementById('dateStart').textContent = '';
+            document.getElementById('dateEnd').textContent = '';
+        }
+    }
+
+    // ============================================
+    // QUIZ LOGIC
+    // ============================================
+    function startQuiz() {
+        currentQuestionIndex = 0;
+        responses = {};
+        showScreen('quizScreen');
+        renderQuestion();
+        initCardDragHandlers();
+    }
+
+    function initCardDragHandlers() {
+        const card = document.getElementById('card');
+        if (!card) return;
+
+        card.removeEventListener('mousedown', startDrag);
+        card.removeEventListener('touchstart', startDrag);
+
+        card.addEventListener('mousedown', startDrag);
+        card.addEventListener('touchstart', startDrag, { passive: false });
+
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('touchmove', drag, { passive: false });
+        document.addEventListener('mouseup', endDrag);
+        document.addEventListener('touchend', endDrag);
+    }
+
+    function renderQuestion() {
+        const question = questions[currentQuestionIndex];
+        const card = document.getElementById('card');
+        const sectionLabel = document.getElementById('sectionLabel');
+        const cardContent = document.getElementById('cardContent');
+        const progressBar = document.getElementById('progressBar');
+
+        // Stop recording if moving away from text card
+        if (question.type !== 'text') {
+            stopRecording();
         }
 
-        // ============================================
-        // QUIZ LOGIC
-        // ============================================
-        function startQuiz() {
-            currentQuestionIndex = 0;
-            responses = {};
-            showScreen('quizScreen');
-            renderQuestion();
-            initCardDragHandlers();
-        }
+        card.style.backgroundColor = '#0D0D0D';
+        card.style.borderColor = COLOR_MAP[question.color];
+        card.style.transform = 'none';
 
-        function initCardDragHandlers() {
-            const card = document.getElementById('card');
-            if (!card) return;
+        // Section label with icon
+        let icon = '';
+        if (question.section === 'morning') icon = SUN_ICON;
+        else if (question.section === 'evening') icon = MOON_ICON;
 
-            card.removeEventListener('mousedown', startDrag);
-            card.removeEventListener('touchstart', startDrag);
+        sectionLabel.innerHTML = icon + `<span>${SECTION_LABELS[question.section]}</span>`;
+        sectionLabel.style.color = COLOR_MAP[question.color];
 
-            card.addEventListener('mousedown', startDrag);
-            card.addEventListener('touchstart', startDrag, { passive: false });
+        const progress = (currentQuestionIndex / questions.length) * 100;
+        progressBar.style.width = `${progress}%`;
 
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('touchmove', drag, { passive: false });
-            document.addEventListener('mouseup', endDrag);
-            document.addEventListener('touchend', endDrag);
-        }
+        const colorHex = COLOR_MAP[question.color];
 
-        function renderQuestion() {
-            const question = questions[currentQuestionIndex];
-            const card = document.getElementById('card');
-            const sectionLabel = document.getElementById('sectionLabel');
-            const cardContent = document.getElementById('cardContent');
-            const progressBar = document.getElementById('progressBar');
-
-            // Stop recording if moving away from text card
-            if (question.type !== 'text') {
-                stopRecording();
-            }
-
-            card.style.backgroundColor = '#0D0D0D';
-            card.style.borderColor = COLOR_MAP[question.color];
-            card.style.transform = 'none';
-
-            // Section label with icon
-            let icon = '';
-            if (question.section === 'morning') icon = SUN_ICON;
-            else if (question.section === 'evening') icon = MOON_ICON;
-
-            sectionLabel.innerHTML = icon + `<span>${SECTION_LABELS[question.section]}</span>`;
-            sectionLabel.style.color = COLOR_MAP[question.color];
-
-            const progress = (currentQuestionIndex / questions.length) * 100;
-            progressBar.style.width = `${progress}%`;
-
-            const colorHex = COLOR_MAP[question.color];
-
-            if (question.type === 'yesno') {
-                cardContent.innerHTML = `<div class="question-text" style="color: ${colorHex}">${question.text}</div>`;
-            } else if (question.type === 'text') {
-                cardContent.innerHTML = `
-                    <div class="text-input-container">
-                        <textarea 
-                            id="textInput" 
-                            class="text-input" 
-                            placeholder="tap to type or use microphone..."
-                        ></textarea>
-                        <div class="input-controls">
-                            <button id="micBtn" class="mic-btn" onclick="toggleRecording()">
-                                ${MIC_ICON}
-                                <span>record</span>
-                            </button>
-                            <button class="submit-btn" onclick="submitText()">
-                                submit
-                            </button>
-                        </div>
-                    </div>
-                `;
-            } else if (question.type === 'rating') {
-                const values = [2, 1, 0, -1, -2];
-                cardContent.innerHTML = `<div class="rating-container">
-                    ${values.map(val => `
-                        <div class="rating-circle" 
-                             data-value="${val}"
-                             style="border-color: ${colorHex}; color: ${colorHex};"
-                             onclick="selectRating(${val})">
-                            ${val > 0 ? '+' + val : val}
-                        </div>
-                    `).join('')}
-                </div>`;
-            } else if (question.type === 'hours') {
-                cardContent.innerHTML = `
-                    <div class="slider-container">
-                        <div class="question-text" style="color: ${colorHex}; font-size: 24px; margin-bottom: 20px;">${question.text}</div>
-                        <div class="slider-value" id="sliderValue" style="color: ${colorHex}">0</div>
-                        <div class="slider-wrapper">
-                            <input 
-                                type="range" 
-                                min="0" 
-                                max="12" 
-                                value="0" 
-                                class="hour-slider" 
-                                id="hourSlider"
-                                style="background: linear-gradient(to right, ${colorHex} 0%, #1A1A1A 0%);"
-                                oninput="updateSliderValue(this.value, '${colorHex}')"
-                            />
-                            <div class="slider-labels">
-                                <span>0</span>
-                                <span>6</span>
-                                <span>12</span>
-                            </div>
-                        </div>
-                        <button class="submit-btn" onclick="submitHours()" style="margin-top: 40px;">
+        if (question.type === 'yesno') {
+            cardContent.innerHTML = `<div class="question-text" style="color: ${colorHex}">${question.text}</div>`;
+        } else if (question.type === 'text') {
+            cardContent.innerHTML = `
+                <div class="text-input-container">
+                    <textarea 
+                        id="textInput" 
+                        class="text-input" 
+                        placeholder="tap to type or use microphone..."
+                    ></textarea>
+                    <div class="input-controls">
+                        <button id="micBtn" class="mic-btn" onclick="toggleRecording()">
+                            ${MIC_ICON}
+                            <span>record</span>
+                        </button>
+                        <button class="submit-btn" onclick="submitText()">
                             submit
                         </button>
                     </div>
-                `;
+                </div>
+            `;
+        } else if (question.type === 'rating') {
+            const values = [2, 1, 0, -1, -2];
+            cardContent.innerHTML = `<div class="rating-container">
+                ${values.map(val => `
+                    <div class="rating-circle" 
+                         data-value="${val}"
+                         style="border-color: ${colorHex}; color: ${colorHex};"
+                         onclick="selectRating(${val})">
+                        ${val > 0 ? '+' + val : val}
+                    </div>
+                `).join('')}
+            </div>`;
+        } else if (question.type === 'hours') {
+            cardContent.innerHTML = `
+                <div class="slider-container">
+                    <div class="question-text" style="color: ${colorHex}; font-size: 24px; margin-bottom: 20px;">${question.text}</div>
+                    <div class="slider-value" id="sliderValue" style="color: ${colorHex}">0</div>
+                    <div class="slider-wrapper">
+                        <input 
+                            type="range" 
+                            min="0" 
+                            max="12" 
+                            value="0" 
+                            class="hour-slider" 
+                            id="hourSlider"
+                            style="background: linear-gradient(to right, ${colorHex} 0%, #1A1A1A 0%);"
+                            oninput="updateSliderValue(this.value, '${colorHex}')"
+                        />
+                        <div class="slider-labels">
+                            <span>0</span>
+                            <span>6</span>
+                            <span>12</span>
+                        </div>
+                    </div>
+                    <button class="submit-btn" onclick="submitHours()" style="margin-top: 40px;">
+                        submit
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    function updateSliderValue(value, color) {
+        document.getElementById('sliderValue').textContent = value;
+        const slider = document.getElementById('hourSlider');
+        const percentage = (value / 12) * 100;
+        slider.style.background = `linear-gradient(to right, ${color} ${percentage}%, #1A1A1A ${percentage}%)`;
+    }
+
+    function submitText() {
+        const textInput = document.getElementById('textInput');
+        const question = questions[currentQuestionIndex];
+        responses[question.id] = textInput.value.trim();
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+            renderQuestion();
+        } else {
+            completeQuiz();
+        }
+    }
+
+    function submitHours() {
+        const slider = document.getElementById('hourSlider');
+        const question = questions[currentQuestionIndex];
+        responses[question.id] = slider.value;
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+            renderQuestion();
+        } else {
+            completeQuiz();
+        }
+    }
+
+    function selectRating(value) {
+        const question = questions[currentQuestionIndex];
+        const circles = document.querySelectorAll('.rating-circle');
+        
+        circles.forEach(circle => {
+            const circleValue = parseInt(circle.getAttribute('data-value'));
+            if (circleValue <= value) {
+                circle.style.backgroundColor = COLOR_MAP[question.color];
             }
-        }
+        });
 
-        function updateSliderValue(value, color) {
-            document.getElementById('sliderValue').textContent = value;
-            const slider = document.getElementById('hourSlider');
-            const percentage = (value / 12) * 100;
-            slider.style.background = `linear-gradient(to right, ${color} ${percentage}%, #1A1A1A ${percentage}%)`;
-        }
+        responses[question.id] = value;
 
-        function submitText() {
-            const textInput = document.getElementById('textInput');
-            const question = questions[currentQuestionIndex];
-            responses[question.id] = textInput.value.trim();
+        setTimeout(() => {
             currentQuestionIndex++;
             if (currentQuestionIndex < questions.length) {
                 renderQuestion();
             } else {
                 completeQuiz();
             }
+        }, 300);
+    }
+
+    async function completeQuiz() {
+        const timestamp = new Date().toISOString();
+        
+        // Get location
+        const location = await getLocation();
+        
+        const data = {
+            timestamp,
+            ...responses
+        };
+        
+        if (location) {
+            data.loc = location;
         }
 
-        function submitHours() {
-            const slider = document.getElementById('hourSlider');
-            const question = questions[currentQuestionIndex];
-            responses[question.id] = slider.value;
-            currentQuestionIndex++;
-            if (currentQuestionIndex < questions.length) {
-                renderQuestion();
+        await saveToSheet(data);
+        showScreen('chartScreen');
+    }
+
+    // ============================================
+    // DRAG HANDLERS
+    // ============================================
+    function startDrag(e) {
+        const question = questions[currentQuestionIndex];
+        if (question.type === 'rating' || question.type === 'text' || question.type === 'hours') return;
+
+        e.preventDefault();
+        isDragging = true;
+        dragStartX = e.touches ? e.touches[0].clientX : e.clientX;
+        dragOffset = 0;
+
+        const card = document.getElementById('card');
+        if (card) card.classList.add('dragging');
+    }
+
+    function drag(e) {
+        if (!isDragging) return;
+
+        const question = questions[currentQuestionIndex];
+        const currentX = e.touches ? e.touches[0].clientX : e.clientX;
+        dragOffset = currentX - window.innerWidth / 2;
+
+        const card = document.getElementById('card');
+        if (!card) return;
+
+        const rotation = dragOffset * 0.1;
+        card.style.transform = `translateX(${dragOffset}px) rotate(${rotation}deg)`;
+
+        if (Math.abs(dragOffset) > 50) {
+            if (dragOffset > 0) {
+                card.style.backgroundColor = COLOR_MAP[question.color] + '20';
             } else {
-                completeQuiz();
+                card.style.backgroundColor = '#1A1A1A';
             }
+        } else {
+            card.style.backgroundColor = '#0D0D0D';
         }
+    }
 
-        function selectRating(value) {
-            const question = questions[currentQuestionIndex];
-            const circles = document.querySelectorAll('.rating-circle');
-            
-            circles.forEach(circle => {
-                const circleValue = parseInt(circle.getAttribute('data-value'));
-                if (circleValue <= value) {
-                    circle.style.backgroundColor = COLOR_MAP[question.color];
-                }
-            });
+    function endDrag() {
+        if (!isDragging) return;
 
-            responses[question.id] = value;
+        const question = questions[currentQuestionIndex];
+        const card = document.getElementById('card');
+        
+        if (Math.abs(dragOffset) > 150) {
+            const answer = dragOffset > 0 ? 'yes' : 'no';
+            responses[question.id] = answer;
+
+            card.style.transition = 'transform 0.3s ease';
+            card.style.transform = `translateX(${dragOffset > 0 ? '1000px' : '-1000px'}) rotate(${dragOffset > 0 ? '30deg' : '-30deg'})`;
 
             setTimeout(() => {
+                card.style.transition = '';
                 currentQuestionIndex++;
                 if (currentQuestionIndex < questions.length) {
                     renderQuestion();
@@ -2009,187 +2063,106 @@
                     completeQuiz();
                 }
             }, 300);
+        } else {
+            card.style.transform = 'none';
+            card.style.backgroundColor = '#0D0D0D';
         }
 
-        async function completeQuiz() {
-            const timestamp = new Date().toISOString();
-            
-            // Get location
-            const location = await getLocation();
-            
-            const data = {
-                timestamp,
-                ...responses
-            };
-            
-            if (location) {
-                data.loc = location;
-            }
+        isDragging = false;
+        dragOffset = 0;
+        if (card) card.classList.remove('dragging');
+    }
 
-            await saveToSheet(data);
-            showScreen('chartScreen');
-        }
+    // ============================================
+    // SPEECH RECOGNITION
+    // ============================================
+    function initSpeechRecognition() {
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
 
-        // ============================================
-        // DRAG HANDLERS
-        // ============================================
-        function startDrag(e) {
-            const question = questions[currentQuestionIndex];
-            if (question.type === 'rating' || question.type === 'text' || question.type === 'hours') return;
+            recognition.onresult = (event) => {
+                const textInput = document.getElementById('textInput');
+                if (!textInput) return;
 
-            e.preventDefault();
-            isDragging = true;
-            dragStartX = e.touches ? e.touches[0].clientX : e.clientX;
-            dragOffset = 0;
+                let finalTranscript = '';
+                let interimTranscript = '';
 
-            const card = document.getElementById('card');
-            if (card) card.classList.add('dragging');
-        }
-
-        function drag(e) {
-            if (!isDragging) return;
-
-            const question = questions[currentQuestionIndex];
-            const currentX = e.touches ? e.touches[0].clientX : e.clientX;
-            dragOffset = currentX - window.innerWidth / 2;
-
-            const card = document.getElementById('card');
-            if (!card) return;
-
-            const rotation = dragOffset * 0.1;
-            card.style.transform = `translateX(${dragOffset}px) rotate(${rotation}deg)`;
-
-            if (Math.abs(dragOffset) > 50) {
-                if (dragOffset > 0) {
-                    card.style.backgroundColor = COLOR_MAP[question.color] + '20';
-                } else {
-                    card.style.backgroundColor = '#1A1A1A';
-                }
-            } else {
-                card.style.backgroundColor = '#0D0D0D';
-            }
-        }
-
-        function endDrag() {
-            if (!isDragging) return;
-
-            const question = questions[currentQuestionIndex];
-            const card = document.getElementById('card');
-            
-            if (Math.abs(dragOffset) > 150) {
-                const answer = dragOffset > 0 ? 'yes' : 'no';
-                responses[question.id] = answer;
-
-                card.style.transition = 'transform 0.3s ease';
-                card.style.transform = `translateX(${dragOffset > 0 ? '1000px' : '-1000px'}) rotate(${dragOffset > 0 ? '30deg' : '-30deg'})`;
-
-                setTimeout(() => {
-                    card.style.transition = '';
-                    currentQuestionIndex++;
-                    if (currentQuestionIndex < questions.length) {
-                        renderQuestion();
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript + ' ';
                     } else {
-                        completeQuiz();
+                        interimTranscript += transcript;
                     }
-                }, 300);
-            } else {
-                card.style.transform = 'none';
-                card.style.backgroundColor = '#0D0D0D';
-            }
+                }
 
-            isDragging = false;
-            dragOffset = 0;
-            if (card) card.classList.remove('dragging');
-        }
+                textInput.value = (textInput.value + finalTranscript).trim();
+            };
 
-        // ============================================
-        // SPEECH RECOGNITION
-        // ============================================
-        function initSpeechRecognition() {
-            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                recognition = new SpeechRecognition();
-                recognition.continuous = true;
-                recognition.interimResults = true;
-                recognition.lang = 'en-US';
-
-                recognition.onresult = (event) => {
-                    const textInput = document.getElementById('textInput');
-                    if (!textInput) return;
-
-                    let finalTranscript = '';
-                    let interimTranscript = '';
-
-                    for (let i = event.resultIndex; i < event.results.length; i++) {
-                        const transcript = event.results[i][0].transcript;
-                        if (event.results[i].isFinal) {
-                            finalTranscript += transcript + ' ';
-                        } else {
-                            interimTranscript += transcript;
-                        }
-                    }
-
-                    textInput.value = (textInput.value + finalTranscript).trim();
-                };
-
-                recognition.onerror = (event) => {
-                    console.error('Speech recognition error:', event.error);
-                    stopRecording();
-                };
-            }
-        }
-
-        function toggleRecording() {
-            if (!recognition) {
-                alert('Speech recognition not supported in this browser');
-                return;
-            }
-
-            if (isRecording) {
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
                 stopRecording();
-            } else {
-                startRecording();
-            }
+            };
+        }
+    }
+
+    function toggleRecording() {
+        if (!recognition) {
+            alert('Speech recognition not supported in this browser');
+            return;
         }
 
-        function startRecording() {
-            if (!recognition) return;
-
-            try {
-                recognition.start();
-                isRecording = true;
-                const micBtn = document.getElementById('micBtn');
-                if (micBtn) {
-                    micBtn.classList.add('recording');
-                }
-            } catch (error) {
-                console.error('Error starting recording:', error);
-            }
+        if (isRecording) {
+            stopRecording();
+        } else {
+            startRecording();
         }
+    }
 
-        function stopRecording() {
-            if (!recognition || !isRecording) return;
+    function startRecording() {
+        if (!recognition) return;
 
-            try {
-                recognition.stop();
-                isRecording = false;
-                const micBtn = document.getElementById('micBtn');
-                if (micBtn) {
-                    micBtn.classList.remove('recording');
-                }
-            } catch (error) {
-                console.error('Error stopping recording:', error);
+        try {
+            recognition.start();
+            isRecording = true;
+            const micBtn = document.getElementById('micBtn');
+            if (micBtn) {
+                micBtn.classList.add('recording');
             }
+        } catch (error) {
+            console.error('Error starting recording:', error);
         }
+    }
 
-        // ============================================
-        // INITIALIZATION
-        // ============================================
-        window.onload = () => {
-            initializeGoogleAuth();
-            initPopupDragHandlers();
-            initSpeechRecognition();
-        };
-    </script>
+    function stopRecording() {
+        if (!recognition || !isRecording) return;
+
+        try {
+            recognition.stop();
+            isRecording = false;
+            const micBtn = document.getElementById('micBtn');
+            if (micBtn) {
+                micBtn.classList.remove('recording');
+            }
+        } catch (error) {
+            console.error('Error stopping recording:', error);
+        }
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    window.onload = () => {
+        initializeGoogleAuth();
+        initPopupDragHandlers();
+        initSpeechRecognition();
+    };
+</script>
+```
+
 </body>
 </html>
