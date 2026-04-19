@@ -771,9 +771,11 @@
         const DATA_OWNER = 'santibraby';
         const DATA_REPO = 'tenthirteen-data';
         const DATA_BRANCH = 'main';
-        const DATA_FILE = 'data.json';
+        const DATA_START_YEAR = 2025; // first year with entries; don't move backwards
+        const LEGACY_FILE = 'data.json'; // single-file format, auto-migrated on first load
         const PAT_STORAGE_KEY = 'tenthirteen_gh_pat';
-        const GH_API = `https://api.github.com/repos/${DATA_OWNER}/${DATA_REPO}/contents/${DATA_FILE}`;
+        const dataPath = (year) => `data-${year}.json`;
+        const dataUrl = (path) => `https://api.github.com/repos/${DATA_OWNER}/${DATA_REPO}/contents/${path}`;
 
         const COLOR_MAP = {
             'C': '#00FFFF',  // Cyan
@@ -802,7 +804,8 @@
         // APP STATE
         // ============================================
         let githubToken = null;
-        let dataSha = null; // SHA of data.json last loaded, needed for PUT
+        let yearData = {}; // { 2025: [entries], 2026: [entries], ... } — authoritative per-year cache
+        let yearShas = {}; // { 2025: 'sha', 2026: 'sha', ... } — needed for PUT
         let currentQuestionIndex = 0;
         let responses = {};
         let dragStartX = 0;
@@ -938,82 +941,172 @@
             });
         }
 
-        async function loadData() {
-            const res = await ghFetch(`${GH_API}?ref=${DATA_BRANCH}&t=${Date.now()}`, {
+        function entryYear(entry) {
+            return new Date(entry.timestamp).getUTCFullYear();
+        }
+
+        // Rebuild the flat, sorted quizData array that the charts consume.
+        function rebuildQuizData() {
+            const years = Object.keys(yearData).map(Number).sort((a, b) => a - b);
+            const flat = [];
+            years.forEach(y => flat.push(...yearData[y]));
+            flat.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            quizData = flat;
+        }
+
+        // GET one year's file. Returns { sha, entries } or null if 404.
+        async function loadYearFile(year) {
+            const res = await ghFetch(`${dataUrl(dataPath(year))}?ref=${DATA_BRANCH}&t=${Date.now()}`, {
                 cache: 'no-store'
             });
-            if (res.status === 401 || res.status === 403) {
-                throw new Error('AUTH');
-            }
-            if (res.status === 404) {
-                // data.json doesn't exist yet — treat as empty
-                dataSha = null;
-                quizData = [];
-                return;
-            }
-            if (!res.ok) {
-                throw new Error(`load failed: ${res.status}`);
-            }
+            if (res.status === 404) return null;
+            if (res.status === 401 || res.status === 403) throw new Error('AUTH');
+            if (!res.ok) throw new Error(`load ${dataPath(year)} failed: ${res.status}`);
             const body = await res.json();
-            dataSha = body.sha;
             let parsed = [];
             try {
                 parsed = JSON.parse(b64decodeUtf8(body.content));
             } catch (e) {
-                console.error('data.json is not valid JSON:', e);
-                parsed = [];
+                console.error(`${dataPath(year)} is not valid JSON:`, e);
             }
-            quizData = Array.isArray(parsed) ? parsed : [];
+            return {
+                sha: body.sha,
+                entries: Array.isArray(parsed) ? parsed : []
+            };
         }
 
-        async function saveData(entry) {
-            // Append to local array, then PUT whole file back with current sha.
-            const newArray = [...quizData, entry];
-            const content = b64encodeUtf8(JSON.stringify(newArray, null, 2) + '\n');
+        // GET legacy data.json, returns { sha, entries } or null if 404.
+        async function loadLegacyFile() {
+            const res = await ghFetch(`${dataUrl(LEGACY_FILE)}?ref=${DATA_BRANCH}&t=${Date.now()}`, {
+                cache: 'no-store'
+            });
+            if (res.status === 404) return null;
+            if (res.status === 401 || res.status === 403) throw new Error('AUTH');
+            if (!res.ok) throw new Error(`load ${LEGACY_FILE} failed: ${res.status}`);
+            const body = await res.json();
+            let parsed = [];
+            try {
+                parsed = JSON.parse(b64decodeUtf8(body.content));
+            } catch (e) {
+                console.error(`${LEGACY_FILE} is not valid JSON:`, e);
+            }
+            return {
+                sha: body.sha,
+                entries: Array.isArray(parsed) ? parsed : []
+            };
+        }
 
-            const putOnce = (sha) => ghFetch(GH_API, {
+        // PUT a year file with the given entries.
+        async function writeYearFile(year, entries, message) {
+            const sorted = [...entries].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            const content = b64encodeUtf8(JSON.stringify(sorted, null, 2) + '\n');
+            const sha = yearShas[year];
+            const res = await ghFetch(dataUrl(dataPath(year)), {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    message: `add entry ${entry.timestamp}`,
+                    message,
                     content,
                     branch: DATA_BRANCH,
                     ...(sha ? { sha } : {})
                 })
             });
-
-            let res = await putOnce(dataSha);
-
-            // SHA conflict: someone else wrote to data.json between our load and save.
-            // Reload and retry once with fresh state.
-            if (res.status === 409 || res.status === 422) {
-                console.warn('sha conflict, reloading and retrying...');
-                await loadData();
-                const retryArray = [...quizData, entry];
-                const retryContent = b64encodeUtf8(JSON.stringify(retryArray, null, 2) + '\n');
-                res = await ghFetch(GH_API, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: `add entry ${entry.timestamp}`,
-                        content: retryContent,
-                        branch: DATA_BRANCH,
-                        ...(dataSha ? { sha: dataSha } : {})
-                    })
-                });
-            }
-
-            if (res.status === 401 || res.status === 403) {
-                throw new Error('AUTH');
-            }
+            if (res.status === 401 || res.status === 403) throw new Error('AUTH');
             if (!res.ok) {
                 const text = await res.text().catch(() => '');
-                throw new Error(`save failed: ${res.status} ${text}`);
+                throw new Error(`write ${dataPath(year)} failed: ${res.status} ${text}`);
+            }
+            const body = await res.json();
+            yearData[year] = sorted;
+            yearShas[year] = body.content?.sha || null;
+            return body;
+        }
+
+        // One-time migration: split legacy data.json into year files, delete legacy.
+        // Safe to re-run: if year files already exist for some years, merges by timestamp.
+        async function migrateFromLegacy() {
+            const legacy = await loadLegacyFile();
+            if (!legacy) return; // nothing to migrate
+
+            setPatStatus(`migrating ${legacy.entries.length} entries into yearly files…`);
+
+            // Merge legacy entries into yearData (dedupe by timestamp).
+            legacy.entries.forEach(e => {
+                const y = entryYear(e);
+                if (!yearData[y]) yearData[y] = [];
+                const dup = yearData[y].some(existing => existing.timestamp === e.timestamp);
+                if (!dup) yearData[y].push(e);
+            });
+
+            // Write every year that has entries (replacing any existing content).
+            const years = Object.keys(yearData).map(Number).sort((a, b) => a - b);
+            for (const y of years) {
+                await writeYearFile(y, yearData[y], `migrate: create ${dataPath(y)} (${yearData[y].length} entries)`);
             }
 
-            const body = await res.json();
-            dataSha = body.content?.sha || dataSha;
-            quizData = newArray;
+            // Delete the legacy file.
+            const delRes = await ghFetch(dataUrl(LEGACY_FILE), {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: 'migrate: partition data.json into yearly files',
+                    sha: legacy.sha,
+                    branch: DATA_BRANCH
+                })
+            });
+            if (!delRes.ok && delRes.status !== 404) {
+                const text = await delRes.text().catch(() => '');
+                console.warn(`couldn't delete legacy data.json: ${delRes.status} ${text}`);
+            }
+
+            setPatStatus('');
+        }
+
+        async function loadData() {
+            yearData = {};
+            yearShas = {};
+            const currentYear = new Date().getUTCFullYear();
+
+            // Load every year file from DATA_START_YEAR to current year.
+            for (let y = DATA_START_YEAR; y <= currentYear; y++) {
+                const result = await loadYearFile(y);
+                if (result) {
+                    yearData[y] = result.entries;
+                    yearShas[y] = result.sha;
+                }
+            }
+
+            // Self-heal: if legacy data.json still exists (including after an interrupted
+            // migration), merge it in and delete it. Cheap 404 check after migration runs once.
+            await migrateFromLegacy();
+
+            rebuildQuizData();
+        }
+
+        async function saveData(entry) {
+            const year = entryYear(entry);
+            const currentEntries = yearData[year] || [];
+            const newEntries = [...currentEntries, entry];
+
+            try {
+                await writeYearFile(year, newEntries, `add entry ${entry.timestamp}`);
+            } catch (err) {
+                // SHA conflict: another device wrote to this year's file. Reload and retry once.
+                if (err.message && (err.message.includes('409') || err.message.includes('422'))) {
+                    console.warn('sha conflict on', dataPath(year), '— reloading and retrying');
+                    const reloaded = await loadYearFile(year);
+                    if (reloaded) {
+                        yearData[year] = reloaded.entries;
+                        yearShas[year] = reloaded.sha;
+                    }
+                    const retryEntries = [...(yearData[year] || []), entry];
+                    await writeYearFile(year, retryEntries, `add entry ${entry.timestamp}`);
+                } else {
+                    throw err;
+                }
+            }
+
+            rebuildQuizData();
         }
 
         // Connect flow: validate token, then load data and show chart.
@@ -1062,7 +1155,8 @@
             if (!confirm('forget the stored github token? you\'ll need to paste it again on next load.')) return;
             localStorage.removeItem(PAT_STORAGE_KEY);
             githubToken = null;
-            dataSha = null;
+            yearData = {};
+            yearShas = {};
             quizData = [];
             document.getElementById('resetLink').style.display = 'none';
             setPatStatus('');
