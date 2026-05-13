@@ -1540,6 +1540,8 @@
                     const hasSex = entry['d10'] === 'yes';
                     const hasSelfSex = entry['d11'] === 'yes';
                     const hadAlcohol = entry['d3'] === 'no';
+                    const hadWorkout = entry['e2'] === 'yes';
+                    const hadWalk = entry['m4'] === 'yes';
 
                     return {
                         originalTimestamp: entry.timestamp,
@@ -1553,7 +1555,9 @@
                         hasConflict,
                         hasSex,
                         hasSelfSex,
-                        hadAlcohol
+                        hadAlcohol,
+                        hadWorkout,
+                        hadWalk
                     };
                 });
 
@@ -1578,7 +1582,9 @@
                         pink: pinkHours,
                         creative: creativeHours,
                         rating: ratingScaled,
-                        hadAlcohol: entry['d3'] === 'no'
+                        hadAlcohol: entry['d3'] === 'no',
+                        hadWorkout: entry['e2'] === 'yes',
+                        hadWalk: entry['m4'] === 'yes'
                     };
                 });
 
@@ -1629,15 +1635,36 @@
                 ctx.stroke();
             });
 
-            // Alcohol markers: red vertical line on days alcohol was consumed
-            ctx.strokeStyle = 'rgba(255, 0, 0, 0.55)';
+            // Daily-event marker lines.
+            // Cyan = evening workout (centered on the day),
+            // Red  = alcohol consumed (offset left of cyan),
+            // Magenta = morning walk (offset right of cyan).
+            const MARKER_OFFSET = 3; // px from center on each side
             ctx.lineWidth = 1.5;
             data.forEach(d => {
+                const cx = padding.left + d.xPos * chartW;
+                // Red (alcohol) — left
                 if (d.hadAlcohol) {
-                    const x = padding.left + d.xPos * chartW;
+                    ctx.strokeStyle = 'rgba(255, 0, 0, 0.55)';
                     ctx.beginPath();
-                    ctx.moveTo(x, padding.top);
-                    ctx.lineTo(x, padding.top + chartH);
+                    ctx.moveTo(cx - MARKER_OFFSET, padding.top);
+                    ctx.lineTo(cx - MARKER_OFFSET, padding.top + chartH);
+                    ctx.stroke();
+                }
+                // Cyan (evening workout) — center
+                if (d.hadWorkout) {
+                    ctx.strokeStyle = 'rgba(0, 255, 255, 0.55)';
+                    ctx.beginPath();
+                    ctx.moveTo(cx, padding.top);
+                    ctx.lineTo(cx, padding.top + chartH);
+                    ctx.stroke();
+                }
+                // Magenta (morning walk) — right
+                if (d.hadWalk) {
+                    ctx.strokeStyle = 'rgba(255, 0, 255, 0.55)';
+                    ctx.beginPath();
+                    ctx.moveTo(cx + MARKER_OFFSET, padding.top);
+                    ctx.lineTo(cx + MARKER_OFFSET, padding.top + chartH);
                     ctx.stroke();
                 }
             });
@@ -1810,15 +1837,33 @@
                 ctx.stroke();
             });
 
-            // Alcohol markers: red vertical line on days alcohol was consumed
-            ctx.strokeStyle = 'rgba(255, 0, 0, 0.55)';
+            // Daily-event marker lines.
+            // Cyan = evening workout (centered on the day),
+            // Red  = alcohol consumed (offset left of cyan),
+            // Magenta = morning walk (offset right of cyan).
+            const MARKER_OFFSET = 3; // px from center on each side
             ctx.lineWidth = 1.5;
             data.forEach(d => {
+                const cx = padding.left + d.xPos * chartW;
                 if (d.hadAlcohol) {
-                    const x = padding.left + d.xPos * chartW;
+                    ctx.strokeStyle = 'rgba(255, 0, 0, 0.55)';
                     ctx.beginPath();
-                    ctx.moveTo(x, padding.top);
-                    ctx.lineTo(x, padding.top + chartH);
+                    ctx.moveTo(cx - MARKER_OFFSET, padding.top);
+                    ctx.lineTo(cx - MARKER_OFFSET, padding.top + chartH);
+                    ctx.stroke();
+                }
+                if (d.hadWorkout) {
+                    ctx.strokeStyle = 'rgba(0, 255, 255, 0.55)';
+                    ctx.beginPath();
+                    ctx.moveTo(cx, padding.top);
+                    ctx.lineTo(cx, padding.top + chartH);
+                    ctx.stroke();
+                }
+                if (d.hadWalk) {
+                    ctx.strokeStyle = 'rgba(255, 0, 255, 0.55)';
+                    ctx.beginPath();
+                    ctx.moveTo(cx + MARKER_OFFSET, padding.top);
+                    ctx.lineTo(cx + MARKER_OFFSET, padding.top + chartH);
                     ctx.stroke();
                 }
             });
