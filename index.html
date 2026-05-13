@@ -1636,29 +1636,31 @@
             });
 
             // Daily-event marker lines — short verticals (~30% chart height) centered on the
-            // reference dot for each event.
-            //   Red     = alcohol consumed (d3 === 'no'), centered on the white rating dot
-            //   Cyan    = evening workout  (e2 === 'yes'), centered on the cyan dot
-            //   Magenta = morning walk     (m4 === 'yes'), centered on the magenta dot
+            // reference dot for each event. Slight x-offset between markers so they don't
+            // overlap on days where reference dots land near the same y.
+            //   Red     = alcohol consumed (d3 === 'no'),  centered on white rating dot, x-offset LEFT
+            //   Cyan    = evening workout  (e2 === 'yes'), centered on cyan dot,         x-offset CENTER
+            //   Magenta = morning walk     (m4 === 'yes'), centered on magenta dot,      x-offset RIGHT
             const MARKER_LEN_RATIO = 0.30;
+            const MARKER_OFFSET = 3; // px between adjacent markers
             const markerHalf = (chartH * MARKER_LEN_RATIO) / 2;
             ctx.lineWidth = 1.5;
-            const drawMarker = (cx, val, color) => {
+            const drawMarker = (x, val, color) => {
                 if (val === null || val === undefined) return;
                 const yc = padding.top + chartH - (val / 100) * chartH;
                 const y1 = Math.max(padding.top, yc - markerHalf);
                 const y2 = Math.min(padding.top + chartH, yc + markerHalf);
                 ctx.strokeStyle = color;
                 ctx.beginPath();
-                ctx.moveTo(cx, y1);
-                ctx.lineTo(cx, y2);
+                ctx.moveTo(x, y1);
+                ctx.lineTo(x, y2);
                 ctx.stroke();
             };
             data.forEach(d => {
                 const cx = padding.left + d.xPos * chartW;
-                if (d.hadAlcohol) drawMarker(cx, d.rating,  'rgba(255, 0, 0, 0.55)');
-                if (d.hadWorkout) drawMarker(cx, d.cyan,    'rgba(0, 255, 255, 0.55)');
-                if (d.hadWalk)    drawMarker(cx, d.magenta, 'rgba(255, 0, 255, 0.55)');
+                if (d.hadAlcohol) drawMarker(cx - MARKER_OFFSET, d.rating,  'rgba(255, 0, 0, 0.55)');
+                if (d.hadWorkout) drawMarker(cx,                 d.cyan,    'rgba(0, 255, 255, 0.55)');
+                if (d.hadWalk)    drawMarker(cx + MARKER_OFFSET, d.magenta, 'rgba(255, 0, 255, 0.55)');
             });
 
             // Segment data by time gaps so lines break on skipped days
