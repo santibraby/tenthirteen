@@ -596,36 +596,47 @@
         }
         .options-panel {
             position: fixed;
-            top: 5%;
-            left: 5%;
-            width: 90%;
-            height: 90%;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50vh;
             background-color: #0D0D0D;
-            border: 2px solid #FFFFFF;
-            border-radius: 16px;
-            padding: 0;
-            overflow: hidden;
+            border-top: 1px solid #2A2A2A;
+            border-radius: 18px 18px 0 0;
+            box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.5);
             z-index: 1100;
             display: none;
             flex-direction: column;
+            overflow: hidden;
         }
         .options-panel.active {
             display: flex;
+        }
+        .options-panel::before {
+            /* grabber bar like a native bottom sheet */
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 36px;
+            height: 4px;
+            background: #3A3A3A;
+            border-radius: 2px;
         }
         .options-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 24px 12px 24px;
-            border-bottom: 1px solid #1A1A1A;
+            padding: 22px 24px 12px 24px;
         }
         .options-title {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
             text-transform: lowercase;
         }
         .options-close {
-            font-size: 28px;
+            font-size: 26px;
             color: #888;
             cursor: pointer;
             line-height: 1;
@@ -638,35 +649,35 @@
         .options-body {
             flex: 1;
             overflow-y: auto;
-            padding: 12px 24px 24px 24px;
+            padding: 4px 16px 32px 16px;
+            -webkit-overflow-scrolling: touch;
         }
         .options-section {
-            margin-bottom: 20px;
+            margin-bottom: 22px;
         }
         .options-section-name {
             font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #666;
-            margin: 8px 0 8px 0;
+            letter-spacing: 0.8px;
+            color: #888;
+            margin: 0 12px 8px 12px;
+            font-weight: 700;
+        }
+        .options-section-card {
+            background-color: #1A1A1A;
+            border-radius: 10px;
+            overflow: hidden;
         }
         .option-row {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 10px 4px;
+            gap: 14px;
+            padding: 12px 16px;
             cursor: pointer;
-            border-radius: 6px;
+            border-bottom: 1px solid #0D0D0D;
         }
-        .option-row:hover {
-            background-color: #161616;
-        }
-        .option-row input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #FFFFFF;
-            cursor: pointer;
-            margin: 0;
+        .option-row:last-child {
+            border-bottom: none;
         }
         .option-dot {
             width: 10px;
@@ -674,16 +685,54 @@
             border-radius: 50%;
             display: inline-block;
             flex-shrink: 0;
+            box-shadow: 0 0 6px currentColor;
         }
         .option-text {
             font-size: 15px;
             text-transform: lowercase;
+            flex: 1;
         }
-        .options-empty {
-            color: #666;
-            font-size: 13px;
-            text-align: center;
-            padding: 20px;
+        /* iOS-style toggle switch */
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 26px;
+            flex-shrink: 0;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #3A3A3A;
+            border-radius: 26px;
+            transition: background-color 0.2s;
+        }
+        .toggle-slider::before {
+            position: absolute;
+            content: '';
+            height: 22px;
+            width: 22px;
+            left: 2px;
+            top: 2px;
+            background-color: #FFFFFF;
+            border-radius: 50%;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+        }
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #34C759;
+        }
+        .toggle-switch input:checked + .toggle-slider::before {
+            transform: translateX(18px);
         }
 
         /* PAT input */
@@ -1356,31 +1405,40 @@
 
         function renderOptionsBody() {
             const body = document.getElementById('optionsBody');
-            const sectionOrder = ['morning', 'evening', 'daily'];
-            const sectionTitles = { morning: 'morning', evening: 'evening', daily: 'daily' };
+            // Color groups in the user's preferred display order.
+            const groups = [
+                { color: 'C', name: 'physical health' },
+                { color: 'M', name: 'mental health' },
+                { color: 'Y', name: 'social health' },
+                { color: 'W', name: 'general health' }
+            ];
             const all = getMarkerQuestions();
+            const escape = (s) => s
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
             let html = '';
-            sectionOrder.forEach(section => {
-                const qs = all.filter(q => q.section === section);
+            groups.forEach(group => {
+                const qs = all.filter(q => q.color === group.color);
                 if (qs.length === 0) return;
                 html += '<div class="options-section">';
-                html += `<div class="options-section-name">${sectionTitles[section]}</div>`;
+                html += `<div class="options-section-name">${group.name}</div>`;
+                html += '<div class="options-section-card">';
                 qs.forEach(q => {
                     const isHarmful = q.substanceType === 'harmful';
                     const swatchHex = isHarmful ? '#FF0000' : (COLOR_MAP[q.color] || '#FFFFFF');
                     const checked = !!markerSelections[q.id] ? 'checked' : '';
-                    // Escape ampersands/quotes in the question text just in case.
-                    const safeText = q.text
-                        .replace(/&/g, '&amp;')
-                        .replace(/</g, '&lt;')
-                        .replace(/>/g, '&gt;')
-                        .replace(/"/g, '&quot;');
                     html += '<label class="option-row">';
+                    html += `<span class="option-dot" style="background:${swatchHex};color:${swatchHex}"></span>`;
+                    html += `<span class="option-text">${escape(q.text)}</span>`;
+                    html += '<span class="toggle-switch">';
                     html += `<input type="checkbox" data-q="${q.id}" ${checked}>`;
-                    html += `<span class="option-dot" style="background:${swatchHex}"></span>`;
-                    html += `<span class="option-text">${safeText}</span>`;
+                    html += '<span class="toggle-slider"></span>';
+                    html += '</span>';
                     html += '</label>';
                 });
+                html += '</div>';
                 html += '</div>';
             });
             body.innerHTML = html;
