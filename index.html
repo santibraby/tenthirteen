@@ -575,6 +575,117 @@
             display: none;
         }
 
+        /* Options button + panel */
+        .options-btn {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            background-color: #1A1A1A;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Karla', sans-serif;
+            text-transform: lowercase;
+            cursor: pointer;
+            border-radius: 20px;
+        }
+        .options-btn:hover {
+            background-color: #2A2A2A;
+        }
+        .options-panel {
+            position: fixed;
+            top: 5%;
+            left: 5%;
+            width: 90%;
+            height: 90%;
+            background-color: #0D0D0D;
+            border: 2px solid #FFFFFF;
+            border-radius: 16px;
+            padding: 0;
+            overflow: hidden;
+            z-index: 1100;
+            display: none;
+            flex-direction: column;
+        }
+        .options-panel.active {
+            display: flex;
+        }
+        .options-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px 12px 24px;
+            border-bottom: 1px solid #1A1A1A;
+        }
+        .options-title {
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: lowercase;
+        }
+        .options-close {
+            font-size: 28px;
+            color: #888;
+            cursor: pointer;
+            line-height: 1;
+            padding: 4px 8px;
+            user-select: none;
+        }
+        .options-close:hover {
+            color: #FFFFFF;
+        }
+        .options-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 24px 24px 24px;
+        }
+        .options-section {
+            margin-bottom: 20px;
+        }
+        .options-section-name {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #666;
+            margin: 8px 0 8px 0;
+        }
+        .option-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 4px;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+        .option-row:hover {
+            background-color: #161616;
+        }
+        .option-row input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #FFFFFF;
+            cursor: pointer;
+            margin: 0;
+        }
+        .option-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .option-text {
+            font-size: 15px;
+            text-transform: lowercase;
+        }
+        .options-empty {
+            color: #666;
+            font-size: 13px;
+            text-align: center;
+            padding: 20px;
+        }
+
         /* PAT input */
         .pat-input {
             background: #1A1A1A;
@@ -673,6 +784,7 @@
                     <button class="view-btn" id="viewHours" onclick="setChartMode('hours')">hours</button>
                     <button class="view-btn" id="viewLoc" onclick="setChartMode('loc')">loc</button>
                 </div>
+                <button class="options-btn" id="optionsBtn" onclick="toggleOptions()">options</button>
                 <div class="date-range" id="dateRange">
                     <span id="dateStart"></span>
                     <span id="dateEnd"></span>
@@ -684,6 +796,15 @@
     <!-- Data Popup -->
     <div id="dataPopup" class="data-popup">
         <div id="popupContent"></div>
+    </div>
+
+    <!-- Marker Options Panel -->
+    <div id="optionsPanel" class="options-panel">
+        <div class="options-header">
+            <span class="options-title">marker lines</span>
+            <span class="options-close" onclick="toggleOptions()">×</span>
+        </div>
+        <div class="options-body" id="optionsBody"></div>
     </div>
 
     <!-- Quiz Screen -->
@@ -774,6 +895,7 @@
         const DATA_START_YEAR = 2025; // first year with entries; don't move backwards
         const LEGACY_FILE = 'data.json'; // single-file format, auto-migrated on first load
         const PAT_STORAGE_KEY = 'tenthirteen_gh_pat';
+        const MARKER_STORAGE_KEY = 'tenthirteen_markers'; // { 'd3': true, 'm4': false, ... }
         const dataPath = (year) => `data-${year}.json`;
         const dataUrl = (path) => `https://api.github.com/repos/${DATA_OWNER}/${DATA_REPO}/contents/${path}`;
 
@@ -792,6 +914,32 @@
             'text': 'Daily Response',
             'rating': 'Daily Rating'
         };
+
+        // Marker helpers — used by both the options panel and the chart drawing.
+        // Returns yes/no questions that can have markers attached (no hours/text/rating).
+        function getMarkerQuestions() {
+            return QUESTIONS.filter(q =>
+                q.section === 'morning' || q.section === 'evening' || q.section === 'daily'
+            );
+        }
+        // Color the marker for this question. Harmful substances (nicotine, cannabis,
+        // alcohol) are always red, regardless of their UI line color. Everything else
+        // uses the question's COLOR_MAP color at 55% opacity.
+        function getMarkerColor(q) {
+            if (q.substanceType === 'harmful') return 'rgba(255, 0, 0, 0.55)';
+            const hex = COLOR_MAP[q.color] || '#FFFFFF';
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, 0.55)`;
+        }
+        // Did this entry trigger this marker? For "X free?" questions (harmful substances)
+        // the trigger is 'no' (meaning they consumed X). Everything else triggers on 'yes'.
+        function isMarkerActive(entry, q) {
+            const v = entry && entry[q.id];
+            if (q.substanceType === 'harmful') return v === 'no';
+            return v === 'yes';
+        }
 
         // SVG Icons
         const SUN_ICON = '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
@@ -817,6 +965,7 @@
         let globe = null;
         let recognition = null;
         let isRecording = false;
+        let markerSelections = {}; // which yes/no questions render as vertical marker lines
         
         // Chart state for click detection
         let chartDataPoints = [];
@@ -1181,6 +1330,75 @@
         }
 
         // ============================================
+        // MARKER OPTIONS PANEL
+        // ============================================
+        function loadMarkerSelections() {
+            try {
+                const saved = localStorage.getItem(MARKER_STORAGE_KEY);
+                markerSelections = saved ? JSON.parse(saved) : {};
+            } catch (e) {
+                markerSelections = {};
+            }
+        }
+        function saveMarkerSelections() {
+            localStorage.setItem(MARKER_STORAGE_KEY, JSON.stringify(markerSelections));
+        }
+
+        window.toggleOptions = function () {
+            const panel = document.getElementById('optionsPanel');
+            if (panel.classList.contains('active')) {
+                panel.classList.remove('active');
+            } else {
+                renderOptionsBody();
+                panel.classList.add('active');
+            }
+        };
+
+        function renderOptionsBody() {
+            const body = document.getElementById('optionsBody');
+            const sectionOrder = ['morning', 'evening', 'daily'];
+            const sectionTitles = { morning: 'morning', evening: 'evening', daily: 'daily' };
+            const all = getMarkerQuestions();
+            let html = '';
+            sectionOrder.forEach(section => {
+                const qs = all.filter(q => q.section === section);
+                if (qs.length === 0) return;
+                html += '<div class="options-section">';
+                html += `<div class="options-section-name">${sectionTitles[section]}</div>`;
+                qs.forEach(q => {
+                    const isHarmful = q.substanceType === 'harmful';
+                    const swatchHex = isHarmful ? '#FF0000' : (COLOR_MAP[q.color] || '#FFFFFF');
+                    const checked = !!markerSelections[q.id] ? 'checked' : '';
+                    // Escape ampersands/quotes in the question text just in case.
+                    const safeText = q.text
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;');
+                    html += '<label class="option-row">';
+                    html += `<input type="checkbox" data-q="${q.id}" ${checked}>`;
+                    html += `<span class="option-dot" style="background:${swatchHex}"></span>`;
+                    html += `<span class="option-text">${safeText}</span>`;
+                    html += '</label>';
+                });
+                html += '</div>';
+            });
+            body.innerHTML = html;
+            body.querySelectorAll('input[type="checkbox"]').forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const id = e.target.dataset.q;
+                    if (e.target.checked) {
+                        markerSelections[id] = true;
+                    } else {
+                        delete markerSelections[id];
+                    }
+                    saveMarkerSelections();
+                    updateChart();
+                });
+            });
+        }
+
+        // ============================================
         // GEOLOCATION
         // ============================================
         function getLocation() {
@@ -1539,9 +1757,6 @@
 
                     const hasSex = entry['d10'] === 'yes';
                     const hasSelfSex = entry['d11'] === 'yes';
-                    const hadAlcohol = entry['d3'] === 'no';
-                    const hadWorkout = entry['e2'] === 'yes';
-                    const hadWalk = entry['m4'] === 'yes';
 
                     return {
                         originalTimestamp: entry.timestamp,
@@ -1555,9 +1770,7 @@
                         hasConflict,
                         hasSex,
                         hasSelfSex,
-                        hadAlcohol,
-                        hadWorkout,
-                        hadWalk
+                        raw: entry
                     };
                 });
 
@@ -1582,9 +1795,7 @@
                         pink: pinkHours,
                         creative: creativeHours,
                         rating: ratingScaled,
-                        hadAlcohol: entry['d3'] === 'no',
-                        hadWorkout: entry['e2'] === 'yes',
-                        hadWalk: entry['m4'] === 'yes'
+                        raw: entry
                     };
                 });
 
@@ -1602,6 +1813,32 @@
                 document.getElementById('dateStart').textContent = formatDate(startDate);
                 document.getElementById('dateEnd').textContent = formatDate(endDate);
             }
+        }
+
+        // Draw vertical full-height marker lines for each user-selected yes/no question.
+        // Multiple active markers on the same entry stagger horizontally, centered on the
+        // entry's x position so the cluster stays visually anchored to the day.
+        function drawMarkerLines(ctx, data, padding, chartW, chartH) {
+            const activeMarkers = getMarkerQuestions().filter(q => markerSelections[q.id]);
+            if (activeMarkers.length === 0) return;
+            const SPACING = 3;
+            ctx.lineWidth = 1.5;
+            data.forEach(d => {
+                if (!d.raw) return;
+                // Which markers fire today?
+                const firing = activeMarkers.filter(q => isMarkerActive(d.raw, q));
+                if (firing.length === 0) return;
+                const cx = padding.left + d.xPos * chartW;
+                const baseOffset = -((firing.length - 1) * SPACING) / 2;
+                firing.forEach((q, i) => {
+                    const x = cx + baseOffset + i * SPACING;
+                    ctx.strokeStyle = getMarkerColor(q);
+                    ctx.beginPath();
+                    ctx.moveTo(x, padding.top);
+                    ctx.lineTo(x, padding.top + chartH);
+                    ctx.stroke();
+                });
+            });
         }
 
         function drawPercentChart(ctx, data, padding, chartW, chartH) {
@@ -1686,35 +1923,12 @@
                 }
             });
 
-            // Daily-event marker lines — short verticals (~30% chart height) centered on the
-            // reference dot for each event. Drawn AFTER gradient fills (so markers sit on top
-            // of them) but BEFORE the smooth lines and dots (so the curves stay clean on top).
-            // Slight x-offset between markers so they don't overlap when reference dots land
-            // near the same y.
-            //   Red     = alcohol consumed (d3 === 'no'),  centered on white rating dot, x-offset LEFT
-            //   Cyan    = evening workout  (e2 === 'yes'), centered on cyan dot,         x-offset CENTER
-            //   Magenta = morning walk     (m4 === 'yes'), centered on magenta dot,      x-offset RIGHT
-            const MARKER_LEN_RATIO = 0.30;
-            const MARKER_OFFSET = 3; // px between adjacent markers
-            const markerHalf = (chartH * MARKER_LEN_RATIO) / 2;
-            ctx.lineWidth = 1.5;
-            const drawMarker = (x, val, color) => {
-                if (val === null || val === undefined) return;
-                const yc = padding.top + chartH - (val / 100) * chartH;
-                const y1 = Math.max(padding.top, yc - markerHalf);
-                const y2 = Math.min(padding.top + chartH, yc + markerHalf);
-                ctx.strokeStyle = color;
-                ctx.beginPath();
-                ctx.moveTo(x, y1);
-                ctx.lineTo(x, y2);
-                ctx.stroke();
-            };
-            data.forEach(d => {
-                const cx = padding.left + d.xPos * chartW;
-                if (d.hadAlcohol) drawMarker(cx - MARKER_OFFSET, d.rating,  'rgba(255, 0, 0, 0.55)');
-                if (d.hadWorkout) drawMarker(cx,                 d.cyan,    'rgba(0, 255, 255, 0.55)');
-                if (d.hadWalk)    drawMarker(cx + MARKER_OFFSET, d.magenta, 'rgba(255, 0, 255, 0.55)');
-            });
+            // Configurable marker lines — full-height verticals for each selected yes/no
+            // question. Colored by the question's COLOR_MAP color, with a red override for
+            // harmful substances (nicotine, cannabis, alcohol). Multiple active markers on
+            // the same day stagger horizontally so they don't stack on top of each other.
+            // Drawn AFTER gradient fills, BEFORE smooth lines + dots.
+            drawMarkerLines(ctx, data, padding, chartW, chartH);
 
             // All lines including white (rating) — drawn per segment so they break on gaps
             const allLines = [
@@ -1833,36 +2047,8 @@
                 ctx.stroke();
             });
 
-            // Daily-event marker lines.
-            // Cyan = evening workout (centered on the day),
-            // Red  = alcohol consumed (offset left of cyan),
-            // Magenta = morning walk (offset right of cyan).
-            const MARKER_OFFSET = 3; // px from center on each side
-            ctx.lineWidth = 1.5;
-            data.forEach(d => {
-                const cx = padding.left + d.xPos * chartW;
-                if (d.hadAlcohol) {
-                    ctx.strokeStyle = 'rgba(255, 0, 0, 0.55)';
-                    ctx.beginPath();
-                    ctx.moveTo(cx - MARKER_OFFSET, padding.top);
-                    ctx.lineTo(cx - MARKER_OFFSET, padding.top + chartH);
-                    ctx.stroke();
-                }
-                if (d.hadWorkout) {
-                    ctx.strokeStyle = 'rgba(0, 255, 255, 0.55)';
-                    ctx.beginPath();
-                    ctx.moveTo(cx, padding.top);
-                    ctx.lineTo(cx, padding.top + chartH);
-                    ctx.stroke();
-                }
-                if (d.hadWalk) {
-                    ctx.strokeStyle = 'rgba(255, 0, 255, 0.55)';
-                    ctx.beginPath();
-                    ctx.moveTo(cx + MARKER_OFFSET, padding.top);
-                    ctx.lineTo(cx + MARKER_OFFSET, padding.top + chartH);
-                    ctx.stroke();
-                }
-            });
+            // Configurable marker lines (same logic as percent chart).
+            drawMarkerLines(ctx, data, padding, chartW, chartH);
 
             const categories = [
                 { key: 'sleep', color: '#1a1a2e' },
@@ -2303,6 +2489,7 @@
         // INITIALIZATION
         // ============================================
         window.onload = () => {
+            loadMarkerSelections();
             initializeConnection();
             initPopupDragHandlers();
             initSpeechRecognition();
