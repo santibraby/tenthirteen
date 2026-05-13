@@ -596,14 +596,14 @@
         }
         .options-panel {
             position: fixed;
-            bottom: 0;
-            left: 0;
+            top: 0;
             right: 0;
-            height: 50vh;
+            bottom: 0;
+            width: 50vw;
             background-color: #0D0D0D;
-            border-top: 1px solid #2A2A2A;
-            border-radius: 18px 18px 0 0;
-            box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.5);
+            border-left: 1px solid #2A2A2A;
+            border-radius: 18px 0 0 18px;
+            box-shadow: -8px 0 30px rgba(0, 0, 0, 0.5);
             z-index: 1100;
             display: none;
             flex-direction: column;
@@ -613,14 +613,14 @@
             display: flex;
         }
         .options-panel::before {
-            /* grabber bar like a native bottom sheet */
+            /* slim vertical grabber on the left edge */
             content: '';
             position: absolute;
-            top: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 36px;
-            height: 4px;
+            top: 50%;
+            left: 8px;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 36px;
             background: #3A3A3A;
             border-radius: 2px;
         }
@@ -628,7 +628,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 22px 24px 12px 24px;
+            padding: 18px 22px 12px 22px;
         }
         .options-title {
             font-size: 17px;
