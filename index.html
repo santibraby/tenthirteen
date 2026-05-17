@@ -873,41 +873,39 @@
         // QUESTIONS CONFIGURATION
         // ============================================
         const QUESTIONS = [
-            // Morning (m1-m13, skipping m2 and m11 which were removed)
-            { id: 'm1', section: 'morning', text: 'make bed?', color: 'M' },
-            { id: 'm3', section: 'morning', text: 'colostrum AM?', color: 'C' },
-            { id: 'm4', section: 'morning', text: 'morning walk?', color: 'M' },
-            { id: 'm5', section: 'morning', text: 'yogurt / fruit / granola?', color: 'C' },
-            { id: 'm6', section: 'morning', text: 'journal?', color: 'M' },
-            { id: 'm7', section: 'morning', text: 'shower AM?', color: 'C' },
-            { id: 'm8', section: 'morning', text: 'hair AM?', color: 'C' },
-            { id: 'm9', section: 'morning', text: 'shave?', color: 'M' },
-            { id: 'm10', section: 'morning', text: 'face / ear AM?', color: 'C' },
+            // Morning (m1-m15, retired: m2, m8, m9, m10, m11, m13)
+            // Note: d9 lives in this section (moved from daily); ID kept for data continuity.
             { id: 'm12', section: 'morning', text: 'rise at 6:30?', color: 'M' },
-            { id: 'm13', section: 'morning', text: 'daily vitamin?', color: 'M' },
-            
-            // Evening (e1-e10, skipping e6 and e7 which were removed)
-            { id: 'e1', section: 'evening', text: 'colostrum PM?', color: 'C' },
-            { id: 'e2', section: 'evening', text: 'evening workout?', color: 'C' },
-            { id: 'e3', section: 'evening', text: 'shower PM?', color: 'C' },
-            { id: 'e4', section: 'evening', text: 'hair PM?', color: 'C' },
-            { id: 'e5', section: 'evening', text: 'face / ear PM?', color: 'C' },
+            { id: 'm1',  section: 'morning', text: 'make bed?', color: 'M' },
+            { id: 'm3',  section: 'morning', text: 'colostrum AM?', color: 'C' },
+            { id: 'd9',  section: 'morning', text: 'walk / feed peppa?', color: 'Y' },
+            { id: 'm14', section: 'morning', text: 'coffee with Maria?', color: 'Y' },
+            { id: 'm4',  section: 'morning', text: 'morning walk?', color: 'M' },
+            { id: 'm15', section: 'morning', text: 'morning workout?', color: 'C' },
+            { id: 'm7',  section: 'morning', text: 'shower / hair / face AM?', color: 'C' },
+            // m8 (hair AM), m9 (shave), m10 (face/ear AM) retired — subsumed into m7
+            { id: 'm5',  section: 'morning', text: 'smoothie?', color: 'C' },
+            { id: 'm6',  section: 'morning', text: 'journal?', color: 'M' },
+            // m13 (daily vitamin?) retired
+
+            // Evening (e1-e10, retired: e2, e4, e5, e6, e7)
+            // e2 (evening workout) retired — moved to morning as m15
+            // e4 (hair PM), e5 (face/ear PM) retired — subsumed into e3
+            { id: 'e3',  section: 'evening', text: 'shower / hair / face PM?', color: 'C' },
+            { id: 'e9',  section: 'evening', text: 'recline at 10:30?', color: 'M' },
+            { id: 'e1',  section: 'evening', text: 'colostrum PM?', color: 'C' },
             { id: 'e10', section: 'evening', text: 'drink bottle of water?', color: 'C' },
-            { id: 'e8', section: 'evening', text: 'read?', color: 'M' },
-            { id: 'e9', section: 'evening', text: 'recline at 10:30?', color: 'M' },
-            
-            // Daily substances (d1-d5)
-            { id: 'd1', section: 'daily', text: 'nicotine free?', color: 'M', substanceType: 'harmful' },
-            { id: 'd2', section: 'daily', text: 'cannabis free?', color: 'M', substanceType: 'harmful' },
-            { id: 'd3', section: 'daily', text: 'alcohol free?', color: 'M', substanceType: 'harmful' },
-            { id: 'd4', section: 'daily', text: 'caffeine?', color: 'M' },
-            { id: 'd5', section: 'daily', text: 'nootropics?', color: 'M', substanceType: 'nootropic' },
-            
-            // Daily social (d6-d9)
-            { id: 'd6', section: 'daily', text: 'connect with friends?', color: 'Y' },
-            { id: 'd7', section: 'daily', text: 'connect with family?', color: 'Y' },
-            { id: 'd8', section: 'daily', text: 'quality time with Maria?', color: 'Y' },
-            { id: 'd9', section: 'daily', text: 'take care of Peppa?', color: 'Y' },
+            { id: 'e8',  section: 'evening', text: 'read?', color: 'M' },
+
+            // Daily substances (d1-d5, retired: d1, d2, d4)
+            // d1 (nicotine free?), d2 (cannabis free?), d4 (caffeine?) retired
+            { id: 'd3',  section: 'daily', text: 'alcohol free?',   color: 'M', substanceType: 'harmful' },
+            { id: 'd5',  section: 'daily', text: 'nootropics?',     color: 'M', substanceType: 'nootropic' },
+
+            // Daily social (d6-d9, retired: d8; d9 moved to morning)
+            { id: 'd6',  section: 'daily', text: 'connect with friends?', color: 'Y' },
+            { id: 'd7',  section: 'daily', text: 'connect with family?',  color: 'Y' },
+            // d8 (quality time with Maria) retired — replaced by m14 coffee with Maria
             
             // Daily intimacy (d10-d11)
             { id: 'd10', section: 'daily', text: 'sex?', color: 'W', intimacyType: 'sex' },
@@ -924,11 +922,11 @@
             { id: 'd17', section: 'daily', text: 'left it better?', color: 'C' },
             
             // Hours (h1-h5)
-            { id: 'h1', section: 'hours', text: 'pinkProportion hours', color: 'M' },
-            { id: 'h2', section: 'hours', text: 'FR studio hours', color: 'C' },
-            { id: 'h3', section: 'hours', text: 'FR creative hours', color: 'Y' },
+            { id: 'h1', section: 'hours', text: 'technologies hours', color: 'M' },
+            { id: 'h2', section: 'hours', text: 'studio hours', color: 'C' },
+            { id: 'h3', section: 'hours', text: 'creative hours', color: 'Y' },
             { id: 'h4', section: 'hours', text: 'health hours', color: 'W' },
-            { id: 'h5', section: 'hours', text: 'sleep (last night)', color: 'M', barColor: 'black' },
+            { id: 'h5', section: 'hours', text: 'sleep (last night)', color: 'M' },
             
             // Text and rating
             { id: 'text', section: 'text', text: 'daily response', color: 'W' },
@@ -2085,19 +2083,29 @@
         }
 
         function drawHoursChart(ctx, data, padding, chartW, chartH) {
-            // Y-axis labels
+            // 5 lines, each plotted as smooth bezier curves like the percent chart.
+            // Values scale by /24 — e.g. 8 hours of sleep lands at 1/3 of chart height.
+            const colors = {
+                gray:    '#888888',  // sleep (h5)
+                white:   '#FFFFFF',  // health (h4)
+                cyan:    '#00FFFF',  // studio (h2)
+                magenta: '#FF00FF',  // technologies (h1)
+                yellow:  '#FFFF00'   // creative (h3)
+            };
+
+            // Y-axis labels every 6 hours
             ctx.fillStyle = 'rgba(255,255,255,0.15)';
             ctx.font = '10px Karla';
             ctx.textAlign = 'right';
-            [24, 12, 0].forEach(v => {
+            [24, 18, 12, 6, 0].forEach(v => {
                 const y = padding.top + chartH - (v / 24) * chartH;
                 ctx.fillText(v + 'h', padding.left - 8, y + 3);
             });
 
-            // Subtle grid lines
+            // Subtle horizontal grid
             ctx.strokeStyle = 'rgba(255,255,255,0.05)';
             ctx.lineWidth = 1;
-            [24, 12, 0].forEach(v => {
+            [24, 18, 12, 6, 0].forEach(v => {
                 const y = padding.top + chartH - (v / 24) * chartH;
                 ctx.beginPath();
                 ctx.moveTo(padding.left, y);
@@ -2105,61 +2113,78 @@
                 ctx.stroke();
             });
 
-            // Configurable marker lines (same logic as percent chart).
+            // Segment data by time gaps (same 36h threshold as the percent chart)
+            const GAP_MS = 36 * 60 * 60 * 1000;
+            const segments = [];
+            {
+                let current = [];
+                let lastTime = null;
+                data.forEach((d, i) => {
+                    const t = new Date(d.originalTimestamp).getTime();
+                    if (lastTime !== null && t - lastTime > GAP_MS) {
+                        if (current.length > 0) segments.push(current);
+                        current = [];
+                    }
+                    current.push(i);
+                    lastTime = t;
+                });
+                if (current.length > 0) segments.push(current);
+            }
+
+            // Configurable event markers, drawn between grid and curves so curves stay on top
             drawMarkerLines(ctx, data, padding, chartW, chartH);
 
-            const categories = [
-                { key: 'sleep', color: '#1a1a2e' },
-                { key: 'health', color: '#FFFFFF' },
-                { key: 'studio', color: '#00FFFF' },
-                { key: 'pink', color: '#FF00FF' },
-                { key: 'creative', color: '#FFFF00' }
+            // Drawing order: sleep + health first (background neutrals), then the three
+            // colored "active" categories on top.
+            const lines = [
+                { key: 'sleep',    color: colors.gray },
+                { key: 'health',   color: colors.white },
+                { key: 'studio',   color: colors.cyan },
+                { key: 'pink',     color: colors.magenta },  // h1 → technologies
+                { key: 'creative', color: colors.yellow }
             ];
 
-            // Bar width based on smallest real-time gap between entries
-            // so bars don't overlap when entries land in adjacent 3-hour slots
-            let minGap = 1;
-            if (data.length > 1) {
-                const sortedX = data.map(d => d.xPos).sort((a, b) => a - b);
-                for (let i = 1; i < sortedX.length; i++) {
-                    const g = sortedX[i] - sortedX[i - 1];
-                    if (g > 0) minGap = Math.min(minGap, g);
-                }
-            }
-            const barWidth = Math.max(2, Math.min(20, minGap * chartW * 0.7));
+            const getSegPoints = (segIndices, key) => segIndices.map(i => {
+                const d = data[i];
+                const val = d[key];
+                return {
+                    x: padding.left + d.xPos * chartW,
+                    y: (val !== null && val !== undefined && !isNaN(val))
+                        ? padding.top + chartH - (val / 24) * chartH
+                        : null,
+                    index: i
+                };
+            }).filter(p => p.y !== null);
 
-            data.forEach((d, i) => {
-                const x = padding.left + d.xPos * chartW - barWidth / 2;
-                let y = padding.top + chartH;
-
-                categories.forEach((cat, ci) => {
-                    const hours = d[cat.key];
-                    const h = (hours / 24) * chartH;
-                    if (h < 1) return;
-                    y -= h;
-
-                    const rgb = hexToRgb(cat.color);
-                    const grad = ctx.createLinearGradient(x, y, x, y + h);
-                    grad.addColorStop(0, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 1)`);
-                    grad.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.6)`);
-                    ctx.fillStyle = grad;
-
-                    const isTop = ci === categories.length - 1 || categories.slice(ci + 1).every(c => d[c.key] < 0.1);
-                    const radius = isTop ? Math.min(barWidth / 2, 4) : 0;
-
-                    if (radius > 0) {
-                        ctx.beginPath();
-                        ctx.moveTo(x, y + h);
-                        ctx.lineTo(x, y + radius);
-                        ctx.quadraticCurveTo(x, y, x + radius, y);
-                        ctx.lineTo(x + barWidth - radius, y);
-                        ctx.quadraticCurveTo(x + barWidth, y, x + barWidth, y + radius);
-                        ctx.lineTo(x + barWidth, y + h);
-                        ctx.closePath();
-                        ctx.fill();
-                    } else {
-                        ctx.fillRect(x, y, barWidth, h);
+            // Smooth bezier lines per segment
+            segments.forEach(segIndices => {
+                lines.forEach(({ key, color }) => {
+                    const points = getSegPoints(segIndices, key);
+                    if (points.length > 1) {
+                        ctx.strokeStyle = color;
+                        ctx.lineWidth = 1.5;
+                        drawSmoothLine(ctx, points);
                     }
+                });
+            });
+
+            // Dots at each data point, scaled with data density
+            const dotSize = data.length <= 7 ? 5 : data.length <= 30 ? 3.5 : 2;
+            lines.forEach(({ key, color }) => {
+                const allPoints = data.map((d, i) => {
+                    const val = d[key];
+                    return {
+                        x: padding.left + d.xPos * chartW,
+                        y: (val !== null && val !== undefined && !isNaN(val))
+                            ? padding.top + chartH - (val / 24) * chartH
+                            : null
+                    };
+                }).filter(p => p.y !== null);
+                allPoints.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, dotSize, 0, Math.PI * 2);
+                    ctx.fillStyle = color;
+                    ctx.fill();
                 });
             });
         }
